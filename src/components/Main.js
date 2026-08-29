@@ -377,7 +377,7 @@ const Main = () => {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
             >
-              Veille technologique
+              Mes passions
             </motion.h2>
           </Ressources>
 

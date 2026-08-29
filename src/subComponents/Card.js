@@ -146,9 +146,7 @@ const Card = (props) => {
         ))}
       </Tags>
       <Footer>
-        <Link to={{ pathname: `${demo}` }} target="_blank">
-          Source
-        </Link>
+        
       </Footer>
     </Box>
   );

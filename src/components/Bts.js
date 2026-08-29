@@ -165,49 +165,49 @@ const Bts = () => {
 
           <Main>
             <Title>
-              <Design width={40} height={40} /> BTS SIO
+              <Design width={40} height={40} /> BTS SIO option SLAM
             </Title>
             <Description>
             Services Informatiques aux Organisations.
             </Description>
             <Description>
-              <strong>Qu’est-ce que le BTS SIO ?</strong> <br />
+            <strong>Matières</strong> <br />
               <ul>
-                <li>Le BTS SIO est un diplôme reconnu par l’état de niveau Bac+2, qui après le 1er semestre se distingue en 2 options Slam et Sisr.</li>
+                <li>Dev Web - Organisation BDD</li>
+                <li>Management - Economie/Droit</li>
+                <li>Mathématiques - Culture Générale</li>
               </ul>
             </Description>
             <Description>
-              <strong>Option choisie : SLAM</strong> <br />
+            <strong>Technologies utilisées</strong> <br />
               <ul>
-                <li>Exploitation d’un schéma de données</li>
-                <li>Programmation objet</li>
-                <li>Conception et adaptation d’une base de données (BDD)</li>
-                <li>Réalisation et maintenance de composants logiciels</li>
+                <li>SQL, Docker</li>
+                <li>React, JS, Angular, Vue, Electron, Java, PHP</li>
               </ul>
             </Description>
           </Main>
           <Main>
             <Title>
-              <Develope width={40} height={40} /> Bachelor 3 Informatique
+              <Develope width={40} height={40} /> Master 1 DevOps
             </Title>
             <Description>
-            3e année d'études en informatique avant de réaliser ensuite mon Master.
+            4e année d'études en informatique avant d'obtenir mon diplôme de Master.
             </Description>
             <Description>
               <strong>Matières</strong> <br />
               <ul>
-                <li>Administration BDD – NoSQL </li>
-                <li>DevOps – Management d’équipe</li>
-                <li>Dev mobile - Web avancé front - Développement API - Développement Desktop</li>
+                <li>Web Services - Scripting </li>
+                <li>Pilotage & Maintenance SI</li>
+                <li>Infrastructure Cloud - Open Source</li>
                 <li>Mise en situation professionnelle</li>
               </ul>
             </Description>
             <Description>
               <strong>Technologies utilisées</strong> <br />
               <ul>
-                <li>NoSQL, Docker</li>
-                <li>Management d'équipe</li>
-                <li>React, JS, Angular, Vue, Symfony, Electron, Java, PHP, Ruby</li>
+                <li>SQL, Docker, Ansible</li>
+                <li>Vue Js, Js, Python, PHP, </li>
+                <li>VM, Linux</li>
 
               </ul>
             </Description>

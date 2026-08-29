@@ -112,7 +112,7 @@ const Apropos = () => {
           <Main
             initial={{ opacity: 0 }}
             animate={{ opacity: 1, transition: { duration: 1, delay: 1 } }}>
-            Je m'appelle Marvin Escalle et je suis actuellement en Bachelor 3 informatique à Ynov Aix-en Provence. 
+            Je m'appelle Marvin Escalle et je suis actuellement en Master 1 DevOps à Ynov Paris. 
             <br />
             <br />
             Après avoir obtenu mon diplôme du Baccalauréat STMG, je me suis dirigé vers un BTS SIO puis vers un master avec spécialité DevOps car, il correspond à ce que
@@ -122,7 +122,7 @@ const Apropos = () => {
             Je pense avoir les compétences requises pour cela car j'aime beaucoup les matières de management et gestion mais aussi
             celles de développement web et applications.
             <br />
-            <br />J'utilise comme langages : HTML, CSS, JS, Vue JS. {' '}
+            <br />J'utilise comme technologies : HTML, CSS, JS, Vue JS, Python, Ansible. {' '}
 
           </Main>
           <BigTitle text='A Propos' top='10%' left='5%' />

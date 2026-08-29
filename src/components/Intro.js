@@ -207,7 +207,7 @@ const Intro = () => {
 
           <h3>Je suis Marvin Escalle.</h3>
 
-          <h6>Étudiant en Bachelor 3 informatique à Ynov Aix-Marseille.</h6>
+          <h6>Étudiant en Master 1 DevOps à Ynov Paris.</h6>
         </Text>
       </SubBox>
       <SubBox>

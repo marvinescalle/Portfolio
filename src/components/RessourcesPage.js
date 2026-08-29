@@ -139,7 +139,7 @@ const RessourcesPage = () => {
             ))}
           </Main>
 
-          <BigTitle text="Veille technologique" top="10%" right="10%" />
+          <BigTitle text="Mes passions" top="10%" right="10%" />
 
           <Rotate ref={yinyang}>
             <YinYang width={80} height={80} fill={DarkTheme.text} />
