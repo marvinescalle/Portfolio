@@ -8,7 +8,7 @@ export const Stages = [
         link:""
     },
     {
-        id:1,
+        id:2,
         name:"Développeur Web apprenti",
         tags:["2023", "PHP", "Js", "Symfony","javascript","mysql", "WP"],
         date:"Alternance d'une durée de 12 mois au sein de l'entreprise \"Fiscalyse\" dans laquelle j'ai développé divers outils à intégrer dans le logiciel vendu par l'entreprise.", 
@@ -16,7 +16,7 @@ export const Stages = [
         link:"https://www.fiscalyse.fr"
     },
     {
-        id:1,
+        id:3,
         name:"Stage développement web",
         tags:["2022", "html","css","php","javascript", "mysql", "WP"],
         date:"J'ai effectué un stage d'une durée de 6 semaines au sein de l'entreprise \"Fiscalyse\" durant lequel j'ai dû réaliser une API permettant de convertir des données de la BDD de l'entreprise en fichier excel puis ensuite afficher ces données dans des diagrammes en PDF.", 
@@ -24,7 +24,7 @@ export const Stages = [
         link:"https://www.fiscalyse.fr"
     },
     {
-        id:1,
+        id:4,
         name:"Emploi Saisonnier",
         tags:["2022", "Restauration"],
         date:"J'ai effectué un emploi saisonnier d'une durée de 8 semaines au sein de la Plateforme Logistique APHM durant lequel j'ai dû préparer des plateaux repas pour les personnes hospitalisées dans les hôpitaux de Marseille.", 
@@ -32,7 +32,7 @@ export const Stages = [
         link:"https://www.fiscalyse.fr"
     },
     {
-        id:1,
+        id:5,
         name:"Emploi Saisonnier",
         tags:["2021","Conseil Départemental 13", "Management", ],
         date:"J'ai effectué un emploi saisonnier d'une durée de 4 semaines au sein du Conseil Départemental des Bouches-du-Rhône durant lequel j'ai effectué des tâches dans la gestion des troupes forestières du département.",
@@ -40,7 +40,7 @@ export const Stages = [
         link:"https://www.departement13.fr"
     },
     {
-        id:2,
+        id:6,
         name:"Emploi Saisonnier",
         tags:["2020","Conseil Départemental 13","Comptabilité"],
         date:"J'ai effectué un emploi saisonnier d'une durée de 4 semaines au sein du Conseil Départemental des Bouches-du-Rhône durant lequel j'ai effectué des tâches dans la comptabilité.",
@@ -48,7 +48,7 @@ export const Stages = [
         link:"https://www.departement13.fr" 
     },
     {
-        id:3,
+        id:7,
         name:"Stage vente prêt-à-porter",
         tags:["2019","Size?","Commerce"],
         date:"J'ai effectué un stage d'une durée de 2 semaines au sein de l'entreprise \"Size\" durant lequel j'ai accueilli les clients, je les ai conseillé et encaissé leurs achats.",

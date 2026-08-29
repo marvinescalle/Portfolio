@@ -8,7 +8,7 @@ export const Projets = [
         link:""
     },
     {
-        id:1,
+        id:2,
         name:"YNDR : Il s'agit d'une application ayant pour but d'améliorer la vie étudiante en facilitant la rencontre de ceux-ci au sein du campus",
         tags:["html","css","vuejs","nestjs","javascript","mysql"],
         date:"2020", 
@@ -16,7 +16,7 @@ export const Projets = [
         link:""
     },
     {
-        id:1,
+        id:3,
         name:"Yspotify : Il s'agit d'un projet ayant pour but de développer une API en utilisant les ressources de spotify",
         tags:["html","css","php","javascript","node","ruby"],
         date:"2020", 
@@ -24,7 +24,7 @@ export const Projets = [
         link:""
     },
     {
-        id:1,
+        id:4,
         name:"Ypizza : Il s'agit d'une boutique en ligne permettant de commander (fictivement) des article ainsi que de les personnaliser...",
         tags:["html","css","scss","javascript","angularjs"],
         date:"2020", 
@@ -32,7 +32,7 @@ export const Projets = [
         link:""
     },
     {
-        id:1,
+        id:5,
         name:"TBGW : Il s'agit d'un site de gambling avec une monnaie fictive et une boutique personnalisée",
         tags:["html","css","php","javascript","mysql"],
         date:"2020", 
@@ -40,7 +40,7 @@ export const Projets = [
         link:""
     },
     {
-        id:2,
+        id:6,
         name:"MonScan : Il s'agit d'un site internet regroupant divers scans de mangas réalisé pour un devoir en classe",
         tags:["html","css","php","javascript","mysql"],
         date:"2021",
@@ -48,7 +48,7 @@ export const Projets = [
         link:"2021"
     },
     {
-        id:3,
+        id:7,
         name:"EgoSoin : Il s'agit d'un site relié à une BDD dans lequel on peut y répertorier des rdv entre patients et médecins",
         tags:["html","css","php","mysql"],
         date:"2021",
@@ -56,7 +56,7 @@ export const Projets = [
         link:"2021"
     },
     {
-        id:4,
+        id:8,
         name:"TicketOk : Il 'sagit d'un outil de ticketing en PHP et mysql",
         tags:["html","css","php","mysql"],
         date:"2021",
@@ -64,7 +64,7 @@ export const Projets = [
         link:"Il 'sagit d'un outil de ticketing en PHP et mysql"
     },
     {
-        id:5,
+        id:9,
         name:"Tableau clients : Il s'agit d'un tableau regroupant le nom des clients ainsi que leurs achats",
         tags:["html","css","php","javascript","mysql"],
         date:"2022",
@@ -73,7 +73,7 @@ export const Projets = [
         
     },
     {
-        id:6,
+        id:10,
         name:"Portfolio : Il s'agit de mon propre portfolio sur lequel vous vous trouvez",
         tags:["react","html", "css", "javascript"],
         date:"2022",
