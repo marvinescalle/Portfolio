@@ -274,24 +274,46 @@ const halo = keyframes`
   100% { transform: scale(1.28); opacity: 0; }
 `;
 
-const Focal = styled.button`
+/* Le calage du symbole vit sur cette enveloppe, et par de la mise en page
+   plutôt que par un transform.
+
+   Il était auparavant centré par translate(-50%, -50%). Or ce pourcentage se
+   résout contre la boîte du bouton, dont la hauteur passe de 102 à 190 px
+   pendant l'animation, puisque le symbole grandit. Lorsque le navigateur
+   confie la transition de transform au compositeur, il fige la résolution du
+   pourcentage au démarrage alors que la hauteur, elle, continue d'évoluer :
+   le bouton reste positionné 44 px trop bas pendant tout le trajet, soit la
+   moitié de la variation de hauteur, puis se recale d'un coup à l'arrivée. La
+   largeur du bouton ne bougeant pas, seul l'axe vertical était touché.
+
+   Ici le centrage et l'accroche au coin viennent de flexbox, qui se recalcule
+   à chaque mise en page. Le transform du bouton ne porte plus que des pixels,
+   et ne peut donc plus se désynchroniser. */
+const FocalSlot = styled.div`
   position: absolute;
+  inset: 0;
   z-index: 5;
-  top: ${(props) => (props.$open ? "auto" : "50%")};
-  left: ${(props) => (props.$open ? "auto" : "50%")};
-  bottom: ${(props) => (props.$open ? layout.gutter : "auto")};
-  right: ${(props) => (props.$open ? layout.gutter : "auto")};
-  transform: ${(props) => (props.$open ? "none" : "translate(-50%, -50%)")};
+  display: flex;
+  /* Marge symétrique : le centrage reste celui de la fenêtre, et le coin
+     tombe exactement là où bottom et right le posaient. */
+  padding: ${layout.gutter};
+  align-items: ${(props) => (props.$open ? "flex-end" : "center")};
+  justify-content: ${(props) => (props.$open ? "flex-end" : "center")};
+  pointer-events: none;
+`;
+
+const Focal = styled.button`
+  position: relative;
+  pointer-events: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 2.25rem;
   color: ${(props) => props.theme.text};
-  /* Le calage se fait par top, left, bottom et right, qui basculent d'un coup
-     puisqu'une longueur ne s'interpole pas vers auto. Le trajet visible est
-     donc porté par le seul transform, posé au clic par mesure des deux
-     positions. Le symbole arrive ainsi exactement sur sa place de repos, sans
-     dépendre d'un calcul de distance approché. */
+  /* L'ancrage bascule d'un coup, flexbox ne s'interpolant pas. Le trajet
+     visible est donc porté par le seul transform, posé au clic par mesure des
+     deux positions. Le symbole arrive ainsi exactement sur sa place de repos,
+     sans dépendre d'un calcul de distance approché. */
   transition: transform
     ${(props) => (props.$open ? motionSpec.focal : motionSpec.focalBack)};
 
@@ -605,14 +627,12 @@ const Home = () => {
     const spin = spinRef.current;
     if (!from || !focal || !mark) return;
 
-    const base = open ? "" : "translate(-50%, -50%) ";
-
     /* Les deux transitions sont suspendues le temps de la mesure : tant
        qu'elles sont actives, la géométrie relevée est celle de l'état qu'on
        vient de quitter, et le décalage calculé serait faux. */
     focal.style.transition = "none";
     mark.style.transition = "none";
-    focal.style.transform = `${base}translate(0px, 0px)`;
+    focal.style.transform = "translate(0px, 0px)";
     // Taille d'arrivée, relevée avant de reposer celle du départ.
     const target = mark.getBoundingClientRect();
     /* La taille de départ est reposée avant la mesure : c'est elle qui vaut
@@ -642,7 +662,7 @@ const Home = () => {
       rollRef.current += dx > 0 ? -turn : turn;
     }
 
-    focal.style.transform = `${base}translate(${dx}px, ${dy}px)`;
+    focal.style.transform = `translate(${dx}px, ${dy}px)`;
     // Fige ce point de départ avant de rendre les transitions à nouveau actives.
     void focal.offsetWidth;
 
@@ -650,7 +670,7 @@ const Home = () => {
     mark.style.transition = "";
     mark.style.width = "";
     mark.style.height = "";
-    focal.style.transform = `${base}translate(0px, 0px)`;
+    focal.style.transform = "translate(0px, 0px)";
     if (spin) spin.style.rotate = `${rollRef.current}deg`;
   }, [open]);
 
@@ -746,6 +766,7 @@ const Home = () => {
           </MobileRail>
         ) : null}
 
+        <FocalSlot $open={open}>
         <Focal
           ref={focalRef}
           type="button"
@@ -785,6 +806,7 @@ const Home = () => {
           </span>
           <span className="hint">{t.home.hint}</span>
         </Focal>
+        </FocalSlot>
 
         <PanelLayer aria-hidden={!open} inert={!open}>
         <PanelAnchor>
