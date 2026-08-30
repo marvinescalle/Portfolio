@@ -1,7 +1,7 @@
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import styled, { ThemeProvider, keyframes } from "styled-components";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useReducedMotion } from "framer-motion";
 
 import portrait from "../assets/optimized/portrait.jpg";
 import { profile } from "../data/profile";
@@ -12,7 +12,6 @@ import SoundToggle from "../components/ui/SoundToggle";
 import { ArrowUpRight } from "../components/icons";
 import BrandMark from "../components/brand/BrandMark";
 import VortexIntro from "../components/intro/VortexIntro";
-import VortexBurst from "../components/intro/VortexBurst";
 import {
   markIntroPlayed,
   shouldPlayIntro,
@@ -25,6 +24,36 @@ import {
    révèle la présentation.
    ──────────────────────────────────────────────────────────────────────── */
 
+/* Cadence de l'ouverture, en secondes. Tout est enchaîné par des délais de
+   transition CSS : aucune boucle JavaScript, donc aucun risque de saccade si
+   le navigateur suspend le rendu, et rien à remettre en état si l'ouverture
+   est interrompue.
+
+     0.00        le symbole donne un coup d'accélérateur
+     0.06 - 0.78 il rejoint le coin bas droit et reprend sa taille de repos
+     0.10 - 0.56 le panneau noir se déploie de la gauche vers la droite
+     0.26 - 0.70 le texte se découvre du haut vers le bas
+     0.36 - 0.82 le portrait se découvre de la gauche vers la droite
+   ──────────────────────────────────────────────────────────────────────── */
+const swift = "cubic-bezier(0.22, 0.61, 0.36, 1)";
+const motionSpec = {
+  focal: `0.72s ${swift} 0.06s`,
+  panel: `0.46s ${swift} 0.10s`,
+  text: `0.44s ${swift} 0.26s`,
+  photo: `0.46s ${swift} 0.36s`,
+  // Les libellés basculent en clair au moment où le noir passe sous eux.
+  tint: "0.3s ease 0.18s",
+  /* Repli : les délais qui étagent l'ouverture n'ont pas de sens à l'envers,
+     ils laisseraient le portrait seul sur le fond clair. Tout se referme
+     ensemble et plus vite. */
+  focalBack: `0.52s ${swift}`,
+  back: `0.24s ${swift}`,
+  /* Le panneau se retire un cheveu après le texte : sinon la bande de texte
+     encore en train de se refermer se retrouve seule sur le fond clair. */
+  panelBack: `0.34s ${swift} 0.04s`,
+  tintBack: "0.24s ease",
+};
+
 const Screen = styled.div`
   position: relative;
   width: 100%;
@@ -32,35 +61,44 @@ const Screen = styled.div`
   height: 100dvh;
   overflow: hidden;
   background: ${(props) => props.theme.body};
+
+  /* La règle globale ramène les durées à zéro mais laisse les délais : sans
+     cela, l'ouverture se ferait encore en trois temps, en trois à-coups. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      transition-delay: 0s !important;
+    }
+  }
 `;
 
 /** Grande zone noire révélée à l'ouverture : le contraste est l'identité. */
-/* Toutes les surfaces noires de la présentation sont regroupées ici pour
-   être découvertes d'un seul geste : un cercle qui s'ouvre depuis le
-   symbole. Le noir semble ainsi jaillir de lui et remplir la composition.
-
-   Volontairement en CSS et non en WebGL : le tracé est calculé par le
-   navigateur, il ne dépend d'aucune particularité de compositing. */
 const DarkGroup = styled.div`
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.16s linear;
-
-  &[data-visible="true"] {
-    opacity: 1;
-  }
 `;
 
-const DarkPanel = styled(motion.div)`
+/* Le panneau se déploie latéralement, dans l'axe de la colonne qu'il occupe.
+   Un scaleX depuis le bord gauche plutôt qu'une forme qui s'étend depuis le
+   centre : le geste suit la géométrie de la page, ne déborde jamais de
+   l'écran, et reste entièrement pris en charge par le compositeur. */
+const DarkPanel = styled.div`
   position: absolute;
   inset: 0 auto 0 0;
   width: 50%;
   background: ${(props) => props.theme.text};
-  transform-origin: left;
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform ${motionSpec.panelBack};
   z-index: 1;
+
+  &[data-visible="true"] {
+    transform: scaleX(1);
+    transition: transform ${motionSpec.panel};
+  }
 
   ${media.md`
     width: 100%;
@@ -86,14 +124,17 @@ const Wordmark = styled.span`
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: ${(props) => (props.$onDark ? props.theme.body : props.theme.text)};
-  transition: color 0.6s ease;
+  transition: color
+    ${(props) => (props.$onDark ? motionSpec.tint : motionSpec.tintBack)};
 `;
 
 const linkVisual = `
   font-size: 0.8rem;
   letter-spacing: 0.02em;
   padding: 0.5rem 0;
-  transition: color 0.6s ease, opacity 0.3s ease;
+  transition: color
+      ${(props) => (props.$onDark ? motionSpec.tint : motionSpec.tintBack)},
+    opacity 0.3s ease;
 
   &::after {
     content: "";
@@ -231,8 +272,13 @@ const Focal = styled.button`
   align-items: center;
   gap: 2.25rem;
   color: ${(props) => props.theme.text};
-  transition: top 0.8s ease, left 0.8s ease, bottom 0.8s ease, right 0.8s ease,
-    transform 0.8s ease;
+  /* Le calage se fait par top, left, bottom et right, qui basculent d'un coup
+     puisqu'une longueur ne s'interpole pas vers auto. Le trajet visible est
+     donc porté par le seul transform, posé au clic par mesure des deux
+     positions. Le symbole arrive ainsi exactement sur sa place de repos, sans
+     dépendre d'un calcul de distance approché. */
+  transition: transform
+    ${(props) => (props.$open ? motionSpec.focal : motionSpec.focalBack)};
 
   .mark {
     position: relative;
@@ -240,7 +286,22 @@ const Focal = styled.button`
     place-items: center;
     width: ${(props) => (props.$open ? "3rem" : "clamp(6rem, 13vw, 8.5rem)")};
     height: ${(props) => (props.$open ? "3rem" : "clamp(6rem, 13vw, 8.5rem)")};
-    transition: width 0.8s ease, height 0.8s ease, transform 0.5s ease;
+    transition: width
+        ${(props) => (props.$open ? motionSpec.focal : motionSpec.focalBack)},
+      height
+        ${(props) => (props.$open ? motionSpec.focal : motionSpec.focalBack)},
+      transform 0.5s ease;
+  }
+
+  /* Bref coup d'accélérateur au clic, cumulatif : l'angle ne revient jamais
+     en arrière, la rotation lente reprend donc sans à-coup. */
+  .spin {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    rotate: ${(props) => props.$kick}deg;
+    transition: rotate 0.5s cubic-bezier(0.05, 0.85, 0.25, 1);
   }
 
   /* Anneau qui respire : la seule indication permanente que l'élément
@@ -309,7 +370,7 @@ const PanelAnchor = styled.div`
   `}
 `;
 
-const Panel = styled(motion.div)`
+const Panel = styled.div`
   pointer-events: auto;
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -323,14 +384,19 @@ const Panel = styled(motion.div)`
   `}
 `;
 
+/* Le fond du bloc est exactement le noir du grand panneau : le volet ne se
+   voit donc pas comme un rectangle qui descend, seules les lignes de texte se
+   posent les unes après les autres. Le léger décalage vertical évite le fondu
+   générique tout en restant discret. */
 const TextSide = styled.div`
-  opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 0.42s ease, transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+  clip-path: inset(0 0 100% 0);
+  transform: translateY(10px);
+  transition: clip-path ${motionSpec.back}, transform ${motionSpec.back};
 
   &[data-visible="true"] {
-    opacity: 1;
+    clip-path: inset(0 0 0 0);
     transform: none;
+    transition: clip-path ${motionSpec.text}, transform ${motionSpec.text};
   }
 
   background: ${(props) => props.theme.body};
@@ -439,13 +505,15 @@ const Cta = styled(Link)`
 
 const PhotoSide = styled.div`
   position: relative;
-  /* Volet vertical : le portrait se découvre du haut vers le bas, en même
-     temps que la matière noire se range. */
-  clip-path: inset(0 0 100% 0);
-  transition: clip-path 0.62s cubic-bezier(0.22, 0.61, 0.36, 1);
+  /* Volet horizontal, dans le prolongement du panneau noir : le portrait se
+     découvre de la gauche vers la droite, une fois le texte posé. L'axe
+     diffère de celui du texte pour que les deux apparitions se distinguent. */
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path ${motionSpec.back};
 
   &[data-visible="true"] {
-    clip-path: inset(0 0 0% 0);
+    clip-path: inset(0 0 0 0);
+    transition: clip-path ${motionSpec.photo};
   }
 
   background: ${(props) => props.theme.body};
@@ -479,13 +547,12 @@ const Home = () => {
   const [open, setOpen] = useState(false);
   const [hovered, setHovered] = useState(false);
   const markRef = useRef(null);
-  /* Expulsion : point de départ mesuré au clic, zone visée mesurée sur
-     l'élément réel, et avancement partagé qui pilote l'apparition du
-     contenu sans provoquer de rendu à chaque image. */
-  const [emission, setEmission] = useState(null);
-  const [revealed, setRevealed] = useState(false);
-  const [settled, setSettled] = useState(false);
-  const darkRef = useRef(null);
+  const focalRef = useRef(null);
+  /* Position du symbole relevée juste avant la bascule, pour rattraper par un
+     `transform` le saut d'ancrage qui suit. */
+  const flipRef = useRef(null);
+  // Angle cumulé du coup d'accélérateur donné à chaque ouverture.
+  const [kick, setKick] = useState(0);
   const t = useTranslation();
   const { language, setLanguage } = useLanguage();
   const reduce = useReducedMotion();
@@ -503,6 +570,49 @@ const Home = () => {
   useEffect(() => {
     if (!intro) markIntroPlayed();
   }, [intro]);
+
+  /* Le symbole change d'ancrage d'un seul coup au moment où la présentation
+     s'ouvre ou se referme. On mesure sa place d'arrivée avant le premier
+     rendu à l'écran, on le repose sur sa place de départ par un `transform`,
+     puis on laisse la transition ramener ce décalage à zéro. Le trajet est
+     donc continu et l'arrivée est exacte par construction, quelle que soit la
+     taille de la fenêtre. */
+  useLayoutEffect(() => {
+    const from = flipRef.current;
+    flipRef.current = null;
+
+    const focal = focalRef.current;
+    const mark = markRef.current;
+    if (!from || !focal || !mark) return;
+
+    const base = open ? "" : "translate(-50%, -50%) ";
+
+    /* Les deux transitions sont suspendues le temps de la mesure : tant
+       qu'elles sont actives, la géométrie relevée est celle de l'état qu'on
+       vient de quitter, et le décalage calculé serait faux. */
+    focal.style.transition = "none";
+    mark.style.transition = "none";
+    focal.style.transform = `${base}translate(0px, 0px)`;
+    /* La taille de départ est reposée avant la mesure : c'est elle qui vaut
+       au premier instant du trajet, et elle décale la colonne puisque le
+       symbole y est empilé au-dessus du libellé. */
+    mark.style.width = `${from.width}px`;
+    mark.style.height = `${from.height}px`;
+
+    const now = mark.getBoundingClientRect();
+    const dx = from.x - (now.left + now.width / 2);
+    const dy = from.y - (now.top + now.height / 2);
+
+    focal.style.transform = `${base}translate(${dx}px, ${dy}px)`;
+    // Fige ce point de départ avant de rendre les transitions à nouveau actives.
+    void focal.offsetWidth;
+
+    focal.style.transition = "";
+    mark.style.transition = "";
+    mark.style.width = "";
+    mark.style.height = "";
+    focal.style.transform = `${base}translate(0px, 0px)`;
+  }, [open]);
 
 
 
@@ -535,13 +645,13 @@ const Home = () => {
           {pick(profile.disciplines, language).join(", ")}
         </h1>
 
-        <DarkGroup ref={darkRef} data-visible={open && (settled || reduce)}>
-          <DarkPanel />
+        <DarkGroup>
+          <DarkPanel data-visible={open} />
         </DarkGroup>
 
-        <Wordmark $onDark={open && (settled || reduce)}>
+        <Wordmark $onDark={open}>
           {profile.fullName}
-          <SoundToggle onDark={open && (settled || reduce)} />
+          <SoundToggle onDark={open} />
         </Wordmark>
 
         <TopRight role="group" aria-label={t.nav.language}>
@@ -561,10 +671,10 @@ const Home = () => {
         </TopRight>
 
         <DesktopOnly>
-          <RailLeft to="/a-propos" style={{ top: "36%" }} $onDark={open && (settled || reduce)}>
+          <RailLeft to="/a-propos" style={{ top: "36%" }} $onDark={open}>
             {t.nav.items["/a-propos"]}
           </RailLeft>
-          <RailLeft to="/contact" style={{ top: "64%" }} $onDark={open && (settled || reduce)}>
+          <RailLeft to="/contact" style={{ top: "64%" }} $onDark={open}>
             {t.nav.items["/contact"]}
           </RailLeft>
 
@@ -597,55 +707,26 @@ const Home = () => {
         ) : null}
 
         <Focal
+          ref={focalRef}
           type="button"
-          $open={open && (settled || reduce)}
+          $open={open}
           $ready={!intro}
+          $kick={kick}
           onClick={() => {
-            if (open) {
-              setOpen(false);
-              setEmission(null);
-              setSettled(false);
-              setRevealed(false);
-              return;
-            }
-
-            // Mesuré avant que le symbole ne quitte le centre : la matière
-            // doit partir de là où le visiteur vient de cliquer.
-            const box = markRef.current?.getBoundingClientRect();
-            const center = box
-              ? { x: box.left + box.width / 2, y: box.top + box.height / 2 }
-              : { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-
-            setOpen(true);
-
-            if (reduce) {
-              setRevealed(true);
-              setSettled(true);
-              return;
-            }
-
-            /* Zone visée mesurée sur l'élément réel, dans le même geste :
-               la couche sombre est montée en permanence, il n'y a donc pas
-               à attendre un rendu supplémentaire pour la connaître. */
-            const zone = darkRef.current?.getBoundingClientRect();
-            setEmission(
-              zone
+            // Relevé avant la bascule : c'est le point de départ du trajet.
+            if (!reduce) {
+              const box = markRef.current?.getBoundingClientRect();
+              flipRef.current = box
                 ? {
-                    center,
-                    rect: {
-                      left: zone.left,
-                      top: zone.top,
-                      right: zone.right,
-                      bottom: zone.bottom,
-                    },
+                    x: box.left + box.width / 2,
+                    y: box.top + box.height / 2,
+                    width: box.width,
+                    height: box.height,
                   }
-                : null
-            );
-
-            if (!zone) {
-              setRevealed(true);
-              setSettled(true);
+                : null;
+              if (!open) setKick((angle) => angle + 120);
             }
+            setOpen((wasOpen) => !wasOpen);
           }}
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
@@ -656,22 +737,22 @@ const Home = () => {
           aria-label={open ? t.home.hide : t.home.open}
         >
           <span className="mark" ref={markRef}>
-            <BrandMark
-              size="100%"
-              state={
-                emission ? "loading" : hovered && !open ? "hover" : "idle"
-              }
-              paused={intro}
-            />
+            <span className="spin">
+              <BrandMark
+                size="100%"
+                state={hovered && !open ? "hover" : "idle"}
+                paused={intro}
+              />
+            </span>
           </span>
           <span className="hint">{t.home.hint}</span>
         </Focal>
 
         <PanelLayer aria-hidden={!open} inert={!open}>
         <PanelAnchor>
-          <Panel id="presentation" style={{ opacity: open ? 1 : 0 }}>
+          <Panel id="presentation">
               <ThemeProvider theme={darkTheme}>
-                <TextSide data-visible={revealed || reduce}>
+                <TextSide data-visible={open}>
                   <Hello>{t.home.hello}</Hello>
 
                 <NameBlock>
@@ -701,7 +782,7 @@ const Home = () => {
                 </TextSide>
               </ThemeProvider>
 
-              <PhotoSide data-visible={revealed || reduce}>
+              <PhotoSide data-visible={open}>
                 <img
                   src={portrait}
                   alt={`${t.about.portrait} ${profile.fullName}`}
@@ -712,15 +793,6 @@ const Home = () => {
           </Panel>
         </PanelAnchor>
         </PanelLayer>
-
-        {!intro && !reduce ? (
-          <VortexBurst
-            emission={emission}
-            onReveal={() => setRevealed(true)}
-            onSettle={() => setSettled(true)}
-            onDone={() => setEmission(null)}
-          />
-        ) : null}
 
         {intro ? (
           <VortexIntro

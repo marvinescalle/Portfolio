@@ -1,14 +1,5 @@
 /**
- * Rendu du vortex, dans les deux sens.
- *
- *   absorb  le voile noir est aspiré vers le centre et disparaît dans le
- *           symbole. C'est le rideau d'ouverture du site.
- *   emit    le noir est au contraire expulsé du symbole, puis se stabilise
- *           dans une zone donnée. C'est l'ouverture de la présentation.
- *
- * Les deux sens partagent la même torsion, les mêmes lobes, le même bruit
- * et les mêmes filaments en spirale : ce sont deux états d'un seul et même
- * phénomène, pas deux effets qui se ressemblent.
+ * Rendu du voile noir aspiré vers le centre, en WebGL brut.
  *
  * Pourquoi un shader plutôt qu'un masque CSS ou SVG : l'effet recherché est
  * une rotation dont l'intensité dépend de la distance au centre. Le centre
@@ -35,15 +26,6 @@ uniform vec2 uRes;
 uniform float uProgress;
 uniform float uTime;
 uniform vec3 uColor;
-uniform float uEmit;
-uniform vec2 uCenter;
-uniform vec4 uRect;
-
-/** Distance signée à un rectangle, pour la zone visée en émission. */
-float sdBox(vec2 p, vec2 c, vec2 extent) {
-  vec2 q = abs(p - c) - extent;
-  return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0);
-}
 
 float hash(vec2 p) {
   return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
@@ -62,95 +44,12 @@ float noise(vec2 p) {
 
 void main() {
   // Repère centré, normalisé par la demi-diagonale : le rayon vaut donc 1
-  // dans les coins, quel que soit le format de l'écran. En émission le
-  // centre n'est pas celui de l'écran mais celui du symbole.
-  float scale = 0.5 * length(uRes);
-  vec2 pivot = uEmit > 0.5 ? uCenter : 0.5 * uRes;
-  vec2 uv = (gl_FragCoord.xy - pivot) / scale;
+  // dans les coins, quel que soit le format de l'écran.
+  vec2 uv = (gl_FragCoord.xy - 0.5 * uRes) / (0.5 * length(uRes));
   float r = length(uv);
   float angle = atan(uv.y, uv.x);
 
   float p = clamp(uProgress, 0.0, 1.0);
-
-  if (uEmit > 0.5) {
-    // ---------------- ÉMISSION ----------------
-    /* Construction volontairement calquée sur celle de l'aspiration : le
-       contour est défini par un RAYON que les lobes multiplient, et non par
-       une distance à laquelle on ajouterait des bosses. C'est ce qui donne
-       une forme franche plutôt qu'une masse molle. La cible rectangulaire
-       n'intervient qu'à la toute fin, par interpolation des distances. */
-    float grow = smoothstep(0.02, 0.62, p);
-
-    // La torsion part au maximum, exactement là où l'aspiration la laisse,
-    // puis se dénoue à mesure que la matière se range.
-    /* Décroissance plus lente qu'à l'aspiration : la rotation doit rester
-       sensible jusqu'au bord de la forme en expansion, sinon le corps grossit
-       sans tourner et l'effet se lit comme un simple cercle qui s'agrandit. */
-    float swirlOut = exp(-r * 1.0) * (6.2 * (1.0 - grow) + 2.6 * uTime);
-    float twistedOut = angle + swirlOut;
-
-    /* Lobes nettement plus discrets que pour l'aspiration : celle-ci
-       déforme un voile qui couvre l'écran, où une ondulation ample reste
-       lisible. Ici la forme est petite, et la même amplitude la réduirait
-       à une masse informe. */
-    float lobesOut =
-        0.045 * sin(3.0 * twistedOut)
-      + 0.025 * sin(5.0 * twistedOut + 1.7)
-      + 0.012 * sin(8.0 * twistedOut - 0.6);
-
-    /* Bruit indexé sur la direction tournée plutôt que sur l'angle brut :
-       atan() saute de +PI à -PI et laissait une encoche visible sur le bord
-       gauche de la forme. */
-    vec2 dirOut = vec2(cos(twistedOut), sin(twistedOut));
-    float grainOut = noise(dirOut * 3.0 + vec2(r * 9.0 - uTime * 0.8)) - 0.5;
-    float fineOut = noise(dirOut * 7.5 + vec2(11.0 + r * 18.0 - uTime * 1.4)) - 0.5;
-
-    float edgeOut = 0.58 * grow * (1.0 + lobesOut)
-      + 0.026 * grainOut * grow
-      + 0.013 * fineOut * grow;
-
-    // Corps de la matière, puis cible : deux distances que l'on interpole.
-    float dBody = r - edgeOut;
-
-    vec2 rectCenter = ((uRect.xy + uRect.zw) * 0.5 - pivot) / scale;
-    vec2 rectHalf = (uRect.zw - uRect.xy) * 0.5 / scale;
-    float dRect = sdBox(uv, rectCenter, rectHalf);
-
-    /* La bascule vers le rectangle démarre pendant que la forme grandit
-       encore : sans ce recouvrement, il reste une plage où l'on ne voit
-       qu'un disque qui grossit. */
-    float morphOut = smoothstep(0.32, 0.88, p);
-    float dOut = mix(dBody, dRect, morphOut);
-
-    float softOut = mix(0.005, 0.002, morphOut);
-    float veilOut = 1.0 - smoothstep(-softOut, softOut, dOut);
-
-    /* Filaments : mêmes spirales que l'aspiration, placées dans l'espace du
-       rayon et non du champ mélangé, pour rester fins et détachés. */
-    float spiralOut = twistedOut + 2.9 * log(r + 0.05) - uTime * 1.1;
-    float bandOut = fract(spiralOut / 6.2831853 * 3.0);
-    float distOut = min(bandOut, 1.0 - bandOut);
-    /* Bras resserrés et portée courte : autour d'une forme réduite, la
-       largeur retenue pour l'aspiration ferait fusionner les filaments en
-       un halo flou. */
-    float armsOut = smoothstep(0.085, 0.050, distOut);
-
-    /* Alpha pleine sur presque toute la longueur du filament, coupée net à
-       la pointe : un dégradé progressif depuis le corps donnerait la bavure
-       que produisait la version précédente. */
-    float reachOut = smoothstep(edgeOut + 0.36, edgeOut + 0.24, r);
-    float innerOut = smoothstep(0.0, 0.10, r);
-    /* Les filaments ne restent lisibles comme spirale qu'à faible rayon :
-       plus loin, la courbure logarithmique s'aplatit et ils se referment en
-       anneau. Ils s'effacent donc pendant que le corps prend le relais. */
-    float calm = 1.0 - smoothstep(0.20, 0.46, p);
-    float wispsOut = armsOut * reachOut * innerOut * calm;
-
-    gl_FragColor = vec4(uColor, clamp(veilOut + wispsOut, 0.0, 1.0));
-    return;
-  }
-
-  // ---------------- ASPIRATION ----------------
   float ease = p * p * (3.0 - 2.0 * p);
 
   // Rotation différentielle : forte au centre, quasi nulle sur les bords.
@@ -257,31 +156,15 @@ export const createVortex = (canvas, { color = [0.039, 0.039, 0.039] } = {}) => 
   const uProgress = gl.getUniformLocation(program, "uProgress");
   const uTime = gl.getUniformLocation(program, "uTime");
   const uColor = gl.getUniformLocation(program, "uColor");
-  const uEmit = gl.getUniformLocation(program, "uEmit");
-  const uCenter = gl.getUniformLocation(program, "uCenter");
-  const uRect = gl.getUniformLocation(program, "uRect");
 
   gl.enable(gl.BLEND);
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
   gl.uniform3fv(uColor, color);
-  gl.uniform1f(uEmit, 0);
 
   let width = 0;
   let height = 0;
-  let needsResize = true;
-
-  /* La taille n'est relue qu'au montage et lors d'un redimensionnement.
-     Interroger clientWidth à chaque image force le navigateur à recalculer
-     la mise en page en plein milieu de l'animation, ce qui suffit à la
-     rendre saccadée. */
-  const markDirty = () => {
-    needsResize = true;
-  };
-  window.addEventListener("resize", markDirty);
 
   const resize = () => {
-    if (!needsResize) return;
-    needsResize = false;
     // Plafonné à 1.5 : au-delà le gain visuel est nul et le coût réel.
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     const w = Math.floor(canvas.clientWidth * dpr);
@@ -295,27 +178,6 @@ export const createVortex = (canvas, { color = [0.039, 0.039, 0.039] } = {}) => 
     gl.uniform2f(uRes, w, h);
   };
 
-  /**
-   * Bascule en mode émission, en fixant le point de départ et la zone
-   * visée. Coordonnées du document, origine en haut à gauche : la
-   * conversion vers le repère du shader se fait ici.
-   */
-  const setEmission = ({ center, rect }) => {
-    markDirty();
-    resize();
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-    const h = canvas.height;
-    gl.uniform1f(uEmit, 1);
-    gl.uniform2f(uCenter, center.x * dpr, h - center.y * dpr);
-    gl.uniform4f(
-      uRect,
-      rect.left * dpr,
-      h - rect.bottom * dpr,
-      rect.right * dpr,
-      h - rect.top * dpr
-    );
-  };
-
   const render = (progress, time) => {
     resize();
     gl.uniform1f(uProgress, progress);
@@ -326,7 +188,6 @@ export const createVortex = (canvas, { color = [0.039, 0.039, 0.039] } = {}) => 
   };
 
   const destroy = () => {
-    window.removeEventListener("resize", markDirty);
     gl.deleteBuffer(buffer);
     gl.deleteShader(vertexShader);
     gl.deleteShader(fragmentShader);
@@ -338,7 +199,7 @@ export const createVortex = (canvas, { color = [0.039, 0.039, 0.039] } = {}) => 
     // l'intro, le navigateur libère le contexte de lui-même.
   };
 
-  return { render, resize, setEmission, destroy };
+  return { render, resize, destroy };
 };
 
 export default createVortex;
