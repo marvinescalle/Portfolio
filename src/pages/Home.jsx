@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import styled, { ThemeProvider, keyframes } from "styled-components";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 import portrait from "../assets/optimized/portrait.jpg";
 import { profile } from "../data/profile";
-import { pick, useLanguage, useTranslation } from "../i18n";
+import { LANGUAGES, pick, useLanguage, useTranslation } from "../i18n";
 import useDocumentMeta from "../hooks/useDocumentMeta";
 import { darkTheme, layout, lightTheme, media } from "../styles/theme";
 import SoundToggle from "../components/ui/SoundToggle";
@@ -96,9 +96,35 @@ const EdgeLink = styled(Link)`
   color: ${(props) => (props.$onDark ? props.theme.body : props.theme.text)};
 `;
 
-const TopRight = styled(EdgeLink)`
+/* Le coin haut droit accueille désormais le choix de la langue : Contact
+   descend dans la colonne de gauche, aux côtés d'À propos. */
+const TopRight = styled.div`
+  ${edge};
   top: ${layout.gutter};
   right: ${layout.gutter};
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+
+  span {
+    font-family: ${(props) => props.theme.fontMono};
+    font-size: 0.68rem;
+    color: ${(props) => props.theme.textFaint};
+  }
+`;
+
+const LanguageButton = styled.button`
+  font-family: ${(props) => props.theme.fontMono};
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: ${(props) =>
+    props.$active ? props.theme.text : props.theme.textFaint};
+  transition: color 0.25s ease;
+
+  &:hover {
+    color: ${(props) => props.theme.text};
+  }
 `;
 
 /* Deux libellés par côté, plus deux au centre en bas : trois groupes
@@ -408,7 +434,7 @@ const Home = () => {
   const [hovered, setHovered] = useState(false);
   const markRef = useRef(null);
   const t = useTranslation();
-  const { language } = useLanguage();
+  const { language, setLanguage } = useLanguage();
   const reduce = useReducedMotion();
 
   // Décidé une seule fois, au premier rendu : l'intro ne doit pas réapparaître
@@ -433,7 +459,8 @@ const Home = () => {
 
   useDocumentMeta();
 
-  // Contact n'est pas repris ici : le lien est déjà en haut à droite.
+  // Sur petite largeur le coin haut droit ne porte plus que la langue :
+  // toutes les rubriques, Contact compris, passent dans cette liste.
   const sections = [
     "/a-propos",
     "/experiences",
@@ -441,6 +468,7 @@ const Home = () => {
     "/formation",
     "/passions",
     "/cv",
+    "/contact",
   ];
 
   return (
@@ -468,14 +496,28 @@ const Home = () => {
           <SoundToggle onDark={open} />
         </Wordmark>
 
-        <TopRight to="/contact">{t.nav.items["/contact"]}</TopRight>
+        <TopRight role="group" aria-label={t.nav.language}>
+          {LANGUAGES.map((code, i) => (
+            <Fragment key={code}>
+              {i > 0 ? <span aria-hidden="true">/</span> : null}
+              <LanguageButton
+                type="button"
+                $active={language === code}
+                aria-pressed={language === code}
+                onClick={() => setLanguage(code)}
+              >
+                {code}
+              </LanguageButton>
+            </Fragment>
+          ))}
+        </TopRight>
 
         <DesktopOnly>
           <RailLeft to="/a-propos" style={{ top: "36%" }} $onDark={open}>
             {t.nav.items["/a-propos"]}
           </RailLeft>
-          <RailLeft to="/formation" style={{ top: "64%" }} $onDark={open}>
-            {t.nav.items["/formation"]}
+          <RailLeft to="/contact" style={{ top: "64%" }} $onDark={open}>
+            {t.nav.items["/contact"]}
           </RailLeft>
 
           <RailRight to="/passions" style={{ top: "36%" }}>
@@ -486,6 +528,9 @@ const Home = () => {
           </RailRight>
 
           <BottomGroup $open={open}>
+            <BottomLink to="/formation">
+              {t.nav.items["/formation"]}
+            </BottomLink>
             <BottomLink to="/experiences">
               {t.nav.items["/experiences"]}
             </BottomLink>

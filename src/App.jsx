@@ -1,12 +1,14 @@
-import { lazy, Suspense, useEffect, useRef } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import { AnimatePresence } from "framer-motion";
 import { ThemeProvider } from "styled-components";
 
 import GlobalStyle from "./styles/GlobalStyle";
 import { lightTheme } from "./styles/theme";
 import Loading from "./components/ui/Loading";
 import { markIntroPlayed } from "./components/intro/introState";
+import RouteCurtain, {
+  useCurtain,
+} from "./components/transition/RouteCurtain";
 import { AmbienceProvider } from "./components/audio/AmbienceProvider";
 import { LanguageProvider } from "./i18n";
 
@@ -35,38 +37,43 @@ const ConsumeIntroOutsideHome = () => {
 /** Première partie du chemin, qui identifie la section. */
 const sectionOf = (pathname) => `/${pathname.split("/")[1] ?? ""}`;
 
-/**
- * Remet la page en haut au changement de section, mais pas lorsqu'on ouvre
- * ou referme une fiche projet : la liste doit garder sa position.
- */
-const ScrollToTop = () => {
-  const { pathname } = useLocation();
-  const previous = useRef(pathname);
-
-  useEffect(() => {
-    if (sectionOf(previous.current) !== sectionOf(pathname)) {
-      window.scrollTo(0, 0);
-    }
-    previous.current = pathname;
-  }, [pathname]);
-
-  return null;
-};
-
 function App() {
   const location = useLocation();
+
+  // La page affichée est volontairement en retard sur l'adresse : elle ne
+  // change qu'une fois l'écran couvert par le rideau.
+  const [displayed, setDisplayed] = useState(location);
+  const [target, setTarget] = useState(null);
+
+  useEffect(() => {
+    if (location.key === displayed.key) return;
+
+    // Ouvrir ou refermer une fiche reste dans la même rubrique : aucun
+    // rideau, et surtout aucune remise à zéro du défilement.
+    if (sectionOf(location.pathname) === sectionOf(displayed.pathname)) {
+      setDisplayed(location);
+      return;
+    }
+
+    setTarget(location);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location]);
+
+  const { phase, handleComplete } = useCurtain(target, (next) => {
+    setDisplayed(next ?? location);
+    setTarget(null);
+    window.scrollTo(0, 0);
+  });
 
   return (
     <ThemeProvider theme={lightTheme}>
       <LanguageProvider>
       <AmbienceProvider>
       <GlobalStyle />
-      <ScrollToTop />
       <ConsumeIntroOutsideHome />
 
       <Suspense fallback={<Loading />}>
-        <AnimatePresence mode="wait">
-          <Routes location={location} key={sectionOf(location.pathname)}>
+        <Routes location={displayed} key={sectionOf(displayed.pathname)}>
             <Route path="/" element={<Home />} />
             <Route path="/a-propos" element={<About />} />
             <Route path="/experiences" element={<Experience />} />
@@ -88,9 +95,10 @@ function App() {
             <Route path="/Documents" element={<Navigate to="/cv" replace />} />
 
             <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AnimatePresence>
+        </Routes>
       </Suspense>
+
+      <RouteCurtain phase={phase} onComplete={handleComplete} />
       </AmbienceProvider>
       </LanguageProvider>
     </ThemeProvider>

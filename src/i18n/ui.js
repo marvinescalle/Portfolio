@@ -230,7 +230,7 @@ export const ui = {
         "/projets": "Projects",
         "/formation": "Education",
         "/passions": "Interests",
-        "/cv": "Résumé",
+        "/cv": "CV",
         "/contact": "Contact",
       },
     },

@@ -98,9 +98,6 @@ const DesktopList = styled.nav`
 
 const Item = styled(NavLink)`
   position: relative;
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.4rem;
   font-size: 0.85rem;
   letter-spacing: 0.02em;
   color: ${(props) => props.theme.textSoft};
@@ -133,19 +130,6 @@ const Item = styled(NavLink)`
     font-weight: 500;
   }
 
-  /* Numéro de section : présent, mais nettement en retrait du libellé. */
-  .num {
-    font-family: ${(props) => props.theme.fontMono};
-    font-size: 0.6rem;
-    letter-spacing: 0.08em;
-    color: ${(props) => props.theme.textFaint};
-    transition: color 0.25s ease;
-  }
-
-  &:hover .num,
-  &[aria-current="page"] .num {
-    color: ${(props) => props.theme.textSoft};
-  }
 `;
 
 /* Sélecteur de langue : deux libellés séparés d'une barre, sans drapeau ni
@@ -404,9 +388,6 @@ const Nav = () => {
           <DesktopList ref={listRef} aria-label={t.nav.main}>
             {navItems.map((item) => (
               <Item key={item.path} to={item.path}>
-                <span className="num" aria-hidden="true">
-                  {item.index}
-                </span>
                 {t.nav.items[item.path]}
               </Item>
             ))}
