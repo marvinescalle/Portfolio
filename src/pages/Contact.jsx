@@ -142,7 +142,7 @@ const Contact = () => (
     <Reveal delay={0.08}>
       <Intro>
         Une opportunité, un projet ou simplement envie d'échanger ? Le plus
-        simple reste l'e-mail — je réponds à tout le monde.
+        simple reste l'e-mail, je réponds à tout le monde.
       </Intro>
     </Reveal>
 
@@ -157,8 +157,8 @@ const Contact = () => (
                 : {})}
               aria-label={
                 channel.external
-                  ? `${channel.label} — ${channel.value} (nouvel onglet)`
-                  : `${channel.label} — ${channel.value}`
+                  ? `${channel.label} : ${channel.value} (nouvel onglet)`
+                  : `${channel.label} : ${channel.value}`
               }
             >
               <channel.Icon />

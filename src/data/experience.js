@@ -17,7 +17,7 @@ export const mainExperiences = [
     company: "Thales",
     role: "Ingénieur IVVQ / Automatisation",
     contract: "Alternance",
-    // TODO à compléter : période exacte, ex. "2023 — 2025".
+    // TODO à compléter : période exacte, ex. "2023-2025".
     // Les anciennes données du site indiquaient « 2022-2023 » tout en
     // décrivant le poste comme en cours en 2024 : l'information est
     // contradictoire, elle n'a donc pas été reprise. La ligne reste masquée
@@ -25,6 +25,10 @@ export const mainExperiences = [
     period: null,
     location: "Gennevilliers",
     website: null,
+    // Déposer le fichier dans public/images/logos/ puis indiquer son chemin,
+    // par exemple "/images/logos/thales.png". Sans logo, l'initiale de
+    // l'entreprise s'affiche dans le cadre.
+    logo: null,
     summary:
       "Plusieurs années d'expérience dans un environnement industriel exigeant, avec des missions mêlant automatisation, systèmes, données et activités d'intégration / vérification / validation.",
     highlights: [
@@ -49,12 +53,13 @@ export const mainExperiences = [
     company: "Fiscalyse",
     role: "Développeur / IT",
     contract: "Alternance",
-    // TODO à compléter : période exacte, ex. "2022 — 2023".
+    // TODO à compléter : période exacte, ex. "2022-2023".
     // Les anciennes données mentionnaient « 12 mois » sans année de début
     // fiable.
     period: null,
     location: null,
     website: "https://www.fiscalyse.fr",
+    logo: null, // voir public/images/logos/README.md
     summary:
       "Expérience orientée développement et amélioration d'outils internes dans une PME, au plus proche des besoins des utilisateurs et des problématiques métier.",
     highlights: [
@@ -81,7 +86,7 @@ export const secondaryExperiences = [
   {
     id: "aphm",
     year: "2022",
-    company: "AP-HM — Plateforme logistique",
+    company: "AP-HM, plateforme logistique",
     role: "Emploi saisonnier",
     website: null,
     summary:
@@ -91,7 +96,7 @@ export const secondaryExperiences = [
     id: "cd13-2021",
     year: "2021",
     company: "Conseil départemental des Bouches-du-Rhône",
-    role: "Emploi saisonnier — gestion",
+    role: "Emploi saisonnier, gestion",
     website: "https://www.departement13.fr",
     summary:
       "Missions de gestion au sein des équipes forestières du département.",
@@ -100,7 +105,7 @@ export const secondaryExperiences = [
     id: "cd13-2020",
     year: "2020",
     company: "Conseil départemental des Bouches-du-Rhône",
-    role: "Emploi saisonnier — comptabilité",
+    role: "Emploi saisonnier, comptabilité",
     website: "https://www.departement13.fr",
     summary: "Missions de comptabilité au sein des services du département.",
   },

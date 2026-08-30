@@ -47,7 +47,7 @@ const Cover = styled.div`
   img {
     width: 100%;
     height: 100%;
-    /* Les visuels sont hétérogènes — captures d'écran et logos : le mode
+    /* Les visuels sont hétérogènes : captures d'écran et logos : le mode
        contain évite de rogner un titre ou un logo en plein milieu. */
     object-fit: contain;
     padding: 1.25rem;
@@ -232,7 +232,7 @@ const linkProps = (project) => {
     target: "_blank",
     rel: "noopener noreferrer",
     $interactive: true,
-    "aria-label": `${project.title} — ouvrir ${
+    "aria-label": `${project.title} : ouvrir ${
       project.github ? "le dépôt GitHub" : "la démonstration"
     } dans un nouvel onglet`,
   };
@@ -326,7 +326,7 @@ const Projects = () => (
     {archivedProjects.length ? (
       <Block aria-labelledby="archives">
         <Reveal>
-          <BlockTitle id="archives">Archives — projets étudiants</BlockTitle>
+          <BlockTitle id="archives">Archives : projets étudiants</BlockTitle>
         </Reveal>
         <Reveal>
           <Note>

@@ -57,7 +57,7 @@ const Footer = () => (
   <Wrap>
     <Inner>
       <Credit>
-        © {new Date().getFullYear()} {profile.fullName} —{" "}
+        © {new Date().getFullYear()} {profile.fullName} ·{" "}
         <Link to="/">Retour à l'accueil</Link>
       </Credit>
 

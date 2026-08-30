@@ -126,7 +126,7 @@ const Education = () => {
 
               <TagList
                 items={item.skills}
-                label={`Compétences travaillées — ${item.degree}`}
+                label={`Compétences travaillées : ${item.degree}`}
               />
             </Reveal>
           </Entry>

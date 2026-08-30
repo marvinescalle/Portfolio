@@ -1,5 +1,5 @@
 /**
- * Section Passions — pensée comme une galerie éditoriale, pas comme une liste
+ * Section Passions, pensée comme une galerie éditoriale, pas comme une liste
  * de loisirs. Chaque entrée occupe une place précise dans la mosaïque via
  * `span` :
  *

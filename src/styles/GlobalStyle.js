@@ -46,6 +46,9 @@ const GlobalStyle = createGlobalStyle`
   }
 
   h1, h2, h3, h4, h5, h6 {
+    /* normalize.css repose une marge sur h1 via un sélecteur de type, plus
+       spécifique que le reset universel : il faut la neutraliser ici. */
+    margin: 0;
     font-family: ${(props) => props.theme.fontDisplay};
     font-weight: 700;
     line-height: 1.05;

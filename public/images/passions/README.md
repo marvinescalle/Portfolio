@@ -20,4 +20,4 @@ Le chemin commence par `/` : il part de la racine du site, pas du dossier `src`.
 
 Format : JPG ou WebP, environ 1600 px de large, moins de 400 Ko.
 Tant que `image` vaut `null`, une vignette « Photo à venir » s'affiche à la
-place — aucune image n'est inventée.
+place. Aucune image n'est inventée.

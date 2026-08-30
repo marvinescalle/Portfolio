@@ -29,6 +29,33 @@ const Card = styled.article`
   `}
 `;
 
+/* Accroche visuelle en tête de carte : le logo de l'entreprise, ou son
+   initiale tant qu'aucun fichier n'a été déposé. */
+const Logo = styled.div`
+  width: clamp(3.75rem, 6vw, 5rem);
+  height: clamp(3.75rem, 6vw, 5rem);
+  margin-bottom: 1.5rem;
+  border: 1px solid ${(props) => props.theme.lineStrong};
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 0.6rem;
+  }
+
+  span {
+    font-family: ${(props) => props.theme.fontDisplay};
+    font-weight: 800;
+    font-size: clamp(1.5rem, 2.6vw, 2rem);
+    line-height: 1;
+    color: ${(props) => props.theme.textFaint};
+  }
+`;
+
 const Identity = styled.div`
   h2 {
     font-size: clamp(1.5rem, 4.5vw, 3rem);
@@ -185,9 +212,17 @@ const Experience = () => (
         <Reveal key={job.id} delay={i * 0.08}>
           <Card>
             <Identity>
+              <Logo>
+                {job.logo ? (
+                  <img src={job.logo} alt={`Logo ${job.company}`} />
+                ) : (
+                  <span aria-hidden="true">{job.company.charAt(0)}</span>
+                )}
+              </Logo>
+
               <h2>{job.company}</h2>
               <p className="role">
-                {job.role} — {job.contract}
+                {job.role} · {job.contract}
               </p>
               {job.period || job.location ? (
                 <p className="meta">

@@ -16,7 +16,7 @@ const setMeta = (selector, attribute, value) => {
  */
 const useDocumentMeta = (title, description) => {
   useEffect(() => {
-    const fullTitle = title ? `${title} — ${seo.title}` : seo.title;
+    const fullTitle = title ? `${title} · ${seo.title}` : seo.title;
     const text = description || seo.description;
 
     document.title = fullTitle;

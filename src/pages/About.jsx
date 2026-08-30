@@ -63,12 +63,6 @@ const Portrait = styled.figure`
   img {
     width: 100%;
     mix-blend-mode: multiply;
-    filter: grayscale(1) contrast(1.05);
-    transition: filter 0.7s ease;
-  }
-
-  &:hover img {
-    filter: grayscale(0) contrast(1);
   }
 
   figcaption {
@@ -103,14 +97,29 @@ const SkillsTitle = styled.h2`
 
 const Groups = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  /* Cinq catégories, donc cinq colonnes : en grille automatique la
+     cinquième se retrouvait seule sur une deuxième ligne. */
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0 clamp(1rem, 2vw, 2rem);
+
+  ${media.lg`
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  `}
+
+  ${media.md`
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  `}
+
+  ${media.xs`
+    grid-template-columns: 1fr;
+  `}
 `;
 
 const Group = styled.div`
   /* Le wrapper d'apparition s'étire dans la grille : sans cela les filets
      d'une même ligne ne s'alignent pas. */
   height: 100%;
-  padding: 2rem 1.5rem 2.25rem 0;
+  padding: 2rem 0 2.25rem;
   border-bottom: 1px solid ${(props) => props.theme.line};
 
   h3 {
@@ -189,7 +198,7 @@ const About = () => (
             />
           </div>
           <figcaption>
-            {profile.fullName} — {profile.role}
+            {profile.fullName} · {profile.role}
           </figcaption>
         </Portrait>
       </Reveal>

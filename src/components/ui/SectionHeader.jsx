@@ -7,9 +7,9 @@ const Wrap = styled.header`
   grid-template-columns: auto 1fr;
   align-items: start;
   gap: clamp(1rem, 3vw, 2.5rem);
-  padding-bottom: clamp(2rem, 5vw, 3.5rem);
+  padding-bottom: clamp(1.5rem, 3.5vw, 2.5rem);
   border-bottom: 1px solid ${(props) => props.theme.line};
-  margin-bottom: clamp(2.5rem, 6vw, 5rem);
+  margin-bottom: clamp(2rem, 5vw, 3.5rem);
 
   ${media.sm`
     grid-template-columns: 1fr;
@@ -40,7 +40,7 @@ const Title = styled.h1`
 `;
 
 const Lead = styled.p`
-  max-width: 46ch;
+  max-width: min(64ch, 100%);
   margin-top: 1.5rem;
   font-size: clamp(1rem, 1.6vw, 1.15rem);
   color: ${(props) => props.theme.textSoft};

@@ -20,7 +20,7 @@ const Main = styled.main`
   max-width: ${layout.maxWidth};
   width: 100%;
   margin: 0 auto;
-  padding: clamp(3rem, 8vw, 6rem) ${layout.gutter} 0;
+  padding: clamp(2rem, 4vw, 3.5rem) ${layout.gutter} 0;
 `;
 
 /**

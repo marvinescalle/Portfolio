@@ -16,7 +16,7 @@
  * image        URL ou import d'image. `null` affiche un aplat typographique.
  * github       URL du dépôt. `null` si le projet n'a pas de dépôt public.
  * demo         URL de démonstration en ligne. `null` sinon.
- * category     "devops" | "web" | "school" — sert au regroupement.
+ * category     "devops" | "web" | "school" : sert au regroupement.
  * featured     `true` place le projet en grande carte, en haut de page.
  * published    `false` masque le projet du site sans supprimer ses données.
  */

@@ -88,9 +88,12 @@ const TopRight = styled(EdgeLink)`
   right: ${layout.gutter};
 `;
 
+/* Trois libellés de chaque côté, régulièrement espacés : la composition
+   encadre le point focal au lieu de laisser des vides irréguliers. La
+   position verticale est passée en style en ligne, pour ne pas transmettre
+   une prop inconnue au lien de React Router. */
 const RailLeft = styled(EdgeLink)`
   left: ${layout.gutter};
-  top: 50%;
   transform: translateY(-50%);
   writing-mode: vertical-rl;
   rotate: 180deg;
@@ -98,16 +101,34 @@ const RailLeft = styled(EdgeLink)`
 
 const RailRight = styled(EdgeLink)`
   right: ${layout.gutter};
+  transform: translateY(-50%);
   writing-mode: vertical-rl;
 `;
 
-const BottomLeft = styled(EdgeLink)`
+/* Le bas à droite reste libre : le point focal vient s'y loger une fois la
+   présentation ouverte. */
+const Caption = styled.div`
+  ${edge};
   bottom: ${layout.gutter};
   left: ${layout.gutter};
-`;
+  font-family: ${(props) => props.theme.fontMono};
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  line-height: 1.9;
+  text-transform: uppercase;
+  color: ${(props) => (props.$onDark ? props.theme.body : props.theme.text)};
+  /* Masquée une fois la présentation ouverte : celle-ci reprend déjà le
+     titre et les domaines. */
+  opacity: ${(props) => (props.$onDark ? 0 : 1)};
+  transition: color 0.6s ease, opacity 0.5s ease;
 
-const BottomRight = styled(EdgeLink)`
-  bottom: ${layout.gutter};
+  span {
+    display: block;
+  }
+
+  span:last-child {
+    opacity: 0.55;
+  }
 `;
 
 /** Sur mobile, les libellés verticaux deviennent une liste lisible. */
@@ -369,12 +390,6 @@ const PhotoSide = styled.div`
     /* Le portrait est détouré sur fond blanc : le mode multiply fait
        disparaître ce fond sur le papier cassé du site. */
     mix-blend-mode: multiply;
-    filter: grayscale(1) contrast(1.06);
-    transition: filter 0.7s ease;
-  }
-
-  &:hover img {
-    filter: grayscale(0) contrast(1);
   }
 
   ${media.md`
@@ -405,7 +420,7 @@ const Home = () => {
     <ThemeProvider theme={lightTheme}>
       <Screen>
         <h1 className="visually-hidden">
-          {profile.fullName} — {profile.role}, {profile.disciplines.join(", ")}
+          {profile.fullName}, {profile.role} : {profile.disciplines.join(", ")}
         </h1>
 
         <AnimatePresence>
@@ -428,24 +443,30 @@ const Home = () => {
         <TopRight to="/contact">Contact</TopRight>
 
         <DesktopOnly>
-          <RailLeft to="/passions" $onDark={open}>
-            Passions
-          </RailLeft>
-          <RailRight to="/experiences" style={{ top: "26%" }}>
-            Expériences
-          </RailRight>
-          <RailRight to="/projets" style={{ top: "56%" }}>
-            Projets
-          </RailRight>
-          <BottomLeft to="/a-propos" $onDark={open}>
+          <RailLeft to="/a-propos" style={{ top: "28%" }} $onDark={open}>
             À propos
-          </BottomLeft>
-          <BottomRight to="/formation" style={{ right: "22%" }}>
+          </RailLeft>
+          <RailLeft to="/experiences" style={{ top: "50%" }} $onDark={open}>
+            Expériences
+          </RailLeft>
+          <RailLeft to="/projets" style={{ top: "72%" }} $onDark={open}>
+            Projets
+          </RailLeft>
+
+          <RailRight to="/formation" style={{ top: "28%" }}>
             Formation
-          </BottomRight>
-          <BottomRight to="/cv" style={{ right: layout.gutter }}>
+          </RailRight>
+          <RailRight to="/passions" style={{ top: "50%" }}>
+            Passions
+          </RailRight>
+          <RailRight to="/cv" style={{ top: "72%" }}>
             CV
-          </BottomRight>
+          </RailRight>
+
+          <Caption $onDark={open}>
+            <span>{profile.role}</span>
+            <span>{profile.disciplines.join(" · ")}</span>
+          </Caption>
         </DesktopOnly>
 
         {!open ? (

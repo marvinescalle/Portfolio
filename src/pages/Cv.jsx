@@ -98,7 +98,7 @@ const Cv = () => {
   return (
     <PageShell
       title="CV"
-      description="Curriculum vitae de Marvin Escalle, ingénieur IT — consultation en ligne et téléchargement au format PDF."
+      description="Curriculum vitae de Marvin Escalle, ingénieur IT : consultation en ligne et téléchargement au format PDF."
     >
       <SectionHeader
         index="06"

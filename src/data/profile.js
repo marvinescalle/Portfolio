@@ -40,7 +40,7 @@ export const profile = {
 };
 
 export const seo = {
-  title: "Marvin Escalle — IT Engineer | DevOps, Automation & Data",
+  title: "Marvin Escalle · IT Engineer | DevOps, Automation & Data",
   description:
     "Portfolio de Marvin Escalle, ingénieur IT spécialisé en automatisation, DevOps, systèmes et données. Découvrez mes expériences professionnelles, projets et compétences techniques.",
   // TODO à compléter une fois le nom de domaine acheté, ex.

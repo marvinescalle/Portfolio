@@ -1,4 +1,4 @@
-# Portfolio — Marvin Escalle
+# Portfolio de Marvin Escalle
 
 Portfolio personnel développé en React, déployé sur Netlify.
 
@@ -37,7 +37,7 @@ d'interface n'est nécessaire pour ajouter un projet ou une expérience.
 ### Ajouter un projet
 
 Ouvrir `src/data/projects.js`, copier un objet existant et le placer dans le
-tableau `projects` — l'ordre du tableau est l'ordre d'affichage.
+tableau `projects`. L'ordre du tableau est l'ordre d'affichage.
 
 ```js
 {
@@ -87,10 +87,10 @@ Chaque dossier contient un `README.md` rappelant les formats attendus.
 
 ## Stack
 
-- **React 19** + **Vite** — interface et build
-- **React Router 7** — navigation, avec redirections depuis les anciennes URL
-- **styled-components 6** — styles par composant, deux thèmes (clair / sombre)
-- **Framer Motion** — animations, désactivées si le visiteur a demandé de
+- **React 19** + **Vite** : interface et build
+- **React Router 7** : navigation, avec redirections depuis les anciennes URL
+- **styled-components 6** : styles par composant, deux thèmes (clair / sombre)
+- **Framer Motion** : animations, désactivées si le visiteur a demandé de
   réduire les animations
 
 ## Organisation du code

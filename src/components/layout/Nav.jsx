@@ -247,7 +247,7 @@ const Nav = () => {
     <>
       <Bar $scrolled={scrolled}>
         <Inner>
-          <Wordmark to="/" aria-label="Marvin Escalle — retour à l'accueil">
+          <Wordmark to="/" aria-label="Marvin Escalle, retour à l'accueil">
             {profile.fullName}
           </Wordmark>
 
