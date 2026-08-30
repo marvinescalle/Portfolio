@@ -1,5 +1,14 @@
 /**
- * Rendu du voile noir aspiré vers le centre, en WebGL brut.
+ * Rendu du vortex, dans les deux sens.
+ *
+ *   absorb  le voile noir est aspiré vers le centre et disparaît dans le
+ *           symbole. C'est le rideau d'ouverture du site.
+ *   emit    le noir est au contraire expulsé du symbole, puis se stabilise
+ *           dans une zone donnée. C'est l'ouverture de la présentation.
+ *
+ * Les deux sens partagent la même torsion, les mêmes lobes, le même bruit
+ * et les mêmes filaments en spirale : ce sont deux états d'un seul et même
+ * phénomène, pas deux effets qui se ressemblent.
  *
  * Pourquoi un shader plutôt qu'un masque CSS ou SVG : l'effet recherché est
  * une rotation dont l'intensité dépend de la distance au centre. Le centre
@@ -26,6 +35,15 @@ uniform vec2 uRes;
 uniform float uProgress;
 uniform float uTime;
 uniform vec3 uColor;
+uniform float uEmit;
+uniform vec2 uCenter;
+uniform vec4 uRect;
+
+/** Distance signée à un rectangle, pour la zone visée en émission. */
+float sdBox(vec2 p, vec2 c, vec2 extent) {
+  vec2 q = abs(p - c) - extent;
+  return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0);
+}
 
 float hash(vec2 p) {
   return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
@@ -44,12 +62,67 @@ float noise(vec2 p) {
 
 void main() {
   // Repère centré, normalisé par la demi-diagonale : le rayon vaut donc 1
-  // dans les coins, quel que soit le format de l'écran.
-  vec2 uv = (gl_FragCoord.xy - 0.5 * uRes) / (0.5 * length(uRes));
+  // dans les coins, quel que soit le format de l'écran. En émission le
+  // centre n'est pas celui de l'écran mais celui du symbole.
+  float scale = 0.5 * length(uRes);
+  vec2 pivot = uEmit > 0.5 ? uCenter : 0.5 * uRes;
+  vec2 uv = (gl_FragCoord.xy - pivot) / scale;
   float r = length(uv);
   float angle = atan(uv.y, uv.x);
 
   float p = clamp(uProgress, 0.0, 1.0);
+
+  if (uEmit > 0.5) {
+    // ---------------- ÉMISSION ----------------
+    // La matière jaillit du symbole, tourne, puis se range dans la zone
+    // visée. La torsion est maximale au jaillissement et s'apaise ensuite,
+    // exactement l'inverse de l'aspiration.
+    float grow = smoothstep(0.04, 0.58, p);
+
+    float swirlOut = exp(-r * 2.2) * (6.2 * (1.0 - grow) + 1.6 * uTime);
+    float twistedOut = angle + swirlOut;
+
+    float dVortex = r - 0.50 * grow;
+
+    vec2 rectCenter = ((uRect.xy + uRect.zw) * 0.5 - pivot) / scale;
+    vec2 rectHalf = (uRect.zw - uRect.xy) * 0.5 / scale;
+    float dRect = sdBox(uv, rectCenter, rectHalf);
+
+    float morphOut = smoothstep(0.34, 0.94, p);
+    float dOut = mix(dVortex, dRect, morphOut);
+
+    /* La déformation porte sur le champ déjà mélangé : le bord reste tordu
+       et déchiré pendant toute la transformation, et ne se lisse qu'à la
+       toute fin, quand la matière prend la géométrie du panneau. */
+    float calm = 1.0 - smoothstep(0.68, 1.0, p);
+
+    float lobesOut =
+        0.100 * sin(3.0 * twistedOut)
+      + 0.060 * sin(5.0 * twistedOut + 1.7)
+      + 0.040 * sin(8.0 * twistedOut - 0.6);
+
+    float grainOut = noise(vec2(twistedOut * 2.4, r * 9.0 - uTime * 0.8)) - 0.5;
+    float fineOut = noise(vec2(twistedOut * 6.0 + 11.0, r * 18.0 - uTime * 1.4)) - 0.5;
+
+    dOut -= (lobesOut * 0.62 + 0.045 * grainOut + 0.024 * fineOut) * calm;
+
+    float softOut = 0.006 + 0.008 * (1.0 - calm);
+    float veilOut = 1.0 - smoothstep(-softOut, softOut, dOut);
+
+    // Mêmes filaments que l'aspiration, projetés vers l'extérieur.
+    float spiralOut = twistedOut + 2.9 * log(r + 0.05) - uTime * 1.1;
+    float bandOut = fract(spiralOut / 6.2831853 * 3.0);
+    float distOut = min(bandOut, 1.0 - bandOut);
+    float armsOut = smoothstep(0.22, 0.02, distOut);
+    float reachOut = smoothstep(0.42, 0.0, dOut);
+    float innerOut = smoothstep(0.0, 0.10, r);
+    float wispsOut = armsOut * reachOut * innerOut * calm;
+
+    gl_FragColor = vec4(uColor, clamp(veilOut + wispsOut, 0.0, 1.0));
+    return;
+  }
+
+  // ---------------- ASPIRATION ----------------
   float ease = p * p * (3.0 - 2.0 * p);
 
   // Rotation différentielle : forte au centre, quasi nulle sur les bords.
@@ -156,10 +229,14 @@ export const createVortex = (canvas, { color = [0.039, 0.039, 0.039] } = {}) => 
   const uProgress = gl.getUniformLocation(program, "uProgress");
   const uTime = gl.getUniformLocation(program, "uTime");
   const uColor = gl.getUniformLocation(program, "uColor");
+  const uEmit = gl.getUniformLocation(program, "uEmit");
+  const uCenter = gl.getUniformLocation(program, "uCenter");
+  const uRect = gl.getUniformLocation(program, "uRect");
 
   gl.enable(gl.BLEND);
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
   gl.uniform3fv(uColor, color);
+  gl.uniform1f(uEmit, 0);
 
   let width = 0;
   let height = 0;
@@ -176,6 +253,26 @@ export const createVortex = (canvas, { color = [0.039, 0.039, 0.039] } = {}) => 
     canvas.height = h;
     gl.viewport(0, 0, w, h);
     gl.uniform2f(uRes, w, h);
+  };
+
+  /**
+   * Bascule en mode émission, en fixant le point de départ et la zone
+   * visée. Coordonnées du document, origine en haut à gauche : la
+   * conversion vers le repère du shader se fait ici.
+   */
+  const setEmission = ({ center, rect }) => {
+    resize();
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    const h = canvas.height;
+    gl.uniform1f(uEmit, 1);
+    gl.uniform2f(uCenter, center.x * dpr, h - center.y * dpr);
+    gl.uniform4f(
+      uRect,
+      rect.left * dpr,
+      h - rect.bottom * dpr,
+      rect.right * dpr,
+      h - rect.top * dpr
+    );
   };
 
   const render = (progress, time) => {
@@ -199,7 +296,7 @@ export const createVortex = (canvas, { color = [0.039, 0.039, 0.039] } = {}) => 
     // l'intro, le navigateur libère le contexte de lui-même.
   };
 
-  return { render, resize, destroy };
+  return { render, resize, setEmission, destroy };
 };
 
 export default createVortex;

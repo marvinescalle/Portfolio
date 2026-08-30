@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import styled, { ThemeProvider, keyframes } from "styled-components";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
@@ -12,6 +12,7 @@ import SoundToggle from "../components/ui/SoundToggle";
 import { ArrowUpRight } from "../components/icons";
 import BrandMark from "../components/brand/BrandMark";
 import VortexIntro from "../components/intro/VortexIntro";
+import VortexBurst from "../components/intro/VortexBurst";
 import {
   markIntroPlayed,
   shouldPlayIntro,
@@ -45,11 +46,11 @@ const DarkGroup = styled.div`
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  clip-path: ${(props) => props.$clip};
-  transition: clip-path 0.78s cubic-bezier(0.32, 0.72, 0.28, 1);
+  opacity: 0;
+  transition: opacity 0.16s linear;
 
-  @media (prefers-reduced-motion: reduce) {
-    transition: none;
+  &[data-visible="true"] {
+    opacity: 1;
   }
 `;
 
@@ -289,12 +290,6 @@ const PanelLayer = styled.div`
   inset: 0;
   z-index: 4;
   pointer-events: none;
-  clip-path: ${(props) => props.$clip};
-  transition: clip-path 0.78s cubic-bezier(0.32, 0.72, 0.28, 1);
-
-  @media (prefers-reduced-motion: reduce) {
-    transition: none;
-  }
 `;
 
 const PanelAnchor = styled.div`
@@ -329,6 +324,15 @@ const Panel = styled(motion.div)`
 `;
 
 const TextSide = styled.div`
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.42s ease, transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  &[data-visible="true"] {
+    opacity: 1;
+    transform: none;
+  }
+
   background: ${(props) => props.theme.body};
   color: ${(props) => props.theme.text};
   border-top: 1px solid ${(props) => props.theme.line};
@@ -435,6 +439,15 @@ const Cta = styled(Link)`
 
 const PhotoSide = styled.div`
   position: relative;
+  /* Volet vertical : le portrait se découvre du haut vers le bas, en même
+     temps que la matière noire se range. */
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path 0.62s cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  &[data-visible="true"] {
+    clip-path: inset(0 0 0% 0);
+  }
+
   background: ${(props) => props.theme.body};
   border-top: 1px solid ${(props) => props.theme.line};
   border-bottom: 1px solid ${(props) => props.theme.line};
@@ -466,8 +479,13 @@ const Home = () => {
   const [open, setOpen] = useState(false);
   const [hovered, setHovered] = useState(false);
   const markRef = useRef(null);
-  // Point d'où le noir se libère : le centre du symbole, mesuré au clic.
-  const [origin, setOrigin] = useState(null);
+  /* Expulsion : point de départ mesuré au clic, zone visée mesurée sur
+     l'élément réel, et avancement partagé qui pilote l'apparition du
+     contenu sans provoquer de rendu à chaque image. */
+  const [emission, setEmission] = useState(null);
+  const [revealed, setRevealed] = useState(false);
+  const [settled, setSettled] = useState(false);
+  const darkRef = useRef(null);
   const t = useTranslation();
   const { language, setLanguage } = useLanguage();
   const reduce = useReducedMotion();
@@ -486,25 +504,17 @@ const Home = () => {
     if (!intro) markIntroPlayed();
   }, [intro]);
 
-  /* Rayon nécessaire pour que le cercle couvre l'écran depuis ce point :
-     la distance jusqu'au coin le plus éloigné. */
-  const clip = (() => {
-    const point = origin ?? {
-      x: typeof window === "undefined" ? 0 : window.innerWidth / 2,
-      y: typeof window === "undefined" ? 0 : window.innerHeight / 2,
-    };
-    const w = typeof window === "undefined" ? 0 : window.innerWidth;
-    const h = typeof window === "undefined" ? 0 : window.innerHeight;
-    const reach = Math.hypot(
-      Math.max(point.x, w - point.x),
-      Math.max(point.y, h - point.y)
+  /* La zone visée est mesurée sur l'élément réel plutôt que déduite du
+     format de l'écran : la matière se range ainsi exactement là où le
+     panneau se trouvera, sans redire sa géométrie ici. */
+  useLayoutEffect(() => {
+    if (!emission || emission.rect || !darkRef.current) return;
+    const box = darkRef.current.getBoundingClientRect();
+    setEmission((current) =>
+      current && !current.rect ? { ...current, rect: box } : current
     );
-    const at = `at ${Math.round(point.x)}px ${Math.round(point.y)}px`;
-    return {
-      closed: `circle(0px ${at})`,
-      open: `circle(${Math.ceil(reach)}px ${at})`,
-    };
-  })();
+  }, [emission]);
+
 
 
   // L'accueil ne passe pas par PageShell : il pose lui-même la couleur de
@@ -535,13 +545,13 @@ const Home = () => {
           {pick(profile.disciplines, language).join(", ")}
         </h1>
 
-        <DarkGroup $clip={open ? clip.open : clip.closed}>
+        <DarkGroup ref={darkRef} data-visible={open && (settled || reduce)}>
           <DarkPanel />
         </DarkGroup>
 
-        <Wordmark $onDark={open}>
+        <Wordmark $onDark={open && (settled || reduce)}>
           {profile.fullName}
-          <SoundToggle onDark={open} />
+          <SoundToggle onDark={open && (settled || reduce)} />
         </Wordmark>
 
         <TopRight role="group" aria-label={t.nav.language}>
@@ -561,10 +571,10 @@ const Home = () => {
         </TopRight>
 
         <DesktopOnly>
-          <RailLeft to="/a-propos" style={{ top: "36%" }} $onDark={open}>
+          <RailLeft to="/a-propos" style={{ top: "36%" }} $onDark={open && (settled || reduce)}>
             {t.nav.items["/a-propos"]}
           </RailLeft>
-          <RailLeft to="/contact" style={{ top: "64%" }} $onDark={open}>
+          <RailLeft to="/contact" style={{ top: "64%" }} $onDark={open && (settled || reduce)}>
             {t.nav.items["/contact"]}
           </RailLeft>
 
@@ -598,23 +608,32 @@ const Home = () => {
 
         <Focal
           type="button"
-          $open={open}
+          $open={open && (settled || reduce)}
           $ready={!intro}
           onClick={() => {
             if (open) {
               setOpen(false);
+              setEmission(null);
+              setSettled(false);
+              setRevealed(false);
               return;
             }
 
-            // Mesuré avant que le symbole ne quitte le centre : le noir doit
-            // partir de là où le visiteur vient de cliquer.
+            // Mesuré avant que le symbole ne quitte le centre : la matière
+            // doit partir de là où le visiteur vient de cliquer.
             const box = markRef.current?.getBoundingClientRect();
-            setOrigin(
-              box
-                ? { x: box.left + box.width / 2, y: box.top + box.height / 2 }
-                : { x: window.innerWidth / 2, y: window.innerHeight / 2 }
-            );
+            const center = box
+              ? { x: box.left + box.width / 2, y: box.top + box.height / 2 }
+              : { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+
             setOpen(true);
+
+            if (reduce) {
+              setRevealed(true);
+              setSettled(true);
+            } else {
+              setEmission({ center, rect: null });
+            }
           }}
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
@@ -628,7 +647,7 @@ const Home = () => {
             <BrandMark
               size="100%"
               state={
-                open && origin ? "loading" : hovered && !open ? "hover" : "idle"
+                emission ? "loading" : hovered && !open ? "hover" : "idle"
               }
               paused={intro}
             />
@@ -636,15 +655,11 @@ const Home = () => {
           <span className="hint">{t.home.hint}</span>
         </Focal>
 
-        <PanelLayer
-          $clip={open ? clip.open : clip.closed}
-          aria-hidden={!open}
-          inert={!open}
-        >
+        <PanelLayer aria-hidden={!open} inert={!open}>
         <PanelAnchor>
-          <Panel id="presentation">
+          <Panel id="presentation" style={{ opacity: open ? 1 : 0 }}>
               <ThemeProvider theme={darkTheme}>
-                <TextSide>
+                <TextSide data-visible={revealed || reduce}>
                   <Hello>{t.home.hello}</Hello>
 
                 <NameBlock>
@@ -674,7 +689,7 @@ const Home = () => {
                 </TextSide>
               </ThemeProvider>
 
-              <PhotoSide>
+              <PhotoSide data-visible={revealed || reduce}>
                 <img
                   src={portrait}
                   alt={`${t.about.portrait} ${profile.fullName}`}
@@ -685,6 +700,16 @@ const Home = () => {
           </Panel>
         </PanelAnchor>
         </PanelLayer>
+
+        {emission?.rect && !reduce ? (
+          <VortexBurst
+            center={emission.center}
+            rect={emission.rect}
+            onReveal={() => setRevealed(true)}
+            onSettle={() => setSettled(true)}
+            onDone={() => setEmission(null)}
+          />
+        ) : null}
 
         {intro ? (
           <VortexIntro
