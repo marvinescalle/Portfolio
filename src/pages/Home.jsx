@@ -35,6 +35,15 @@ import {
      0.50 - 1.12 le portrait se découvre de la gauche vers la droite
    ──────────────────────────────────────────────────────────────────────── */
 const swift = "cubic-bezier(0.22, 0.61, 0.36, 1)";
+/* Retour au centre. La courbe d'ouverture amortit très longuement : les dix
+   derniers pour cent de distance y prennent 46 % du temps, soit une trentaine
+   de pixels parcourus à moins de 90 px par seconde. Comme le symbole aborde sa
+   place par en dessous, cette traîne se lit comme une arrivée trop basse suivie
+   d'une remontée qui s'éternise. Celle-ci amortit sur 35 % du temps, et la
+   durée est resserrée : la même trentaine de pixels passe à 150 px par seconde.
+   Elle démarre aussi plus franchement, ce qui convient à une bille qui repart
+   plutôt qu'à une forme qu'on relâche. */
+const settle = "cubic-bezier(0.5, 0.1, 0.25, 1)";
 const motionSpec = {
   focal: `0.94s ${swift} 0.08s`,
   panel: `0.62s ${swift} 0.14s`,
@@ -45,7 +54,7 @@ const motionSpec = {
   /* Repli : les délais qui étagent l'ouverture n'ont pas de sens à l'envers,
      ils laisseraient le portrait seul sur le fond clair. Tout se referme
      ensemble et plus vite. */
-  focalBack: `0.82s ${swift}`,
+  focalBack: `0.66s ${settle}`,
   back: `0.34s ${swift}`,
   /* Le panneau se retire un cheveu après le texte : sinon la bande de texte
      encore en train de se refermer se retrouve seule sur le fond clair. */
