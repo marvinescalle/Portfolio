@@ -1,6 +1,14 @@
+import { Link, useNavigate, useParams } from "react-router-dom";
 import styled, { css } from "styled-components";
+import { AnimatePresence, motion } from "framer-motion";
 
-import { archivedProjects, featuredProjects } from "../data/projects";
+import {
+  archivedProjects,
+  featuredProjects,
+  findProject,
+} from "../data/projects";
+import ProjectOverlay from "../components/projects/ProjectOverlay";
+import useBodyScrollLock from "../hooks/useBodyScrollLock";
 import { media } from "../styles/theme";
 import PageShell from "../components/layout/PageShell";
 import SectionHeader from "../components/ui/SectionHeader";
@@ -8,21 +16,29 @@ import Reveal from "../components/ui/Reveal";
 import TagList from "../components/ui/Tag";
 import { ArrowUpRight, Github } from "../components/icons";
 
-/* Une carte devient un lien dès qu'un dépôt ou une démo existe ; sinon elle
-   reste un simple article, sans curseur ni survol trompeurs. */
+/* Toutes les cartes ouvrent désormais une fiche : elles sont toutes
+   cliquables, et le survol doit le dire clairement. */
 const clickable = css`
   cursor: pointer;
 
-  &:hover {
+  &:hover,
+  &:focus-visible {
     border-color: ${(props) => props.theme.text};
   }
 
-  &:hover .cover img {
-    transform: scale(1.03);
+  &:hover .cover img,
+  &:focus-visible .cover img {
+    transform: scale(1.02);
   }
 
-  &:hover .cta {
+  &:hover .cta,
+  &:focus-visible .cta {
     background-size: 100% 1px;
+  }
+
+  &:hover .cta svg,
+  &:focus-visible .cta svg {
+    transform: translate(2px, -2px);
   }
 `;
 
@@ -39,7 +55,7 @@ const cardBase = css`
     filter: grayscale(0);
   }
 
-  ${(props) => (props.$interactive ? clickable : "")}
+  ${clickable}
 `;
 
 const Cover = styled.div`
@@ -149,6 +165,7 @@ const Cta = styled.span`
   svg {
     width: 15px;
     height: 15px;
+    transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
   }
 `;
 
@@ -169,6 +186,10 @@ const RepoBadge = styled.span`
     width: 17px;
     height: 17px;
   }
+`;
+
+const Shell = styled(motion.div)`
+  height: 100%;
 `;
 
 const Grid = styled.div`
@@ -228,21 +249,12 @@ const Note = styled.p`
   margin-bottom: 2rem;
 `;
 
-/** Renvoie les props transformant une carte en lien externe, si possible. */
-const linkProps = (project) => {
-  const href = project.github || project.demo;
-  if (!href) return { $interactive: false };
-  return {
-    as: "a",
-    href,
-    target: "_blank",
-    rel: "noopener noreferrer",
-    $interactive: true,
-    "aria-label": `${project.title} : ouvrir ${
-      project.github ? "le dépôt GitHub" : "la démonstration"
-    } dans un nouvel onglet`,
-  };
-};
+/** La carte ouvre la fiche du projet, à l'intérieur du portfolio. */
+const cardLink = (project) => ({
+  as: Link,
+  to: `/projets/${project.id}`,
+  "aria-label": `${project.title} : ouvrir la fiche du projet`,
+});
 
 const ProjectCover = ({ project }) => (
   <Cover className="cover">
@@ -260,27 +272,28 @@ const ProjectCover = ({ project }) => (
   </Cover>
 );
 
-const ProjectCta = ({ project }) => {
-  if (project.github) {
-    return (
-      <Cta className="cta">
-        Voir le code sur GitHub
-        <ArrowUpRight />
-      </Cta>
-    );
-  }
-  if (project.demo) {
-    return (
-      <Cta className="cta">
-        Voir le projet
-        <ArrowUpRight />
-      </Cta>
-    );
-  }
-  return null;
-};
+const ProjectCta = () => (
+  <Cta className="cta">
+    Voir le projet
+    <ArrowUpRight />
+  </Cta>
+);
 
-const Projects = () => (
+const Projects = () => {
+  const { slug } = useParams();
+  const navigate = useNavigate();
+  const project = slug ? findProject(slug) : null;
+
+  useBodyScrollLock(Boolean(project));
+
+  const close = () => {
+    // Revenir en arrière garde l'historique cohérent, sauf si la fiche est
+    // le point d'entrée du visiteur : il quitterait alors le site.
+    if (window.history.state?.idx > 0) navigate(-1);
+    else navigate("/projets", { replace: true });
+  };
+
+  return (
   <PageShell
     title="Projets"
     description="Projets réalisés par Marvin Escalle : développement web, automatisation et DevOps, ainsi que les archives des travaux étudiants."
@@ -299,8 +312,9 @@ const Projects = () => (
 
         {featuredProjects.map((project, i) => (
           <Reveal key={project.id} delay={i * 0.08}>
+            <Shell layoutId={`project-${project.id}`}>
             <FeaturedCard
-              {...linkProps(project)}
+              {...cardLink(project)}
               style={{ marginBottom: "1.5rem" }}
             >
               {project.github ? (
@@ -321,9 +335,10 @@ const Projects = () => (
                   items={project.stack}
                   label={`Technologies du projet ${project.title}`}
                 />
-                <ProjectCta project={project} />
+                <ProjectCta />
               </Body>
             </FeaturedCard>
+            </Shell>
           </Reveal>
         ))}
       </Block>
@@ -344,7 +359,8 @@ const Projects = () => (
         <Grid>
           {archivedProjects.map((project, i) => (
             <Reveal key={project.id} delay={Math.min(i * 0.04, 0.3)}>
-              <SmallCard {...linkProps(project)}>
+              <Shell layoutId={`project-${project.id}`}>
+              <SmallCard {...cardLink(project)}>
                 {project.github ? (
                   <RepoBadge aria-hidden="true">
                     <Github />
@@ -361,15 +377,27 @@ const Projects = () => (
                     items={project.stack}
                     label={`Technologies du projet ${project.title}`}
                   />
-                  <ProjectCta project={project} />
+                  <ProjectCta />
                 </Body>
               </SmallCard>
+              </Shell>
             </Reveal>
           ))}
         </Grid>
       </Block>
     ) : null}
+
+    <AnimatePresence>
+      {project ? (
+        <ProjectOverlay
+          key={project.id}
+          project={project}
+          onClose={close}
+        />
+      ) : null}
+    </AnimatePresence>
   </PageShell>
-);
+  );
+};
 
 export default Projects;

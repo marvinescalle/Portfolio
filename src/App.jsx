@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, useRef } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { ThemeProvider } from "styled-components";
@@ -6,6 +6,8 @@ import { ThemeProvider } from "styled-components";
 import GlobalStyle from "./styles/GlobalStyle";
 import { lightTheme } from "./styles/theme";
 import Loading from "./components/ui/Loading";
+import { markIntroPlayed } from "./components/intro/introState";
+import { AmbienceProvider } from "./components/audio/AmbienceProvider";
 
 const Home = lazy(() => import("./pages/Home"));
 const About = lazy(() => import("./pages/About"));
@@ -17,12 +19,34 @@ const Cv = lazy(() => import("./pages/Cv"));
 const Contact = lazy(() => import("./pages/Contact"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
-/** Remet la page en haut à chaque changement de route. */
+/**
+ * Si la session ne démarre pas sur l'accueil, l'intro est considérée comme
+ * consommée : elle ne doit pas surgir plus tard, au milieu d'une visite.
+ */
+const ConsumeIntroOutsideHome = () => {
+  useEffect(() => {
+    if (window.location.pathname !== "/") markIntroPlayed();
+  }, []);
+
+  return null;
+};
+
+/** Première partie du chemin, qui identifie la section. */
+const sectionOf = (pathname) => `/${pathname.split("/")[1] ?? ""}`;
+
+/**
+ * Remet la page en haut au changement de section, mais pas lorsqu'on ouvre
+ * ou referme une fiche projet : la liste doit garder sa position.
+ */
 const ScrollToTop = () => {
   const { pathname } = useLocation();
+  const previous = useRef(pathname);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    if (sectionOf(previous.current) !== sectionOf(pathname)) {
+      window.scrollTo(0, 0);
+    }
+    previous.current = pathname;
   }, [pathname]);
 
   return null;
@@ -33,16 +57,19 @@ function App() {
 
   return (
     <ThemeProvider theme={lightTheme}>
+      <AmbienceProvider>
       <GlobalStyle />
       <ScrollToTop />
+      <ConsumeIntroOutsideHome />
 
       <Suspense fallback={<Loading />}>
         <AnimatePresence mode="wait">
-          <Routes location={location} key={location.pathname}>
+          <Routes location={location} key={sectionOf(location.pathname)}>
             <Route path="/" element={<Home />} />
             <Route path="/a-propos" element={<About />} />
             <Route path="/experiences" element={<Experience />} />
             <Route path="/projets" element={<Projects />} />
+            <Route path="/projets/:slug" element={<Projects />} />
             <Route path="/formation" element={<Education />} />
             <Route path="/passions" element={<Passions />} />
             <Route path="/cv" element={<Cv />} />
@@ -61,6 +88,7 @@ function App() {
           </Routes>
         </AnimatePresence>
       </Suspense>
+      </AmbienceProvider>
     </ThemeProvider>
   );
 }

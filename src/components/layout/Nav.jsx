@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
@@ -7,6 +7,7 @@ import navItems from "../../data/navigation";
 import { profile } from "../../data/profile";
 import { layout, media } from "../../styles/theme";
 import { Close, Menu } from "../icons";
+import SoundToggle from "../ui/SoundToggle";
 
 const Bar = styled.header`
   position: sticky;
@@ -22,15 +23,23 @@ const Inner = styled.div`
   max-width: ${layout.maxWidth};
   margin: 0 auto;
   padding: 0 ${layout.gutter};
-  height: ${layout.navHeight};
+  height: ${(props) =>
+    props.$scrolled ? `calc(${layout.navHeight} - 1.25rem)` : layout.navHeight};
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 2rem;
+  transition: height 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
 
   ${media.md`
     height: 4.5rem;
   `}
+`;
+
+const Brand = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
 `;
 
 const Wordmark = styled(NavLink)`
@@ -64,6 +73,7 @@ const Wordmark = styled(NavLink)`
 `;
 
 const DesktopList = styled.nav`
+  position: relative;
   display: flex;
   align-items: center;
   gap: clamp(1rem, 2.4vw, 2.25rem);
@@ -106,10 +116,17 @@ const Item = styled(NavLink)`
     color: ${(props) => props.theme.text};
     font-weight: 500;
   }
+`;
 
-  &[aria-current="page"]::after {
-    transform: scaleX(1);
-  }
+/* Une seule barre pour toute la navigation : elle se déplace vers la
+   rubrique active au lieu d'apparaître et disparaître sous chacune. */
+const Indicator = styled(motion.span)`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: ${(props) => props.theme.text};
+  pointer-events: none;
 `;
 
 const Burger = styled.button`
@@ -210,9 +227,36 @@ const OverlayFoot = styled.a`
 const Nav = () => {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [indicator, setIndicator] = useState(null);
   const location = useLocation();
   const reduce = useReducedMotion();
   const closeRef = useRef(null);
+  const listRef = useRef(null);
+
+  // Position de la barre active, mesurée sur le lien correspondant.
+  const measure = useCallback(() => {
+    const list = listRef.current;
+    const active = list?.querySelector('[aria-current="page"]');
+    if (!list || !active) {
+      setIndicator(null);
+      return;
+    }
+    const listBox = list.getBoundingClientRect();
+    const box = active.getBoundingClientRect();
+    setIndicator({ x: box.left - listBox.left, width: box.width });
+  }, []);
+
+  useLayoutEffect(() => {
+    measure();
+  }, [measure, location.pathname]);
+
+  useEffect(() => {
+    window.addEventListener("resize", measure);
+    // Les polices d'affichage changent la largeur des libellés une fois
+    // chargées : sans cette seconde mesure la barre reste décalée.
+    document.fonts?.ready?.then(measure).catch(() => {});
+    return () => window.removeEventListener("resize", measure);
+  }, [measure]);
 
   // Le menu se referme dès qu'on change de page.
   useEffect(() => setOpen(false), [location.pathname]);
@@ -246,17 +290,33 @@ const Nav = () => {
   return (
     <>
       <Bar $scrolled={scrolled}>
-        <Inner>
-          <Wordmark to="/" aria-label="Marvin Escalle, retour à l'accueil">
-            {profile.fullName}
-          </Wordmark>
+        <Inner $scrolled={scrolled}>
+          <Brand>
+            <Wordmark to="/" aria-label="Marvin Escalle, retour à l'accueil">
+              {profile.fullName}
+            </Wordmark>
+            <SoundToggle />
+          </Brand>
 
-          <DesktopList aria-label="Navigation principale">
+          <DesktopList ref={listRef} aria-label="Navigation principale">
             {navItems.map((item) => (
               <Item key={item.path} to={item.path}>
                 {item.label}
               </Item>
             ))}
+
+            {indicator ? (
+              <Indicator
+                aria-hidden="true"
+                initial={false}
+                animate={{ x: indicator.x, width: indicator.width }}
+                transition={
+                  reduce
+                    ? { duration: 0 }
+                    : { type: "spring", stiffness: 420, damping: 38 }
+                }
+              />
+            ) : null}
           </DesktopList>
 
           <Burger

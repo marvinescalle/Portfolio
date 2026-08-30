@@ -7,6 +7,9 @@
  * Rien d'autre à modifier : la page /projets se construit entièrement à
  * partir de ce fichier.
  *
+ * L'identifiant `id` sert aussi d'adresse : le projet « monscan » s'ouvre
+ * sur /projets/monscan. Le garder court, en minuscules, sans accent.
+ *
  * Champs disponibles
  * ------------------
  * title        Titre court. Sert aussi de texte du lien.
@@ -20,6 +23,44 @@
  * category     "devops" | "web" | "school" : sert au regroupement.
  * featured     `true` place le projet en grande carte, en haut de page.
  * published    `false` masque le projet du site sans supprimer ses données.
+ *
+ * Champs de la fiche détaillée, tous facultatifs
+ * ---------------------------------------------
+ * Ils n'apparaissent que s'ils sont renseignés : une rubrique vide n'est
+ * jamais affichée avec un titre orphelin.
+ *
+ * type             Nature du projet, par exemple "Application web".
+ * longDescription  Présentation développée, en un ou plusieurs paragraphes.
+ * context          Cadre du projet, déjà utilisé sur la carte.
+ * objective        Ce que le projet devait résoudre.
+ * role             Ce que vous avez personnellement réalisé.
+ * challenges       Tableau de difficultés rencontrées.
+ * solutions        Tableau de réponses apportées.
+ * results          Tableau de résultats ou d'enseignements.
+ * gallery          Tableau de { src, alt } pour les captures.
+ *
+ * Exemple d'un projet complet :
+ *
+ *   {
+ *     id: "supervision",
+ *     title: "Plateforme de supervision",
+ *     year: "2025",
+ *     type: "Infrastructure",
+ *     context: "Projet de fin de formation",
+ *     objective: "Centraliser la surveillance de plusieurs services.",
+ *     role: "Conception de l'architecture, mise en place du CI/CD.",
+ *     longDescription: "Deux ou trois paragraphes.",
+ *     challenges: ["Première difficulté.", "Deuxième difficulté."],
+ *     solutions: ["Première réponse.", "Deuxième réponse."],
+ *     results: ["Ce que le projet a permis."],
+ *     gallery: [{ src: "/images/projects/supervision-1.png", alt: "Tableau de bord" }],
+ *     stack: ["Docker", "Kubernetes"],
+ *     github: "https://github.com/...",
+ *     demo: null,
+ *     category: "devops",
+ *     featured: true,
+ *     published: true,
+ *   }
  */
 
 export const projects = [
@@ -234,5 +275,9 @@ export const featuredProjects = publishedProjects.filter((p) => p.featured);
 
 /** Archives : tout ce qui n'est pas mis en avant. */
 export const archivedProjects = publishedProjects.filter((p) => !p.featured);
+
+/** Retrouve un projet depuis son adresse, pour la fiche détaillée. */
+export const findProject = (slug) =>
+  publishedProjects.find((project) => project.id === slug) ?? null;
 
 export default projects;

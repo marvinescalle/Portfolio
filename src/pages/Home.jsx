@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import styled, { ThemeProvider, keyframes } from "styled-components";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
@@ -8,7 +8,13 @@ import { profile } from "../data/profile";
 import useDocumentMeta from "../hooks/useDocumentMeta";
 import { darkTheme, layout, lightTheme, media } from "../styles/theme";
 import SoundToggle from "../components/ui/SoundToggle";
-import { ArrowUpRight, YinYang } from "../components/icons";
+import { ArrowUpRight } from "../components/icons";
+import BrandMark from "../components/brand/BrandMark";
+import VortexIntro from "../components/intro/VortexIntro";
+import {
+  markIntroPlayed,
+  shouldPlayIntro,
+} from "../components/intro/introState";
 
 /* ────────────────────────────────────────────────────────────────────────
    La page d'accueil est volontairement à part : pas de barre de navigation,
@@ -156,11 +162,6 @@ const DesktopOnly = styled.div`
   `}
 `;
 
-const spin = keyframes`
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-`;
-
 const halo = keyframes`
   0% { transform: scale(0.92); opacity: 0.55; }
   75% { transform: scale(1.28); opacity: 0; }
@@ -200,14 +201,9 @@ const Focal = styled.button`
     inset: -14%;
     border: 1px solid ${(props) => props.theme.text};
     border-radius: 50%;
-    opacity: ${(props) => (props.$open ? 0 : 1)};
+    opacity: ${(props) => (props.$open || !props.$ready ? 0 : 1)};
+    transition: opacity 0.6s ease;
     animation: ${halo} 3.4s ease-out infinite;
-  }
-
-  .mark svg {
-    width: 100%;
-    height: 100%;
-    animation: ${spin} 24s linear infinite;
   }
 
   &:hover .mark {
@@ -220,9 +216,14 @@ const Focal = styled.button`
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: ${(props) => props.theme.textSoft};
-    opacity: ${(props) => (props.$open ? 0 : 1)};
-    transition: opacity 0.4s ease;
+    opacity: ${(props) => (props.$open || !props.$ready ? 0 : 1)};
+    transition: opacity 0.4s ease, color 0.3s ease;
     white-space: nowrap;
+  }
+
+  &:hover .hint,
+  &:focus-visible .hint {
+    color: ${(props) => props.theme.text};
   }
 
   ${media.md`
@@ -400,7 +401,29 @@ const PhotoSide = styled.div`
 
 const Home = () => {
   const [open, setOpen] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const markRef = useRef(null);
   const reduce = useReducedMotion();
+
+  // Décidé une seule fois, au premier rendu : l'intro ne doit pas réapparaître
+  // parce qu'un état a changé plus tard.
+  const [intro, setIntro] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const reduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    return !reduced && shouldPlayIntro();
+  });
+
+  useEffect(() => {
+    if (!intro) markIntroPlayed();
+  }, [intro]);
+
+  // L'accueil ne passe pas par PageShell : il pose lui-même la couleur de
+  // fond du document, pour éviter un fond hérité de la page précédente.
+  useEffect(() => {
+    document.body.style.backgroundColor = lightTheme.body;
+  }, []);
 
   useDocumentMeta();
 
@@ -474,15 +497,24 @@ const Home = () => {
         <Focal
           type="button"
           $open={open}
+          $ready={!intro}
           onClick={() => setOpen((value) => !value)}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          onFocus={() => setHovered(true)}
+          onBlur={() => setHovered(false)}
           aria-expanded={open}
           aria-controls="presentation"
           aria-label={
             open ? "Masquer la présentation" : "Afficher la présentation"
           }
         >
-          <span className="mark">
-            <YinYang />
+          <span className="mark" ref={markRef}>
+            <BrandMark
+              size="100%"
+              state={hovered && !open ? "hover" : "idle"}
+              paused={intro}
+            />
           </span>
           <span className="hint">Cliquez pour découvrir</span>
         </Focal>
@@ -545,6 +577,15 @@ const Home = () => {
             ) : null}
           </AnimatePresence>
         </PanelAnchor>
+        {intro ? (
+          <VortexIntro
+            anchorRef={markRef}
+            onDone={() => {
+              markIntroPlayed();
+              setIntro(false);
+            }}
+          />
+        ) : null}
       </Screen>
     </ThemeProvider>
   );

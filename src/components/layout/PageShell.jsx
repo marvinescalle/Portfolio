@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useLayoutEffect } from "react";
 import styled, { ThemeProvider } from "styled-components";
 import { motion, useReducedMotion } from "framer-motion";
 
@@ -15,7 +15,21 @@ const Page = styled(motion.div)`
   flex-direction: column;
 `;
 
-const Main = styled.main`
+/* Signature de transition : un trait fin traverse l'écran à chaque
+   changement de rubrique. Assez bref pour ne jamais retarder la navigation,
+   assez présent pour que le changement se remarque. */
+const Sweep = styled(motion.span)`
+  position: fixed;
+  top: ${layout.navHeight};
+  left: 0;
+  z-index: 60;
+  width: 38vw;
+  height: 1px;
+  background: ${(props) => props.theme.text};
+  pointer-events: none;
+`;
+
+const Main = styled(motion.main)`
   flex: 1;
   /* La page CV a besoin de plus de largeur que les pages de texte : deux
      colonnes de PDF côte à côte doivent rester lisibles. */
@@ -44,27 +58,47 @@ const PageShell = ({
 
   // La couleur de fond du document suit le thème de la page, sinon le
   // débordement élastique laisse apparaître un fond de la mauvaise couleur.
-  useEffect(() => {
-    const previous = document.body.style.backgroundColor;
+  // Posée avant peinture et sans restauration au démontage : rétablir
+  // l'ancienne valeur ferait clignoter le fond entre deux pages.
+  useLayoutEffect(() => {
     document.body.style.backgroundColor = theme.body;
-    return () => {
-      document.body.style.backgroundColor = previous;
-    };
   }, [theme.body]);
 
   return (
     <ThemeProvider theme={theme}>
       <Page
+        /* Uniquement l'opacité : une transformation, même nulle, ferait de
+           ce conteneur le bloc de référence des éléments en position fixed
+           qu'il contient, ce qui déplacerait le menu mobile. Le léger
+           mouvement d'entrée est porté par le contenu, plus bas. */
         initial={reduce ? false : { opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: reduce ? 0 : 0.35, ease: "easeOut" }}
+        transition={{
+          duration: reduce ? 0 : 0.28,
+          ease: [0.22, 0.61, 0.36, 1],
+        }}
       >
+        {reduce ? null : (
+          <Sweep
+            aria-hidden="true"
+            initial={{ x: "-42vw" }}
+            animate={{ x: "112vw" }}
+            transition={{ duration: 0.34, ease: [0.4, 0, 0.2, 1] }}
+          />
+        )}
+
         <a className="skip-link" href="#contenu">
           Aller au contenu
         </a>
         <Nav />
-        <Main id="contenu" $wide={wide}>
+        <Main
+          id="contenu"
+          $wide={wide}
+          initial={reduce ? false : { y: 10 }}
+          animate={{ y: 0 }}
+          transition={{ duration: reduce ? 0 : 0.32, ease: [0.22, 0.61, 0.36, 1] }}
+        >
           {children}
         </Main>
         <Footer />
