@@ -57,24 +57,30 @@ void main() {
   float p = clamp(uProgress, 0.0, 1.0);
 
   // Éruption : le rayon de la tache croît depuis le symbole.
-  float grow = smoothstep(0.0, 0.52, p);
+  float grow = smoothstep(0.0, 0.30, p);
 
   // Torsion décroissante : très marquée au jaillissement, elle se calme à
   // mesure que la matière se range.
-  float twist = exp(-r * 2.0) * (4.6 * (1.0 - grow) + 1.2 * uTime);
+  // Torsion franche au jaillissement, qui s'apaise à mesure que la matière
+  // se range : c'est elle qui donne le caractère de spirale.
+  float twist = exp(-r * 2.4) * (7.4 * (1.0 - grow) + 2.4 * uTime);
   float twisted = angle + twist;
 
-  float lobes =
-      0.110 * sin(3.0 * twisted)
-    + 0.065 * sin(5.0 * twisted + 1.7)
-    + 0.040 * sin(8.0 * twisted - 0.6);
+  /* Le contour est très découpé pendant l'éruption puis se lisse : le
+     rectangle d'arrivée doit être net, pas ondulé. */
+  float turbulence = 1.0 - smoothstep(0.16, 0.92, p);
+  float lobes = turbulence * (
+      0.230 * sin(3.0 * twisted)
+    + 0.130 * sin(5.0 * twisted + 1.7)
+    + 0.080 * sin(8.0 * twisted - 0.6)
+  );
 
   float grain = noise(vec2(twisted * 2.4, r * 9.0 - uTime * 0.8)) - 0.5;
 
-  /* Volontairement bien en deçà de la diagonale : la matière doit jaillir
-     largement autour du symbole sans jamais noircir tout l'écran, sinon la
-     page disparaît un instant au lieu de se remplir. */
-  float radius = 0.74 * grow * (1.0 + lobes) + 0.05 * grain * (1.0 - grow);
+  /* Tache volontairement modeste : elle sert de point de départ, pas de
+     voile. C'est le morphage qui l'étire ensuite vers la zone à remplir.
+     Une tache plus large donnerait l'impression d'un écran noir. */
+  float radius = 0.27 * grow * (1.0 + lobes) + 0.05 * grain * turbulence;
   float dBlob = r - radius;
 
   // Distance au rectangle visé, dans le même repère normalisé.
@@ -83,7 +89,9 @@ void main() {
   float dRect = sdBox(uv, rectCenter, rectHalf);
 
   // Morphage progressif de la spirale vers le rectangle.
-  float morph = smoothstep(0.38, 0.96, p);
+  // Le morphage démarre tôt : la matière file vers sa cible dès qu'elle
+  // a jailli, au lieu de s'étaler d'abord dans toutes les directions.
+  float morph = smoothstep(0.16, 0.92, p);
   float d = mix(dBlob, dRect, morph);
 
   float soft = mix(0.014, 0.0015, morph);
