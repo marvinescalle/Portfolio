@@ -29,30 +29,36 @@ import {
    le navigateur suspend le rendu, et rien à remettre en état si l'ouverture
    est interrompue.
 
-     0.00        le symbole donne un coup d'accélérateur
-     0.06 - 0.78 il rejoint le coin bas droit et reprend sa taille de repos
-     0.10 - 0.56 le panneau noir se déploie de la gauche vers la droite
-     0.26 - 0.70 le texte se découvre du haut vers le bas
-     0.36 - 0.82 le portrait se découvre de la gauche vers la droite
+     0.08 - 1.02 le symbole roule vers le coin bas droit et reprend sa taille
+     0.14 - 0.76 le panneau noir se déploie de la gauche vers la droite
+     0.36 - 0.96 le texte se découvre du haut vers le bas
+     0.50 - 1.12 le portrait se découvre de la gauche vers la droite
    ──────────────────────────────────────────────────────────────────────── */
 const swift = "cubic-bezier(0.22, 0.61, 0.36, 1)";
 const motionSpec = {
-  focal: `0.72s ${swift} 0.06s`,
-  panel: `0.46s ${swift} 0.10s`,
-  text: `0.44s ${swift} 0.26s`,
-  photo: `0.46s ${swift} 0.36s`,
+  focal: `0.94s ${swift} 0.08s`,
+  panel: `0.62s ${swift} 0.14s`,
+  text: `0.6s ${swift} 0.36s`,
+  photo: `0.62s ${swift} 0.5s`,
   // Les libellés basculent en clair au moment où le noir passe sous eux.
-  tint: "0.3s ease 0.18s",
+  tint: "0.42s ease 0.24s",
   /* Repli : les délais qui étagent l'ouverture n'ont pas de sens à l'envers,
      ils laisseraient le portrait seul sur le fond clair. Tout se referme
      ensemble et plus vite. */
-  focalBack: `0.52s ${swift}`,
-  back: `0.24s ${swift}`,
+  focalBack: `0.82s ${swift}`,
+  back: `0.34s ${swift}`,
   /* Le panneau se retire un cheveu après le texte : sinon la bande de texte
      encore en train de se refermer se retrouve seule sur le fond clair. */
-  panelBack: `0.34s ${swift} 0.04s`,
-  tintBack: "0.24s ease",
+  panelBack: `0.44s ${swift} 0.05s`,
+  tintBack: "0.3s ease",
 };
+
+/* Le symbole roule sur la distance qu'il parcourt. Un roulement strict, où
+   l'angle vaut la distance divisée par le rayon, donnerait plus de deux tours
+   entiers sur la diagonale : les trois formes ne seraient plus lisibles. Ce
+   coefficient garde le rapport entre trajet et rotation, en le ramenant à un
+   tour et demi environ. */
+const ROLL_RATIO = 0.6;
 
 const Screen = styled.div`
   position: relative;
@@ -293,15 +299,18 @@ const Focal = styled.button`
       transform 0.5s ease;
   }
 
-  /* Bref coup d'accélérateur au clic, cumulatif : l'angle ne revient jamais
-     en arrière, la rotation lente reprend donc sans à-coup. */
+  /* Roulement du symbole pendant son trajet. L'angle est posé en ligne, avec
+     exactement la durée, le délai et la courbe du déplacement : c'est cette
+     synchronisation qui fait lire une roue qui roule plutôt qu'une forme qui
+     glisse en tournant. La valeur s'accumule et n'est jamais remise à zéro,
+     sans quoi la rotation lente de fond sauterait. */
   .spin {
     display: grid;
     place-items: center;
     width: 100%;
     height: 100%;
-    rotate: ${(props) => props.$kick}deg;
-    transition: rotate 0.5s cubic-bezier(0.05, 0.85, 0.25, 1);
+    transition: rotate
+      ${(props) => (props.$open ? motionSpec.focal : motionSpec.focalBack)};
   }
 
   /* Anneau qui respire : la seule indication permanente que l'élément
@@ -551,8 +560,9 @@ const Home = () => {
   /* Position du symbole relevée juste avant la bascule, pour rattraper par un
      `transform` le saut d'ancrage qui suit. */
   const flipRef = useRef(null);
-  // Angle cumulé du coup d'accélérateur donné à chaque ouverture.
-  const [kick, setKick] = useState(0);
+  const spinRef = useRef(null);
+  // Angle cumulé du roulement, dans un ref : il ne concerne pas le rendu.
+  const rollRef = useRef(0);
   const t = useTranslation();
   const { language, setLanguage } = useLanguage();
   const reduce = useReducedMotion();
@@ -583,6 +593,7 @@ const Home = () => {
 
     const focal = focalRef.current;
     const mark = markRef.current;
+    const spin = spinRef.current;
     if (!from || !focal || !mark) return;
 
     const base = open ? "" : "translate(-50%, -50%) ";
@@ -593,6 +604,8 @@ const Home = () => {
     focal.style.transition = "none";
     mark.style.transition = "none";
     focal.style.transform = `${base}translate(0px, 0px)`;
+    // Taille d'arrivée, relevée avant de reposer celle du départ.
+    const target = mark.getBoundingClientRect();
     /* La taille de départ est reposée avant la mesure : c'est elle qui vaut
        au premier instant du trajet, et elle décale la colonne puisque le
        symbole y est empilé au-dessus du libellé. */
@@ -603,6 +616,16 @@ const Home = () => {
     const dx = from.x - (now.left + now.width / 2);
     const dy = from.y - (now.top + now.height / 2);
 
+    /* Rayon moyen entre les deux tailles, puisque le symbole rétrécit en
+       chemin. Le sens suit le déplacement : vers la droite il roule dans le
+       sens des aiguilles, vers le centre il déroule en sens inverse. */
+    const radius = (from.width + target.width) / 4;
+    if (spin && radius > 0) {
+      const turn =
+        ((Math.hypot(dx, dy) / radius) * 180 * ROLL_RATIO) / Math.PI;
+      rollRef.current += dx > 0 ? -turn : turn;
+    }
+
     focal.style.transform = `${base}translate(${dx}px, ${dy}px)`;
     // Fige ce point de départ avant de rendre les transitions à nouveau actives.
     void focal.offsetWidth;
@@ -612,6 +635,7 @@ const Home = () => {
     mark.style.width = "";
     mark.style.height = "";
     focal.style.transform = `${base}translate(0px, 0px)`;
+    if (spin) spin.style.rotate = `${rollRef.current}deg`;
   }, [open]);
 
 
@@ -711,7 +735,6 @@ const Home = () => {
           type="button"
           $open={open}
           $ready={!intro}
-          $kick={kick}
           onClick={() => {
             // Relevé avant la bascule : c'est le point de départ du trajet.
             if (!reduce) {
@@ -724,7 +747,6 @@ const Home = () => {
                     height: box.height,
                   }
                 : null;
-              if (!open) setKick((angle) => angle + 120);
             }
             setOpen((wasOpen) => !wasOpen);
           }}
@@ -737,7 +759,7 @@ const Home = () => {
           aria-label={open ? t.home.hide : t.home.open}
         >
           <span className="mark" ref={markRef}>
-            <span className="spin">
+            <span className="spin" ref={spinRef}>
               <BrandMark
                 size="100%"
                 state={hovered && !open ? "hover" : "idle"}
