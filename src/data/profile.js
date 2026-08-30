@@ -27,14 +27,20 @@ export const profile = {
   },
 
   /**
-   * CV affiché et téléchargé depuis la page /cv.
-   * Déposer le fichier dans public/cv/ puis mettre à jour `file` si le nom
-   * change. Le chemin part de la racine du site, pas du dossier src.
+   * CV affichés et téléchargés depuis la page /cv, une version par langue.
+   * Déposer les fichiers dans public/cv/ en gardant ces noms : rien d'autre
+   * n'est à modifier. Le chemin part de la racine du site, pas de src.
    */
   cv: {
-    file: "/cv/Marvin_Escalle_CV.pdf",
-    downloadName: "Marvin_Escalle_CV.pdf",
-    // TODO à compléter : date de dernière mise à jour du CV, ex. "Août 2026".
+    fr: {
+      file: "/cv/Marvin_Escalle_CV_FR.pdf",
+      downloadName: "Marvin_Escalle_CV_FR.pdf",
+    },
+    en: {
+      file: "/cv/Marvin_Escalle_CV_EN.pdf",
+      downloadName: "Marvin_Escalle_CV_EN.pdf",
+    },
+    // TODO à compléter : date de dernière mise à jour, ex. "Août 2026".
     updatedAt: null,
   },
 };

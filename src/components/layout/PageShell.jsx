@@ -17,7 +17,9 @@ const Page = styled(motion.div)`
 
 const Main = styled.main`
   flex: 1;
-  max-width: ${layout.maxWidth};
+  /* La page CV a besoin de plus de largeur que les pages de texte : deux
+     colonnes de PDF côte à côte doivent rester lisibles. */
+  max-width: ${(props) => (props.$wide ? layout.wideWidth : layout.maxWidth)};
   width: 100%;
   margin: 0 auto;
   padding: clamp(2rem, 4vw, 3.5rem) ${layout.gutter} 0;
@@ -30,7 +32,13 @@ const Main = styled.main`
  * La page d'accueil ne l'utilise pas : elle garde sa propre composition
  * plein écran, sans barre de navigation.
  */
-const PageShell = ({ theme = lightTheme, title, description, children }) => {
+const PageShell = ({
+  theme = lightTheme,
+  title,
+  description,
+  wide = false,
+  children,
+}) => {
   const reduce = useReducedMotion();
   useDocumentMeta(title, description);
 
@@ -56,7 +64,9 @@ const PageShell = ({ theme = lightTheme, title, description, children }) => {
           Aller au contenu
         </a>
         <Nav />
-        <Main id="contenu">{children}</Main>
+        <Main id="contenu" $wide={wide}>
+          {children}
+        </Main>
         <Footer />
       </Page>
     </ThemeProvider>

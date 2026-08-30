@@ -67,6 +67,8 @@ export const media = Object.entries(breakpoints).reduce((acc, [key, px]) => {
 /** Largeur maximale du contenu et gouttière latérale. */
 export const layout = {
   maxWidth: "1240px",
+  /* Utilisée par la page CV, qui affiche deux documents côte à côte. */
+  wideWidth: "1560px",
   gutter: "clamp(1.25rem, 5vw, 5rem)",
   navHeight: "5.5rem",
 };

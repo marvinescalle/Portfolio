@@ -33,6 +33,7 @@ d'interface n'est nécessaire pour ajouter un projet ou une expérience.
 | `education.js` | Formations affichées en timeline |
 | `passions.js` | Vignettes de la mosaïque Passions |
 | `navigation.js` | Sections et ordre de la navigation |
+| `translations.js` | Textes français et anglais des pages CV et Contact |
 
 ### Ajouter un projet
 
@@ -80,9 +81,11 @@ correspondante, plutôt que d'afficher une valeur approximative.
 
 | Quoi | Où |
 | --- | --- |
-| CV (PDF) | `public/cv/Marvin_Escalle_CV.pdf` |
+| CV français | `public/cv/Marvin_Escalle_CV_FR.pdf` |
+| CV anglais | `public/cv/Marvin_Escalle_CV_EN.pdf` |
 | Captures de projets | `public/images/projects/` |
 | Photos des passions | `public/images/passions/` |
+| Logos d'entreprises | `public/images/logos/` |
 
 Chaque dossier contient un `README.md` rappelant les formats attendus.
 
@@ -116,6 +119,25 @@ src/
 Lien d'évitement, repères sémantiques, un seul `h1` par page, focus visible au
 clavier, `alt` sur toutes les images, intitulés explicites sur les liens
 externes, et respect de `prefers-reduced-motion`.
+
+## Formulaire de contact
+
+La page Contact utilise **Netlify Forms**, sans backend ni service externe.
+
+Le formulaire existe en deux exemplaires qui doivent rester synchronisés :
+une copie statique invisible dans `index.html`, qui sert uniquement à la
+détection par Netlify au moment du build, et le formulaire réellement
+affiché dans `src/components/ui/ContactForm.jsx`. Ajouter un champ dans l'un
+sans l'ajouter dans l'autre ferait que sa valeur ne remonterait pas.
+
+L'envoi passe par `fetch` en `POST` url-encodé vers la racine du site, ce qui
+garde le visiteur sur la page au lieu d'afficher la confirmation générique de
+Netlify.
+
+Netlify Forms ne fonctionne pas en local : l'envoi y échoue toujours et la
+page affiche alors son message d'erreur avec l'adresse email en secours. Voir
+[DEPLOIEMENT.md](DEPLOIEMENT.md) pour la configuration et les tests à faire
+une fois le site en ligne.
 
 ## Déploiement
 

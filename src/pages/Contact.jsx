@@ -1,13 +1,13 @@
 import styled from "styled-components";
 
 import { profile } from "../data/profile";
+import { useTranslation } from "../data/translations";
 import { darkTheme, media } from "../styles/theme";
 import PageShell from "../components/layout/PageShell";
 import Reveal from "../components/ui/Reveal";
+import ContactForm from "../components/ui/ContactForm";
 import { ArrowUpRight, Github, Linkedin, Mail } from "../components/icons";
 
-/* Chaque mot occupe sa propre ligne, et la taille est calée sur le plus
-   long d'entre eux : « TRAVAILLONS » ne doit jamais être coupé en deux. */
 const Statement = styled.h1`
   font-size: clamp(1.75rem, 6.2vw, 5rem);
   font-weight: 800;
@@ -26,13 +26,18 @@ const Intro = styled.p`
   font-size: clamp(1.05rem, 1.8vw, 1.25rem);
   line-height: 1.6;
   color: ${(props) => props.theme.textSoft};
-  padding-bottom: clamp(2.5rem, 7vw, 4.5rem);
+  padding-bottom: clamp(2.5rem, 6vw, 4rem);
   border-bottom: 1px solid ${(props) => props.theme.line};
+`;
+
+const FormBlock = styled.section`
+  padding: clamp(2.5rem, 6vw, 4rem) 0;
 `;
 
 const Channels = styled.ul`
   display: flex;
   flex-direction: column;
+  border-top: 1px solid ${(props) => props.theme.line};
 `;
 
 const Channel = styled.li`
@@ -91,7 +96,7 @@ const Channel = styled.li`
 `;
 
 const Location = styled.p`
-  margin-top: clamp(2.5rem, 6vw, 4rem);
+  margin-top: clamp(2rem, 5vw, 3rem);
   font-family: ${(props) => props.theme.fontMono};
   font-size: 0.75rem;
   letter-spacing: 0.14em;
@@ -99,80 +104,88 @@ const Location = styled.p`
   color: ${(props) => props.theme.textFaint};
 `;
 
-const channels = [
-  {
-    id: "email",
-    label: "Email",
-    value: profile.email,
-    href: `mailto:${profile.email}`,
-    external: false,
-    Icon: Mail,
-  },
-  {
-    id: "linkedin",
-    label: "LinkedIn",
-    value: "Marvin Escalle",
-    href: profile.links.linkedin,
-    external: true,
-    Icon: Linkedin,
-  },
-  {
-    id: "github",
-    label: "GitHub",
-    value: "marvinescalle",
-    href: profile.links.github,
-    external: true,
-    Icon: Github,
-  },
-];
+const Contact = () => {
+  const t = useTranslation();
 
-const Contact = () => (
-  <PageShell
-    theme={darkTheme}
-    title="Contact"
-    description="Contacter Marvin Escalle, ingénieur IT : e-mail, LinkedIn et GitHub."
-  >
-    <Reveal>
-      <Statement>
-        <span>Travaillons</span>
-        <span>ensemble.</span>
-      </Statement>
-    </Reveal>
+  const channels = [
+    {
+      id: "email",
+      label: t.contact.channels.email,
+      value: profile.email,
+      href: `mailto:${profile.email}`,
+      external: false,
+      Icon: Mail,
+    },
+    {
+      id: "linkedin",
+      label: t.contact.channels.linkedin,
+      value: profile.fullName,
+      href: profile.links.linkedin,
+      external: true,
+      Icon: Linkedin,
+    },
+    {
+      id: "github",
+      label: t.contact.channels.github,
+      value: "marvinescalle",
+      href: profile.links.github,
+      external: true,
+      Icon: Github,
+    },
+  ];
 
-    <Reveal delay={0.08}>
-      <Intro>
-        Une opportunité, un projet ou simplement envie d'échanger ? Le plus
-        simple reste l'e-mail, je réponds à tout le monde.
-      </Intro>
-    </Reveal>
+  return (
+    <PageShell
+      theme={darkTheme}
+      title="Contact"
+      description="Contacter Marvin Escalle, ingénieur IT : formulaire, e-mail, LinkedIn et GitHub."
+    >
+      <Reveal>
+        <Statement>
+          {t.contact.title.map((line) => (
+            <span key={line}>{line}</span>
+          ))}
+        </Statement>
+      </Reveal>
 
-    <Channels>
-      {channels.map((channel, i) => (
-        <Reveal as="li" key={channel.id} delay={0.12 + i * 0.06}>
-          <Channel as="div">
-            <a
-              href={channel.href}
-              {...(channel.external
-                ? { target: "_blank", rel: "noopener noreferrer" }
-                : {})}
-              aria-label={
-                channel.external
-                  ? `${channel.label} : ${channel.value} (nouvel onglet)`
-                  : `${channel.label} : ${channel.value}`
-              }
-            >
-              <channel.Icon />
-              <span className="label">{channel.label}</span>
-              <span className="value">{channel.value}</span>
-              <ArrowUpRight className="arrow" />
-            </a>
-          </Channel>
+      <Reveal delay={0.08}>
+        <Intro>{t.contact.intro}</Intro>
+      </Reveal>
+
+      <FormBlock aria-label={t.contact.formLabel}>
+        <Reveal delay={0.12}>
+          <ContactForm texts={t.contact} />
         </Reveal>
-      ))}
-    </Channels>
+      </FormBlock>
 
-    {profile.location ? <Location>{profile.location}</Location> : null}
-  </PageShell>
-);
+      <Channels>
+        {channels.map((channel, i) => (
+          <Reveal as="li" key={channel.id} delay={0.04 + i * 0.05}>
+            <Channel as="div">
+              <a
+                href={channel.href}
+                {...(channel.external
+                  ? { target: "_blank", rel: "noopener noreferrer" }
+                  : {})}
+                aria-label={
+                  channel.external
+                    ? `${channel.label} : ${channel.value} (${t.contact.newTab})`
+                    : `${channel.label} : ${channel.value}`
+                }
+              >
+                <channel.Icon />
+                <span className="label">{channel.label}</span>
+                <span className="value">{channel.value}</span>
+                <ArrowUpRight className="arrow" />
+              </a>
+            </Channel>
+          </Reveal>
+        ))}
+      </Channels>
+
+      {profile.location ? <Location>{profile.location}</Location> : null}
+    </PageShell>
+  );
+};
 
 export default Contact;

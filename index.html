@@ -58,6 +58,33 @@
       contacter directement à marvinescalle.pro@gmail.com.
     </noscript>
     <div id="root"></div>
+
+    <!--
+      Formulaire de détection Netlify Forms.
+
+      Netlify analyse le HTML livré au déploiement pour repérer les
+      formulaires. Une application React ne produit qu'un index.html vide :
+      sans cette copie statique, le formulaire de la page Contact ne serait
+      jamais détecté et les messages n'arriveraient nulle part.
+
+      Ce formulaire n'est jamais affiché ni soumis. Il sert uniquement de
+      déclaration. Le nom et les champs doivent rester identiques à ceux de
+      src/components/ui/ContactForm.jsx.
+    -->
+    <form
+      name="contact"
+      data-netlify="true"
+      data-netlify-honeypot="bot-field"
+      hidden
+    >
+      <input type="hidden" name="form-name" value="contact" />
+      <input type="text" name="bot-field" />
+      <input type="text" name="name" />
+      <input type="email" name="email" />
+      <input type="text" name="subject" />
+      <textarea name="message"></textarea>
+    </form>
+
     <script type="module" src="/src/index.jsx"></script>
   </body>
 </html>
