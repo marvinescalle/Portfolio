@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import styled, { ThemeProvider, keyframes } from "styled-components";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
@@ -12,6 +12,7 @@ import SoundToggle from "../components/ui/SoundToggle";
 import { ArrowUpRight } from "../components/icons";
 import BrandMark from "../components/brand/BrandMark";
 import VortexIntro from "../components/intro/VortexIntro";
+import RevealBurst from "../components/intro/RevealBurst";
 import {
   markIntroPlayed,
   shouldPlayIntro,
@@ -433,6 +434,11 @@ const Home = () => {
   const [open, setOpen] = useState(false);
   const [hovered, setHovered] = useState(false);
   const markRef = useRef(null);
+  const darkRef = useRef(null);
+
+  // Pendant la libération du noir, les vraies zones sombres restent
+  // invisibles : c'est le rendu qui les dessine, avant de leur passer la main.
+  const [burst, setBurst] = useState(null);
   const t = useTranslation();
   const { language, setLanguage } = useLanguage();
   const reduce = useReducedMotion();
@@ -450,6 +456,16 @@ const Home = () => {
   useEffect(() => {
     if (!intro) markIntroPlayed();
   }, [intro]);
+
+  // La zone à remplir est mesurée sur l'élément réel plutôt que déduite du
+  // format de l'écran : elle suit ainsi la mise en page sans la redire.
+  useLayoutEffect(() => {
+    if (!burst || burst.rect || !darkRef.current) return;
+    const box = darkRef.current.getBoundingClientRect();
+    setBurst((current) =>
+      current && !current.rect ? { ...current, rect: box } : current
+    );
+  }, [burst]);
 
   // L'accueil ne passe pas par PageShell : il pose lui-même la couleur de
   // fond du document, pour éviter un fond hérité de la page précédente.
@@ -483,17 +499,18 @@ const Home = () => {
           {open ? (
             <DarkPanel
               key="dark"
-              initial={reduce ? false : { scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              exit={reduce ? { opacity: 0 } : { scaleX: 0 }}
-              transition={{ duration: 0.7, ease: [0.76, 0, 0.24, 1] }}
+              ref={darkRef}
+              initial={reduce ? false : { opacity: 0 }}
+              animate={{ opacity: burst ? 0 : 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: reduce ? 0 : 0.24, ease: "easeOut" }}
             />
           ) : null}
         </AnimatePresence>
 
-        <Wordmark $onDark={open}>
+        <Wordmark $onDark={open && !burst}>
           {profile.fullName}
-          <SoundToggle onDark={open} />
+          <SoundToggle onDark={open && !burst} />
         </Wordmark>
 
         <TopRight role="group" aria-label={t.nav.language}>
@@ -513,10 +530,10 @@ const Home = () => {
         </TopRight>
 
         <DesktopOnly>
-          <RailLeft to="/a-propos" style={{ top: "36%" }} $onDark={open}>
+          <RailLeft to="/a-propos" style={{ top: "36%" }} $onDark={open && !burst}>
             {t.nav.items["/a-propos"]}
           </RailLeft>
-          <RailLeft to="/contact" style={{ top: "64%" }} $onDark={open}>
+          <RailLeft to="/contact" style={{ top: "64%" }} $onDark={open && !burst}>
             {t.nav.items["/contact"]}
           </RailLeft>
 
@@ -552,7 +569,27 @@ const Home = () => {
           type="button"
           $open={open}
           $ready={!intro}
-          onClick={() => setOpen((value) => !value)}
+          onClick={() => {
+            if (open) {
+              setOpen(false);
+              setBurst(null);
+              return;
+            }
+
+            const box = markRef.current?.getBoundingClientRect();
+            setOpen(true);
+
+            // Sans WebGL ni mouvement réduit, l'ouverture reste immédiate.
+            if (!reduce && box) {
+              setBurst({
+                center: {
+                  x: box.left + box.width / 2,
+                  y: box.top + box.height / 2,
+                },
+                rect: null,
+              });
+            }
+          }}
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
           onFocus={() => setHovered(true)}
@@ -564,7 +601,9 @@ const Home = () => {
           <span className="mark" ref={markRef}>
             <BrandMark
               size="100%"
-              state={hovered && !open ? "hover" : "idle"}
+              state={
+                burst ? "loading" : hovered && !open ? "hover" : "idle"
+              }
               paused={intro}
             />
           </span>
@@ -629,6 +668,14 @@ const Home = () => {
             ) : null}
           </AnimatePresence>
         </PanelAnchor>
+        {burst?.rect ? (
+          <RevealBurst
+            center={burst.center}
+            rect={burst.rect}
+            onDone={() => setBurst(null)}
+          />
+        ) : null}
+
         {intro ? (
           <VortexIntro
             anchorRef={markRef}
