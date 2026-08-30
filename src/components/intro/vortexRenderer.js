@@ -74,48 +74,76 @@ void main() {
 
   if (uEmit > 0.5) {
     // ---------------- ÉMISSION ----------------
-    // La matière jaillit du symbole, tourne, puis se range dans la zone
-    // visée. La torsion est maximale au jaillissement et s'apaise ensuite,
-    // exactement l'inverse de l'aspiration.
-    float grow = smoothstep(0.04, 0.58, p);
+    /* Construction volontairement calquée sur celle de l'aspiration : le
+       contour est défini par un RAYON que les lobes multiplient, et non par
+       une distance à laquelle on ajouterait des bosses. C'est ce qui donne
+       une forme franche plutôt qu'une masse molle. La cible rectangulaire
+       n'intervient qu'à la toute fin, par interpolation des distances. */
+    float grow = smoothstep(0.02, 0.62, p);
 
-    float swirlOut = exp(-r * 2.2) * (6.2 * (1.0 - grow) + 1.6 * uTime);
+    // La torsion part au maximum, exactement là où l'aspiration la laisse,
+    // puis se dénoue à mesure que la matière se range.
+    /* Décroissance plus lente qu'à l'aspiration : la rotation doit rester
+       sensible jusqu'au bord de la forme en expansion, sinon le corps grossit
+       sans tourner et l'effet se lit comme un simple cercle qui s'agrandit. */
+    float swirlOut = exp(-r * 1.0) * (6.2 * (1.0 - grow) + 2.6 * uTime);
     float twistedOut = angle + swirlOut;
 
-    float dVortex = r - 0.50 * grow;
+    /* Lobes nettement plus discrets que pour l'aspiration : celle-ci
+       déforme un voile qui couvre l'écran, où une ondulation ample reste
+       lisible. Ici la forme est petite, et la même amplitude la réduirait
+       à une masse informe. */
+    float lobesOut =
+        0.045 * sin(3.0 * twistedOut)
+      + 0.025 * sin(5.0 * twistedOut + 1.7)
+      + 0.012 * sin(8.0 * twistedOut - 0.6);
+
+    /* Bruit indexé sur la direction tournée plutôt que sur l'angle brut :
+       atan() saute de +PI à -PI et laissait une encoche visible sur le bord
+       gauche de la forme. */
+    vec2 dirOut = vec2(cos(twistedOut), sin(twistedOut));
+    float grainOut = noise(dirOut * 3.0 + vec2(r * 9.0 - uTime * 0.8)) - 0.5;
+    float fineOut = noise(dirOut * 7.5 + vec2(11.0 + r * 18.0 - uTime * 1.4)) - 0.5;
+
+    float edgeOut = 0.58 * grow * (1.0 + lobesOut)
+      + 0.026 * grainOut * grow
+      + 0.013 * fineOut * grow;
+
+    // Corps de la matière, puis cible : deux distances que l'on interpole.
+    float dBody = r - edgeOut;
 
     vec2 rectCenter = ((uRect.xy + uRect.zw) * 0.5 - pivot) / scale;
     vec2 rectHalf = (uRect.zw - uRect.xy) * 0.5 / scale;
     float dRect = sdBox(uv, rectCenter, rectHalf);
 
-    float morphOut = smoothstep(0.34, 0.94, p);
-    float dOut = mix(dVortex, dRect, morphOut);
+    /* La bascule vers le rectangle démarre pendant que la forme grandit
+       encore : sans ce recouvrement, il reste une plage où l'on ne voit
+       qu'un disque qui grossit. */
+    float morphOut = smoothstep(0.32, 0.88, p);
+    float dOut = mix(dBody, dRect, morphOut);
 
-    /* La déformation porte sur le champ déjà mélangé : le bord reste tordu
-       et déchiré pendant toute la transformation, et ne se lisse qu'à la
-       toute fin, quand la matière prend la géométrie du panneau. */
-    float calm = 1.0 - smoothstep(0.68, 1.0, p);
-
-    float lobesOut =
-        0.100 * sin(3.0 * twistedOut)
-      + 0.060 * sin(5.0 * twistedOut + 1.7)
-      + 0.040 * sin(8.0 * twistedOut - 0.6);
-
-    float grainOut = noise(vec2(twistedOut * 2.4, r * 9.0 - uTime * 0.8)) - 0.5;
-    float fineOut = noise(vec2(twistedOut * 6.0 + 11.0, r * 18.0 - uTime * 1.4)) - 0.5;
-
-    dOut -= (lobesOut * 0.62 + 0.045 * grainOut + 0.024 * fineOut) * calm;
-
-    float softOut = 0.006 + 0.008 * (1.0 - calm);
+    float softOut = mix(0.005, 0.002, morphOut);
     float veilOut = 1.0 - smoothstep(-softOut, softOut, dOut);
 
-    // Mêmes filaments que l'aspiration, projetés vers l'extérieur.
+    /* Filaments : mêmes spirales que l'aspiration, placées dans l'espace du
+       rayon et non du champ mélangé, pour rester fins et détachés. */
     float spiralOut = twistedOut + 2.9 * log(r + 0.05) - uTime * 1.1;
     float bandOut = fract(spiralOut / 6.2831853 * 3.0);
     float distOut = min(bandOut, 1.0 - bandOut);
-    float armsOut = smoothstep(0.22, 0.02, distOut);
-    float reachOut = smoothstep(0.42, 0.0, dOut);
+    /* Bras resserrés et portée courte : autour d'une forme réduite, la
+       largeur retenue pour l'aspiration ferait fusionner les filaments en
+       un halo flou. */
+    float armsOut = smoothstep(0.085, 0.050, distOut);
+
+    /* Alpha pleine sur presque toute la longueur du filament, coupée net à
+       la pointe : un dégradé progressif depuis le corps donnerait la bavure
+       que produisait la version précédente. */
+    float reachOut = smoothstep(edgeOut + 0.36, edgeOut + 0.24, r);
     float innerOut = smoothstep(0.0, 0.10, r);
+    /* Les filaments ne restent lisibles comme spirale qu'à faible rayon :
+       plus loin, la courbure logarithmique s'aplatit et ils se referment en
+       anneau. Ils s'effacent donc pendant que le corps prend le relais. */
+    float calm = 1.0 - smoothstep(0.20, 0.46, p);
     float wispsOut = armsOut * reachOut * innerOut * calm;
 
     gl_FragColor = vec4(uColor, clamp(veilOut + wispsOut, 0.0, 1.0));

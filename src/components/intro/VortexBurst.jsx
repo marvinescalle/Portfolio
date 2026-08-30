@@ -16,26 +16,29 @@ import { createVortex } from "./vortexRenderer";
    millisecondes, ce qui se voyait comme un accroc au démarrage de l'effet.
 
    Découpage temporel, en secondes :
-     0.00 - 0.12 les gouttes accélèrent, rien n'est encore sorti
-     0.10 - 0.72 expulsion et torsion
-     0.40 - 0.95 la matière prend la géométrie du panneau
-     0.58        le texte et le portrait commencent à se découvrir
-     0.86        passage de relais aux vrais éléments
-     1.15        la page est rendue interactive
+     0.00 - 0.06 les gouttes accélèrent, rien n'est encore sorti
+     0.06 - 0.50 expulsion : les filaments se déroulent en spirale
+     0.37 - 1.02 la torsion se referme et prend la géométrie du panneau
+     0.72        le texte et le portrait commencent à se découvrir
+     1.02        passage de relais aux vrais éléments
+     1.30        la page est rendue interactive
    ──────────────────────────────────────────────────────────────────────── */
 
-const TOTAL = 1.15;
-const START = 0.1;
-const REVEAL = 0.58;
-const SETTLE = 0.86;
+const TOTAL = 1.3;
+const START = 0.06;
+const REVEAL = 0.72;
+const SETTLE = 1.02;
 
 const Canvas = styled.canvas`
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  /* Au-dessus des zones sombres, sous le symbole qui doit rester visible. */
-  z-index: 4;
+  /* Au-dessus des zones sombres, sous la présentation et sous le symbole.
+     À égalité avec le panneau (4), le canvas passait devant lui puisqu'il
+     vient après dans le DOM : le texte se découvrait derrière la matière et
+     ne se voyait qu'à la disparition du canvas. */
+  z-index: 3;
   pointer-events: none;
   opacity: ${(props) => (props.$fading ? 0 : 1)};
   transition: opacity 0.16s linear;
