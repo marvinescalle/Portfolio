@@ -36,8 +36,9 @@ d'interface n'est nécessaire pour ajouter un projet ou une expérience.
 
 ### Ajouter un projet
 
-Ouvrir `src/data/projects.js`, copier un objet existant et le placer dans le
-tableau `projects`. L'ordre du tableau est l'ordre d'affichage.
+Ouvrir `src/data/projects.js` et copier un objet existant dans le tableau
+`projects`. La position dans le fichier n'a pas d'importance : l'affichage
+trie automatiquement du plus récent au plus ancien d'après le champ `year`.
 
 ```js
 {

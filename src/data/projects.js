@@ -1,10 +1,11 @@
 /**
  * Projets du portfolio.
  *
- * POUR AJOUTER UN PROJET : copier un objet ci-dessous, le placer dans le
- * tableau `projects` (l'ordre du tableau est l'ordre d'affichage) et
- * renseigner les champs. Rien d'autre à modifier : la page /projets se
- * construit entièrement à partir de ce fichier.
+ * POUR AJOUTER UN PROJET : copier un objet ci-dessous, le placer n'importe
+ * où dans le tableau `projects` et renseigner les champs. L'affichage trie
+ * automatiquement du plus récent au plus ancien d'après le champ `year`.
+ * Rien d'autre à modifier : la page /projets se construit entièrement à
+ * partir de ce fichier.
  *
  * Champs disponibles
  * ------------------
@@ -207,8 +208,26 @@ export const projects = [
   },
 ];
 
-/** Projets réellement affichés, dans l'ordre du fichier. */
-export const publishedProjects = projects.filter((p) => p.published);
+/**
+ * Tri du plus récent au plus ancien : les projets les plus récents doivent
+ * apparaître en premier. À année égale, l'ordre du fichier est conservé, et
+ * un projet sans année est renvoyé en fin de liste.
+ */
+const byYearDesc = (a, b) => {
+  const yearA = Number.parseInt(a.year, 10);
+  const yearB = Number.parseInt(b.year, 10);
+
+  if (Number.isNaN(yearA) && Number.isNaN(yearB)) return 0;
+  if (Number.isNaN(yearA)) return 1;
+  if (Number.isNaN(yearB)) return -1;
+
+  return yearB - yearA;
+};
+
+/** Projets réellement affichés, du plus récent au plus ancien. */
+export const publishedProjects = projects
+  .filter((p) => p.published)
+  .sort(byYearDesc);
 
 /** Grandes cartes, en tête de page. */
 export const featuredProjects = publishedProjects.filter((p) => p.featured);

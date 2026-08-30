@@ -19,7 +19,6 @@ const clickable = css`
 
   &:hover .cover img {
     transform: scale(1.03);
-    filter: grayscale(0);
   }
 
   &:hover .cta {
@@ -33,6 +32,13 @@ const cardBase = css`
   border: 1px solid ${(props) => props.theme.line};
   background: ${(props) => props.theme.body};
   transition: border-color 0.35s ease;
+
+  /* Le visuel retrouve ses couleurs au survol de la carte entière, qu'elle
+     soit cliquable ou non. */
+  &:hover .cover img {
+    filter: grayscale(0);
+  }
+
   ${(props) => (props.$interactive ? clickable : "")}
 `;
 
