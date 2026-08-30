@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { profile } from "../../data/profile";
 import { layout, media } from "../../styles/theme";
 import { Github, Linkedin, Mail } from "../icons";
+import { useTranslation } from "../../i18n";
 
 const Wrap = styled.footer`
   border-top: 1px solid ${(props) => props.theme.line};
@@ -53,17 +54,19 @@ const SocialLink = styled.a`
   }
 `;
 
-const Footer = () => (
+const Footer = () => {
+  const t = useTranslation();
+  return (
   <Wrap>
     <Inner>
       <Credit>
         © {new Date().getFullYear()} {profile.fullName} ·{" "}
-        <Link to="/">Retour à l'accueil</Link>
+        <Link to="/">{t.common.backHome}</Link>
       </Credit>
 
       <Social>
         <li>
-          <SocialLink href={`mailto:${profile.email}`} aria-label="M'écrire un e-mail">
+          <SocialLink href={`mailto:${profile.email}`} aria-label={t.common.email}>
             <Mail width={20} height={20} />
           </SocialLink>
         </li>
@@ -72,7 +75,7 @@ const Footer = () => (
             href={profile.links.linkedin}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="Profil LinkedIn (nouvel onglet)"
+            aria-label={`${t.common.linkedin} (${t.common.newTab})`}
           >
             <Linkedin width={20} height={20} />
           </SocialLink>
@@ -82,7 +85,7 @@ const Footer = () => (
             href={profile.links.github}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="Profil GitHub (nouvel onglet)"
+            aria-label={`${t.common.github} (${t.common.newTab})`}
           >
             <Github width={20} height={20} />
           </SocialLink>
@@ -90,6 +93,7 @@ const Footer = () => (
       </Social>
     </Inner>
   </Wrap>
-);
+  );
+};
 
 export default Footer;

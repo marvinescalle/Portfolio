@@ -9,12 +9,12 @@
 export const skillGroups = [
   {
     id: "automation",
-    label: "Automatisation",
-    items: ["Python", "Ansible", "Scripting"],
+    label: { fr: "Automatisation", en: "Automation" },
+    items: ["Python", "Ansible", { fr: "Scripting", en: "Scripting" }],
   },
   {
     id: "systems",
-    label: "Systèmes & Infrastructure",
+    label: { fr: "Systèmes & Infrastructure", en: "Systems & Infrastructure" },
     items: [
       "Linux",
       "Windows",
@@ -26,18 +26,18 @@ export const skillGroups = [
   },
   {
     id: "data",
-    label: "Data",
-    items: ["SQL", "Power BI", "Traitement de données"],
+    label: { fr: "Data", en: "Data" },
+    items: ["SQL", "Power BI", { fr: "Traitement de données", en: "Data processing" }],
   },
   {
     id: "dev",
-    label: "Développement",
+    label: { fr: "Développement", en: "Development" },
     items: ["JavaScript", "React", "Node.js", "Web"],
   },
   {
     id: "tooling",
-    label: "Outils & Méthodes",
-    items: ["Git", "CI/CD", "Tests", "Documentation", "Gestion de projet"],
+    label: { fr: "Outils & Méthodes", en: "Tools & Methods" },
+    items: ["Git", "CI/CD", "Tests", { fr: "Documentation", en: "Documentation" }, { fr: "Gestion de projet", en: "Project management" }],
   },
 ];
 

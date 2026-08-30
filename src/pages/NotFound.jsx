@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 import PageShell from "../components/layout/PageShell";
 import { ArrowRight } from "../components/icons";
+import { useTranslation } from "../i18n";
 
 const Wrap = styled.div`
   padding: clamp(3rem, 12vw, 8rem) 0;
@@ -40,21 +41,21 @@ const Wrap = styled.div`
   }
 `;
 
-const NotFound = () => (
-  <PageShell title="Page introuvable">
+const NotFound = () => {
+  const t = useTranslation();
+  return (
+  <PageShell title={t.notFound.title}>
     <Wrap>
-      <p className="code">Erreur 404</p>
-      <h1>Page introuvable</h1>
-      <p className="text">
-        Cette adresse ne correspond à aucune page du portfolio. Elle a peut-être
-        changé lors de la refonte du site.
-      </p>
+      <p className="code">{t.notFound.code}</p>
+      <h1>{t.notFound.title}</h1>
+      <p className="text">{t.notFound.text}</p>
       <Link to="/">
-        Revenir à l'accueil
+        {t.notFound.back}
         <ArrowRight />
       </Link>
     </Wrap>
   </PageShell>
-);
+  );
+};
 
 export default NotFound;

@@ -1,5 +1,7 @@
 import styled from "styled-components";
 import { media } from "../../styles/theme";
+import { motion, useReducedMotion } from "framer-motion";
+
 import Reveal from "./Reveal";
 
 const Wrap = styled.header`
@@ -29,7 +31,15 @@ const Index = styled.span`
   `}
 `;
 
-const Title = styled.h1`
+/* Le titre monte derrière un masque : c'est la partie visible de la
+   transition entre deux rubriques, là où le trait ne fait que passer. */
+const Mask = styled.span`
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+`;
+
+const Title = styled(motion.h1)`
   /* Syne en 800 est très large : environ 1,12em par caractère. Le plancher
      et le facteur vw sont calés sur le titre le plus long (« Expériences »)
      pour qu'il tienne sur une seule ligne jusqu'à 375px de large. */
@@ -50,13 +60,25 @@ const Lead = styled.p`
  * En-tête de page : numéro d'ordre en chasse fixe, titre en display, et
  * chapô facultatif. Le titre est le <h1> unique de la page.
  */
-const SectionHeader = ({ index, title, lead }) => (
+const SectionHeader = ({ index, title, lead }) => {
+  const reduce = useReducedMotion();
+
+  return (
   <Wrap>
     {index ? <Index aria-hidden="true">{index}</Index> : null}
     <div>
-      <Reveal as="div">
-        <Title>{title}</Title>
-      </Reveal>
+      <Mask>
+        <Title
+          initial={reduce ? false : { y: "105%" }}
+          animate={{ y: "0%" }}
+          transition={{
+            duration: reduce ? 0 : 0.5,
+            ease: [0.22, 0.61, 0.36, 1],
+          }}
+        >
+          {title}
+        </Title>
+      </Mask>
       {lead ? (
         <Reveal as="div" delay={0.08}>
           <Lead>{lead}</Lead>
@@ -64,6 +86,7 @@ const SectionHeader = ({ index, title, lead }) => (
       ) : null}
     </div>
   </Wrap>
-);
+  );
+};
 
 export default SectionHeader;

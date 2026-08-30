@@ -1,6 +1,7 @@
 import styled from "styled-components";
 
 import { mainExperiences, secondaryExperiences } from "../data/experience";
+import { pick, useLanguage, useTranslation } from "../i18n";
 import { media } from "../styles/theme";
 import PageShell from "../components/layout/PageShell";
 import SectionHeader from "../components/ui/SectionHeader";
@@ -196,15 +197,19 @@ const Row = styled.article`
   `}
 `;
 
-const Experience = () => (
+const Experience = () => {
+  const t = useTranslation();
+  const { language } = useLanguage();
+
+  return (
   <PageShell
-    title="Expériences"
-    description="Alternances chez Thales et Fiscalyse, stages et premières expériences : automatisation, développement d'outils, données et intégration de systèmes."
+    title={t.experience.title}
+    description={t.experience.seo}
   >
     <SectionHeader
-      index="02"
-      title="Expériences"
-      lead="Deux alternances structurantes, et les expériences qui les ont précédées."
+      index={t.experience.index}
+      title={t.experience.title}
+      lead={t.experience.lead}
     />
 
     <MainList>
@@ -214,7 +219,7 @@ const Experience = () => (
             <Identity>
               <Logo>
                 {job.logo ? (
-                  <img src={job.logo} alt={`Logo ${job.company}`} />
+                  <img src={job.logo} alt={`${t.experience.logoOf} ${job.company}`} />
                 ) : (
                   <span aria-hidden="true">{job.company.charAt(0)}</span>
                 )}
@@ -222,7 +227,7 @@ const Experience = () => (
 
               <h2>{job.company}</h2>
               <p className="role">
-                {job.role} · {job.contract}
+                {pick(job.role, language)} · {pick(job.contract, language)}
               </p>
               {job.period || job.location ? (
                 <p className="meta">
@@ -236,24 +241,24 @@ const Experience = () => (
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Site de l'entreprise
+                  {t.experience.website}
                   <ArrowUpRight />
                 </Site>
               ) : null}
             </Identity>
 
             <Detail>
-              <p className="summary">{job.summary}</p>
+              <p className="summary">{pick(job.summary, language)}</p>
 
               <ul className="highlights">
-                {job.highlights.map((point) => (
+                {pick(job.highlights, language).map((point) => (
                   <li key={point}>{point}</li>
                 ))}
               </ul>
 
               <TagList
                 items={job.stack}
-                label={`Technologies et environnement chez ${job.company}`}
+                label={`${t.experience.stackOf} ${job.company}`}
               />
             </Detail>
           </Card>
@@ -264,7 +269,7 @@ const Experience = () => (
     <Secondary aria-labelledby="autres-experiences">
       <Reveal>
         <SecondaryTitle id="autres-experiences">
-          Autres expériences
+          {t.experience.others}
         </SecondaryTitle>
       </Reveal>
 
@@ -273,15 +278,16 @@ const Experience = () => (
           <Row>
             <span className="year">{job.year}</span>
             <h3>
-              {job.company}
-              <span className="role">{job.role}</span>
+              {pick(job.company, language)}
+              <span className="role">{pick(job.role, language)}</span>
             </h3>
-            <p>{job.summary}</p>
+            <p>{pick(job.summary, language)}</p>
           </Row>
         </Reveal>
       ))}
     </Secondary>
   </PageShell>
-);
+  );
+};
 
 export default Experience;

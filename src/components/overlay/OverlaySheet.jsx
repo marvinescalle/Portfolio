@@ -5,6 +5,7 @@ import { motion, useReducedMotion } from "framer-motion";
 
 import { media } from "../../styles/theme";
 import { Close } from "../icons";
+import { useTranslation } from "../../i18n";
 
 /* ────────────────────────────────────────────────────────────────────────
    Coquille commune aux fiches en surimpression, projets comme passions.
@@ -104,6 +105,7 @@ const FOCUSABLE =
   'a[href], button:not([disabled]), input, textarea, select, [tabindex]:not([tabindex="-1"])';
 
 const OverlaySheet = ({ label, meta, onClose, children }) => {
+  const t = useTranslation();
   const sheetRef = useRef(null);
   const closeRef = useRef(null);
   const returnFocusRef = useRef(null);
@@ -177,7 +179,7 @@ const OverlaySheet = ({ label, meta, onClose, children }) => {
         <Bar>
           <span className="meta">{meta}</span>
           <CloseButton type="button" onClick={onClose} ref={closeRef}>
-            Fermer
+            {t.common.close}
             <Close />
           </CloseButton>
         </Bar>

@@ -31,10 +31,16 @@
 export const passions = [
   {
     id: "sport",
-    label: "Sport",
-    text: "Athlétisme, sprint, puis boxe thaïlandaise et MMA. L'entraînement reste ma manière de couper avec l'écran.",
+    label: { fr: "Sport", en: "Sport" },
+    text: {
+      fr: "Athlétisme, sprint, puis boxe thaïlandaise et MMA. L'entraînement reste ma manière de couper avec l'écran.",
+      en: "Athletics and sprinting, then Muay Thai and MMA. Training is still how I switch off from the screen.",
+    },
     image: null, // → /images/passions/sport.jpg
-    alt: "Marvin Escalle pendant une séance de sport",
+    alt: {
+      fr: "Marvin Escalle pendant une séance de sport",
+      en: "Marvin Escalle during a training session",
+    },
     span: "large",
     // TODO à compléter : texte développé et points marquants.
     longText: null,
@@ -43,10 +49,16 @@ export const passions = [
   },
   {
     id: "dessin",
-    label: "Dessin",
-    text: "Le dessin reste l'une de mes façons préférées de créer sans écran.",
+    label: { fr: "Dessin", en: "Drawing" },
+    text: {
+      fr: "Le dessin reste l'une de mes façons préférées de créer sans écran.",
+      en: "Drawing is still one of my favourite ways to create away from a screen.",
+    },
     image: null, // → /images/passions/dessin.jpg
-    alt: "Un dessin réalisé par Marvin Escalle",
+    alt: {
+      fr: "Un dessin réalisé par Marvin Escalle",
+      en: "A drawing by Marvin Escalle",
+    },
     span: "tall",
     link: "https://www.instagram.com/marmar_drw/",
     linkLabel: "@marmar_drw",
@@ -56,10 +68,16 @@ export const passions = [
   },
   {
     id: "voyage",
-    label: "Voyage",
-    text: "Après mes études, j'ai consacré une longue période à voyager et découvrir différents pays d'Asie.",
+    label: { fr: "Voyage", en: "Travel" },
+    text: {
+      fr: "Après mes études, j'ai consacré une longue période à voyager et découvrir différents pays d'Asie.",
+      en: "After my studies, I spent a long stretch travelling across several countries in Asia.",
+    },
     image: null, // → /images/passions/voyage.jpg
-    alt: "Photographie prise lors d'un voyage en Asie",
+    alt: {
+      fr: "Photographie prise lors d'un voyage en Asie",
+      en: "A photograph taken while travelling in Asia",
+    },
     span: "wide",
     longText: null,
     highlights: [],
@@ -67,10 +85,16 @@ export const passions = [
   },
   {
     id: "tech",
-    label: "Tech & IA",
-    text: "J'expérimente régulièrement avec les nouvelles technologies, l'IA, la 3D et les outils de création numérique.",
+    label: { fr: "Tech & IA", en: "Tech & AI" },
+    text: {
+      fr: "J'expérimente régulièrement avec les nouvelles technologies, l'IA, la 3D et les outils de création numérique.",
+      en: "I regularly experiment with new technologies, AI, 3D and digital creation tools.",
+    },
     image: null, // → /images/passions/tech.jpg
-    alt: "Visuel d'un projet personnel autour de l'IA et de la 3D",
+    alt: {
+      fr: "Visuel d'un projet personnel autour de l'IA et de la 3D",
+      en: "Visual from a personal project around AI and 3D",
+    },
     span: "tall",
     longText: null,
     highlights: [],

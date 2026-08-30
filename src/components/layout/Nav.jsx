@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
@@ -8,6 +15,7 @@ import { profile } from "../../data/profile";
 import { layout, media } from "../../styles/theme";
 import { Close, Menu } from "../icons";
 import SoundToggle from "../ui/SoundToggle";
+import { LANGUAGES, useLanguage, useTranslation } from "../../i18n";
 
 const Bar = styled.header`
   position: sticky;
@@ -49,6 +57,7 @@ const Wordmark = styled(NavLink)`
   letter-spacing: 0.14em;
   text-transform: uppercase;
   white-space: nowrap;
+  transition: letter-spacing 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
 
   /* Le point marque le retour possible vers la page d'accueil. */
   &::after {
@@ -60,6 +69,10 @@ const Wordmark = styled(NavLink)`
     vertical-align: 0.15em;
     background: ${(props) => props.theme.text};
     transition: transform 0.3s ease;
+  }
+
+  &:hover {
+    letter-spacing: 0.19em;
   }
 
   &:hover::after {
@@ -78,13 +91,16 @@ const DesktopList = styled.nav`
   align-items: center;
   gap: clamp(1rem, 2.4vw, 2.25rem);
 
-  ${media.md`
+  ${media.lg`
     display: none;
   `}
 `;
 
 const Item = styled(NavLink)`
   position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
   font-size: 0.85rem;
   letter-spacing: 0.02em;
   color: ${(props) => props.theme.textSoft};
@@ -116,6 +132,55 @@ const Item = styled(NavLink)`
     color: ${(props) => props.theme.text};
     font-weight: 500;
   }
+
+  /* Numéro de section : présent, mais nettement en retrait du libellé. */
+  .num {
+    font-family: ${(props) => props.theme.fontMono};
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    color: ${(props) => props.theme.textFaint};
+    transition: color 0.25s ease;
+  }
+
+  &:hover .num,
+  &[aria-current="page"] .num {
+    color: ${(props) => props.theme.textSoft};
+  }
+`;
+
+/* Sélecteur de langue : deux libellés séparés d'une barre, sans drapeau ni
+   bouton dessiné, pour rester dans le registre typographique du site. */
+const Languages = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-left: clamp(0.75rem, 1.5vw, 1.5rem);
+  padding-left: clamp(0.75rem, 1.5vw, 1.5rem);
+  border-left: 1px solid ${(props) => props.theme.line};
+
+  ${media.lg`
+    display: none;
+  `}
+
+  span {
+    font-family: ${(props) => props.theme.fontMono};
+    font-size: 0.68rem;
+    color: ${(props) => props.theme.textFaint};
+  }
+`;
+
+const LanguageButton = styled.button`
+  font-family: ${(props) => props.theme.fontMono};
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: ${(props) =>
+    props.$active ? props.theme.text : props.theme.textFaint};
+  transition: color 0.25s ease;
+
+  &:hover {
+    color: ${(props) => props.theme.text};
+  }
 `;
 
 /* Une seule barre pour toute la navigation : elle se déplace vers la
@@ -138,7 +203,7 @@ const Burger = styled.button`
   letter-spacing: 0.16em;
   text-transform: uppercase;
 
-  ${media.md`
+  ${media.lg`
     display: inline-flex;
   `}
 `;
@@ -212,6 +277,42 @@ const OverlayItem = styled(NavLink)`
   }
 `;
 
+const OverlayBottom = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+`;
+
+const OverlayLanguages = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  span {
+    font-family: ${(props) => props.theme.fontMono};
+    font-size: 0.75rem;
+    opacity: 0.5;
+  }
+
+  button {
+    font-family: ${(props) => props.theme.fontMono};
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: ${(props) => (props.$dummy ? 1 : 1)};
+  }
+
+  button[aria-pressed="false"] {
+    opacity: 0.45;
+  }
+
+  :focus-visible {
+    outline-color: ${(props) => props.theme.body};
+  }
+`;
+
 const OverlayFoot = styled.a`
   font-family: ${(props) => props.theme.fontMono};
   font-size: 0.78rem;
@@ -229,6 +330,8 @@ const Nav = () => {
   const [scrolled, setScrolled] = useState(false);
   const [indicator, setIndicator] = useState(null);
   const location = useLocation();
+  const t = useTranslation();
+  const { language, setLanguage } = useLanguage();
   const reduce = useReducedMotion();
   const closeRef = useRef(null);
   const listRef = useRef(null);
@@ -248,7 +351,7 @@ const Nav = () => {
 
   useLayoutEffect(() => {
     measure();
-  }, [measure, location.pathname]);
+  }, [measure, location.pathname, language]);
 
   useEffect(() => {
     window.addEventListener("resize", measure);
@@ -292,16 +395,19 @@ const Nav = () => {
       <Bar $scrolled={scrolled}>
         <Inner $scrolled={scrolled}>
           <Brand>
-            <Wordmark to="/" aria-label="Marvin Escalle, retour à l'accueil">
+            <Wordmark to="/" aria-label={t.nav.backHome}>
               {profile.fullName}
             </Wordmark>
             <SoundToggle />
           </Brand>
 
-          <DesktopList ref={listRef} aria-label="Navigation principale">
+          <DesktopList ref={listRef} aria-label={t.nav.main}>
             {navItems.map((item) => (
               <Item key={item.path} to={item.path}>
-                {item.label}
+                <span className="num" aria-hidden="true">
+                  {item.index}
+                </span>
+                {t.nav.items[item.path]}
               </Item>
             ))}
 
@@ -319,13 +425,29 @@ const Nav = () => {
             ) : null}
           </DesktopList>
 
+          <Languages role="group" aria-label={t.nav.language}>
+            {LANGUAGES.map((code, i) => (
+              <Fragment key={code}>
+                {i > 0 ? <span aria-hidden="true">/</span> : null}
+                <LanguageButton
+                  type="button"
+                  $active={language === code}
+                  aria-pressed={language === code}
+                  onClick={() => setLanguage(code)}
+                >
+                  {code}
+                </LanguageButton>
+              </Fragment>
+            ))}
+          </Languages>
+
           <Burger
             type="button"
             onClick={() => setOpen(true)}
             aria-expanded={open}
             aria-haspopup="dialog"
           >
-            Menu
+            {t.nav.menu}
             <Menu width={18} height={18} />
           </Burger>
         </Inner>
@@ -336,7 +458,7 @@ const Nav = () => {
           <Overlay
             role="dialog"
             aria-modal="true"
-            aria-label="Navigation"
+            aria-label={t.nav.main}
             initial={reduce ? false : { opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={reduce ? { opacity: 0 } : { opacity: 0, y: -12 }}
@@ -348,27 +470,44 @@ const Nav = () => {
                 onClick={() => setOpen(false)}
                 ref={closeRef}
               >
-                Fermer
+                {t.nav.close}
                 <Close width={18} height={18} />
               </OverlayClose>
             </OverlayTop>
 
-            <OverlayList aria-label="Navigation principale">
+            <OverlayList aria-label={t.nav.main}>
               <OverlayItem to="/" end>
                 <span aria-hidden="true">00</span>
-                Accueil
+                {t.nav.home}
               </OverlayItem>
               {navItems.map((item) => (
                 <OverlayItem key={item.path} to={item.path}>
                   <span aria-hidden="true">{item.index}</span>
-                  {item.label}
+                  {t.nav.items[item.path]}
                 </OverlayItem>
               ))}
             </OverlayList>
 
-            <OverlayFoot href={`mailto:${profile.email}`}>
-              {profile.email}
-            </OverlayFoot>
+            <OverlayBottom>
+              <OverlayFoot href={`mailto:${profile.email}`}>
+                {profile.email}
+              </OverlayFoot>
+
+              <OverlayLanguages role="group" aria-label={t.nav.language}>
+                {LANGUAGES.map((code, i) => (
+                  <Fragment key={code}>
+                    {i > 0 ? <span aria-hidden="true">/</span> : null}
+                    <button
+                      type="button"
+                      aria-pressed={language === code}
+                      onClick={() => setLanguage(code)}
+                    >
+                      {code}
+                    </button>
+                  </Fragment>
+                ))}
+              </OverlayLanguages>
+            </OverlayBottom>
           </Overlay>
         ) : null}
       </AnimatePresence>

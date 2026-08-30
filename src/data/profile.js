@@ -7,10 +7,15 @@ export const profile = {
   firstName: "Marvin",
   lastName: "Escalle",
   fullName: "Marvin Escalle",
-  role: "Ingénieur IT",
-  disciplines: ["Automatisation", "Systèmes", "Data", "DevOps"],
-  tagline:
-    "J'aime transformer des problématiques techniques et métier en solutions concrètes, automatisées et réellement utilisables.",
+  role: { fr: "Ingénieur IT", en: "IT Engineer" },
+  disciplines: {
+    fr: ["Automatisation", "Systèmes", "Data", "DevOps"],
+    en: ["Automation", "Systems", "Data", "DevOps"],
+  },
+  tagline: {
+    fr: "J'aime transformer des problématiques techniques et métier en solutions concrètes, automatisées et réellement utilisables.",
+    en: "I enjoy turning technical and business problems into concrete, automated and genuinely usable solutions.",
+  },
 
   // TODO à compléter : ville ou région à afficher dans la section Contact.
   // Laisser `null` masque proprement la ligne au lieu d'afficher une valeur
@@ -54,8 +59,10 @@ export const profile = {
 
 export const seo = {
   title: "Marvin Escalle · IT Engineer | DevOps, Automation & Data",
-  description:
-    "Portfolio de Marvin Escalle, ingénieur IT spécialisé en automatisation, DevOps, systèmes et données. Découvrez mes expériences professionnelles, projets et compétences techniques.",
+  description: {
+    fr: "Portfolio de Marvin Escalle, ingénieur IT spécialisé en automatisation, DevOps, systèmes et données. Découvrez mes expériences professionnelles, projets et compétences techniques.",
+    en: "Portfolio of Marvin Escalle, an IT engineer specialising in automation, DevOps, systems and data. Explore my professional experience, projects and technical skills.",
+  },
   // TODO à compléter une fois le nom de domaine acheté, ex.
   // "https://marvinescalle.fr". Sert aux balises Open Graph.
   siteUrl: null,

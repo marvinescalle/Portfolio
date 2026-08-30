@@ -90,9 +90,11 @@ export const projects = [
     id: "portfolio",
     title: "Ce portfolio",
     year: "2026",
-    description:
-      "Le site sur lequel vous vous trouvez. Interface sur mesure en React, sans framework de composants ni template : composition typographique, contraste noir et blanc, animations discrètes et contenu entièrement piloté par des fichiers de données.",
-    context: "Projet personnel",
+    description: {
+      fr: "Le site sur lequel vous vous trouvez. Interface sur mesure en React, sans framework de composants ni template : composition typographique, contraste noir et blanc, animations discrètes et contenu entièrement piloté par des fichiers de données.",
+      en: "The site you are looking at. A bespoke React interface, with no component framework or template: typographic composition, black and white contrast, restrained motion and content driven entirely by data files.",
+    },
+    context: { fr: "Projet personnel", en: "Personal project" },
     stack: ["React", "Vite", "styled-components", "Framer Motion"],
     image: null,
     github: "https://github.com/marvinescalle/Portfolio",
@@ -107,9 +109,11 @@ export const projects = [
     id: "parkacar",
     title: "ParkaCar",
     year: "2020",
-    description:
-      "Application de mise en location et de réservation de places de parking et de garages en temps réel.",
-    context: "Projet étudiant",
+    description: {
+      fr: "Application de mise en location et de réservation de places de parking et de garages en temps réel.",
+      en: "An application for listing and booking parking spaces and garages in real time.",
+    },
+    context: { fr: "Projet étudiant", en: "Student project" },
     stack: ["Vue.js", "JavaScript", "MySQL", "HTML", "CSS"],
     image:
       "https://mir-s3-cdn-cf.behance.net/project_modules/max_316/428928168441237.643a7fac2489c.png",
@@ -123,9 +127,11 @@ export const projects = [
     id: "yndr",
     title: "YNDR",
     year: "2020",
-    description:
-      "Application destinée à améliorer la vie étudiante en facilitant les rencontres au sein du campus.",
-    context: "Projet étudiant",
+    description: {
+      fr: "Application destinée à améliorer la vie étudiante en facilitant les rencontres au sein du campus.",
+      en: "An application designed to improve student life by making it easier to meet people on campus.",
+    },
+    context: { fr: "Projet étudiant", en: "Student project" },
     stack: ["Vue.js", "NestJS", "JavaScript", "MySQL"],
     image:
       "https://mir-s3-cdn-cf.behance.net/project_modules/max_158/bb642d168441237.643a7fac2353e.png",
@@ -139,9 +145,11 @@ export const projects = [
     id: "yspotify",
     title: "Yspotify",
     year: "2020",
-    description:
-      "Développement d'une API s'appuyant sur les ressources de Spotify.",
-    context: "Projet étudiant",
+    description: {
+      fr: "Développement d'une API s'appuyant sur les ressources de Spotify.",
+      en: "An API built on top of the Spotify resources.",
+    },
+    context: { fr: "Projet étudiant", en: "Student project" },
     stack: ["PHP", "JavaScript", "Node", "Ruby"],
     image:
       "https://mir-s3-cdn-cf.behance.net/project_modules/max_316/16ab79168441237.643a7fac2402b.png",
@@ -155,9 +163,11 @@ export const projects = [
     id: "ypizza",
     title: "Ypizza",
     year: "2020",
-    description:
-      "Boutique en ligne fictive permettant de commander et de personnaliser des articles.",
-    context: "Projet étudiant",
+    description: {
+      fr: "Boutique en ligne fictive permettant de commander et de personnaliser des articles.",
+      en: "A fictional online shop for ordering and customising items.",
+    },
+    context: { fr: "Projet étudiant", en: "Student project" },
     stack: ["AngularJS", "JavaScript", "SCSS"],
     image:
       "https://mir-s3-cdn-cf.behance.net/project_modules/max_632/3211ea168441237.643a7fac25123.png",
@@ -171,9 +181,11 @@ export const projects = [
     id: "tbgw",
     title: "TBGW",
     year: "2020",
-    description:
-      "Site de jeu à monnaie fictive, accompagné d'une boutique personnalisée.",
-    context: "Projet étudiant",
+    description: {
+      fr: "Site de jeu à monnaie fictive, accompagné d'une boutique personnalisée.",
+      en: "A gaming site using a fictional currency, with its own shop.",
+    },
+    context: { fr: "Projet étudiant", en: "Student project" },
     stack: ["PHP", "JavaScript", "MySQL"],
     image:
       "https://mir-s3-cdn-cf.behance.net/project_modules/max_632/d8b320168441237.643a7bc41eed4.png",
@@ -187,9 +199,11 @@ export const projects = [
     id: "monscan",
     title: "MonScan",
     year: "2021",
-    description:
-      "Site regroupant divers scans de mangas, réalisé dans le cadre d'un devoir.",
-    context: "Projet étudiant",
+    description: {
+      fr: "Site regroupant divers scans de mangas, réalisé dans le cadre d'un devoir.",
+      en: "A site gathering manga scans, built as a class assignment.",
+    },
+    context: { fr: "Projet étudiant", en: "Student project" },
     stack: ["PHP", "JavaScript", "MySQL"],
     image:
       "https://mir-s3-cdn-cf.behance.net/project_modules/max_632/e11136168441237.643a7bc41fd08.png",
@@ -203,9 +217,11 @@ export const projects = [
     id: "egosoin",
     title: "EgoSoin",
     year: "2021",
-    description:
-      "Application reliée à une base de données permettant de répertorier les rendez-vous entre patients et médecins.",
-    context: "Projet étudiant",
+    description: {
+      fr: "Application reliée à une base de données permettant de répertorier les rendez-vous entre patients et médecins.",
+      en: "A database-backed application for recording appointments between patients and doctors.",
+    },
+    context: { fr: "Projet étudiant", en: "Student project" },
     stack: ["PHP", "MySQL"],
     image:
       "https://mir-s3-cdn-cf.behance.net/project_modules/max_632/bfd8c8168441237.643a7bc41e2d4.png",
@@ -219,8 +235,11 @@ export const projects = [
     id: "ticketok",
     title: "TicketOk",
     year: "2021",
-    description: "Outil de gestion de tickets développé en PHP et MySQL.",
-    context: "Projet étudiant",
+    description: {
+      fr: "Outil de gestion de tickets développé en PHP et MySQL.",
+      en: "A ticket management tool built with PHP and MySQL.",
+    },
+    context: { fr: "Projet étudiant", en: "Student project" },
     stack: ["PHP", "MySQL"],
     // L'ancienne illustration était servie en http:// : elle aurait été
     // bloquée par le navigateur sur un site en https.
@@ -235,9 +254,11 @@ export const projects = [
     id: "tableau-clients",
     title: "Tableau clients",
     year: "2022",
-    description:
-      "Interface de consultation regroupant les clients et le détail de leurs achats.",
-    context: "Projet étudiant",
+    description: {
+      fr: "Interface de consultation regroupant les clients et le détail de leurs achats.",
+      en: "A dashboard listing clients along with the detail of their purchases.",
+    },
+    context: { fr: "Projet étudiant", en: "Student project" },
     stack: ["PHP", "JavaScript", "MySQL"],
     image:
       "https://mir-s3-cdn-cf.behance.net/project_modules/max_632/1532db168441237.643a7bc41cb3b.png",

@@ -1,6 +1,7 @@
 import styled from "styled-components";
 
 import { education } from "../data/education";
+import { pick, useLanguage, useTranslation } from "../i18n";
 import { media } from "../styles/theme";
 import PageShell from "../components/layout/PageShell";
 import SectionHeader from "../components/ui/SectionHeader";
@@ -113,15 +114,19 @@ const Body = styled.p`
   color: ${(props) => props.theme.textSoft};
 `;
 
-const Education = () => (
+const Education = () => {
+  const t = useTranslation();
+  const { language } = useLanguage();
+
+  return (
   <PageShell
-    title="Formation"
-    description="Baccalauréat STMG, BTS SIO, Bachelor Informatique et Master DevOps chez Ynov : du développement et des bases de données vers l'infrastructure et l'automatisation."
+    title={t.education.title}
+    description={t.education.seo}
   >
     <SectionHeader
-      index="04"
-      title="Formation"
-      lead="Un parcours qui part du développement et des bases de données pour aller vers l'infrastructure et l'automatisation."
+      index={t.education.index}
+      title={t.education.title}
+      lead={t.education.lead}
     />
 
     <Timeline>
@@ -129,31 +134,35 @@ const Education = () => (
         <Entry key={item.id}>
           <Reveal delay={i * 0.08}>
             <Head>
-              <h2>{item.degree}</h2>
+              <h2>{pick(item.degree, language)}</h2>
               {item.period ? (
                 <span className="period">{item.period}</span>
               ) : null}
             </Head>
 
-            {item.school ? <School>{item.school}</School> : null}
+            {item.school ? <School>{pick(item.school, language)}</School> : null}
 
             {item.grade ? (
               <Grade>
-                {item.gradeLabel ?? "Note"} : <strong>{item.grade}</strong>
+                {pick(item.gradeLabel, language) ?? t.education.grade} :{" "}
+                <strong>{item.grade}</strong>
               </Grade>
             ) : null}
 
-            {item.description ? <Body>{item.description}</Body> : null}
+            {item.description ? (
+              <Body>{pick(item.description, language)}</Body>
+            ) : null}
 
             <TagList
               items={item.skills}
-              label={`Compétences travaillées : ${item.degree}`}
+              label={`${t.education.skillsOf} ${pick(item.degree, language)}`}
             />
           </Reveal>
         </Entry>
       ))}
     </Timeline>
   </PageShell>
-);
+  );
+};
 
 export default Education;

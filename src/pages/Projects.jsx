@@ -8,6 +8,7 @@ import {
   findProject,
 } from "../data/projects";
 import ProjectOverlay from "../components/projects/ProjectOverlay";
+import { pick, useLanguage, useTranslation } from "../i18n";
 import useBodyScrollLock from "../hooks/useBodyScrollLock";
 import { media } from "../styles/theme";
 import PageShell from "../components/layout/PageShell";
@@ -246,18 +247,18 @@ const Note = styled.p`
 `;
 
 /** La carte ouvre la fiche du projet, à l'intérieur du portfolio. */
-const cardLink = (project) => ({
+const cardLink = (project, t) => ({
   as: Link,
   to: `/projets/${project.id}`,
-  "aria-label": `${project.title} : ouvrir la fiche du projet`,
+  "aria-label": `${project.title} : ${t.projects.openSheet}`,
 });
 
-const ProjectCover = ({ project }) => (
+const ProjectCover = ({ project, alt }) => (
   <Cover className="cover">
     {project.image ? (
       <img
         src={project.image}
-        alt={`Aperçu du projet ${project.title}`}
+        alt={alt}
         loading="lazy"
       />
     ) : (
@@ -268,9 +269,9 @@ const ProjectCover = ({ project }) => (
   </Cover>
 );
 
-const ProjectCta = () => (
+const ProjectCta = ({ label }) => (
   <Cta className="cta">
-    Voir le projet
+    {label}
     <ArrowUpRight />
   </Cta>
 );
@@ -278,6 +279,8 @@ const ProjectCta = () => (
 const Projects = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const t = useTranslation();
+  const { language } = useLanguage();
   const project = slug ? findProject(slug) : null;
 
   useBodyScrollLock(Boolean(project));
@@ -291,25 +294,25 @@ const Projects = () => {
 
   return (
   <PageShell
-    title="Projets"
-    description="Projets réalisés par Marvin Escalle : développement web, automatisation et DevOps, ainsi que les archives des travaux étudiants."
+    title={t.projects.title}
+    description={t.projects.seo}
   >
     <SectionHeader
-      index="03"
-      title="Projets"
-      lead="Une sélection de réalisations, et les archives de mes travaux d'études."
+      index={t.projects.index}
+      title={t.projects.title}
+      lead={t.projects.lead}
     />
 
     {featuredProjects.length ? (
       <Block aria-labelledby="selection">
         <Reveal>
-          <BlockTitle id="selection">Sélection</BlockTitle>
+          <BlockTitle id="selection">{t.projects.selection}</BlockTitle>
         </Reveal>
 
         {featuredProjects.map((project, i) => (
           <Reveal key={project.id} delay={i * 0.08}>
             <FeaturedCard
-              {...cardLink(project)}
+              {...cardLink(project, t)}
               style={{ marginBottom: "1.5rem" }}
             >
               {project.github ? (
@@ -318,19 +321,24 @@ const Projects = () => {
                 </RepoBadge>
               ) : null}
 
-              <ProjectCover project={project} />
+              <ProjectCover
+                project={project}
+                alt={`${t.projects.preview} ${project.title}`}
+              />
 
               <Body>
                 <Meta>
-                  {[project.context, project.year].filter(Boolean).join(" · ")}
+                  {[pick(project.context, language), project.year]
+                    .filter(Boolean)
+                    .join(" · ")}
                 </Meta>
                 <Title>{project.title}</Title>
-                <Description>{project.description}</Description>
+                <Description>{pick(project.description, language)}</Description>
                 <TagList
                   items={project.stack}
-                  label={`Technologies du projet ${project.title}`}
+                  label={`${t.projects.sheet.stackOf} ${project.title}`}
                 />
-                <ProjectCta />
+                <ProjectCta label={t.projects.see} />
               </Body>
             </FeaturedCard>
           </Reveal>
@@ -341,36 +349,36 @@ const Projects = () => {
     {archivedProjects.length ? (
       <Block aria-labelledby="archives">
         <Reveal>
-          <BlockTitle id="archives">Archives : projets étudiants</BlockTitle>
+          <BlockTitle id="archives">{t.projects.archives}</BlockTitle>
         </Reveal>
         <Reveal>
-          <Note>
-            Travaux réalisés pendant mes études, conservés à titre de parcours.
-            Ils ne reflètent pas mon niveau actuel.
-          </Note>
+          <Note>{t.projects.archivesNote}</Note>
         </Reveal>
 
         <Grid>
           {archivedProjects.map((project, i) => (
             <Reveal key={project.id} delay={Math.min(i * 0.04, 0.3)}>
-                <SmallCard {...cardLink(project)}>
+                <SmallCard {...cardLink(project, t)}>
                 {project.github ? (
                   <RepoBadge aria-hidden="true">
                     <Github />
                   </RepoBadge>
                 ) : null}
 
-                <ProjectCover project={project} />
+                <ProjectCover
+                  project={project}
+                  alt={`${t.projects.preview} ${project.title}`}
+                />
 
                 <Body>
                   <Meta>{project.year}</Meta>
                   <Title>{project.title}</Title>
-                  <Description>{project.description}</Description>
+                  <Description>{pick(project.description, language)}</Description>
                   <TagList
                     items={project.stack}
-                    label={`Technologies du projet ${project.title}`}
+                    label={`${t.projects.sheet.stackOf} ${project.title}`}
                   />
-                  <ProjectCta />
+                  <ProjectCta label={t.projects.see} />
                 </Body>
               </SmallCard>
               </Reveal>

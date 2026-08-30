@@ -8,6 +8,7 @@ import { lightTheme } from "./styles/theme";
 import Loading from "./components/ui/Loading";
 import { markIntroPlayed } from "./components/intro/introState";
 import { AmbienceProvider } from "./components/audio/AmbienceProvider";
+import { LanguageProvider } from "./i18n";
 
 const Home = lazy(() => import("./pages/Home"));
 const About = lazy(() => import("./pages/About"));
@@ -57,6 +58,7 @@ function App() {
 
   return (
     <ThemeProvider theme={lightTheme}>
+      <LanguageProvider>
       <AmbienceProvider>
       <GlobalStyle />
       <ScrollToTop />
@@ -90,6 +92,7 @@ function App() {
         </AnimatePresence>
       </Suspense>
       </AmbienceProvider>
+      </LanguageProvider>
     </ThemeProvider>
   );
 }

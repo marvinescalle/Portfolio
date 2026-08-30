@@ -4,6 +4,7 @@ import { AnimatePresence } from "framer-motion";
 
 import { findPassion, passions } from "../data/passions";
 import PassionOverlay from "../components/passions/PassionOverlay";
+import { pick, useLanguage, useTranslation } from "../i18n";
 import useBodyScrollLock from "../hooks/useBodyScrollLock";
 import { darkTheme, media } from "../styles/theme";
 import PageShell from "../components/layout/PageShell";
@@ -161,6 +162,8 @@ const Awaiting = styled.span`
 const Passions = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const t = useTranslation();
+  const { language } = useLanguage();
   const passion = slug ? findPassion(slug) : null;
 
   useBodyScrollLock(Boolean(passion));
@@ -173,13 +176,13 @@ const Passions = () => {
   return (
   <PageShell
     theme={darkTheme}
-    title="Passions"
-    description="Sport, dessin, voyage et expérimentations autour de la tech, de l'IA et de la 3D."
+    title={t.passions.title}
+    description={t.passions.seo}
   >
     <SectionHeader
-      index="05"
-      title="Passions"
-      lead="Ce qui occupe le temps passé loin des serveurs."
+      index={t.passions.index}
+      title={t.passions.title}
+      lead={t.passions.lead}
     />
 
     <Mosaic>
@@ -191,20 +194,20 @@ const Passions = () => {
         >
           <Tile
             to={`/passions/${item.id}`}
-            aria-label={`${item.label} : ouvrir la fiche`}
+            aria-label={`${pick(item.label, language)} : ${t.passions.openSheet}`}
             $hasImage={Boolean(item.image)}
           >
             {item.image ? (
-              <img src={item.image} alt={item.alt} loading="lazy" />
+              <img src={item.image} alt={pick(item.alt, language)} loading="lazy" />
             ) : (
-              <Awaiting aria-hidden="true">Photo à venir</Awaiting>
+              <Awaiting aria-hidden="true">{t.passions.awaiting}</Awaiting>
             )}
 
             <Caption>
-              <h2>{item.label}</h2>
-              <p>{item.text}</p>
+              <h2>{pick(item.label, language)}</h2>
+              <p>{pick(item.text, language)}</p>
               <span className="more">
-                En savoir plus
+                {t.passions.more}
                 <ArrowUpRight />
               </span>
             </Caption>

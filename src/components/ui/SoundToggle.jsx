@@ -1,6 +1,7 @@
 import styled, { keyframes } from "styled-components";
 
 import { useAmbience } from "../audio/AmbienceProvider";
+import { useTranslation } from "../../i18n";
 
 const bounce = keyframes`
   0%, 100% { transform: scaleY(0.35); }
@@ -52,6 +53,7 @@ const Button = styled.button`
  */
 const SoundToggle = ({ onDark = false }) => {
   const { playing, toggle } = useAmbience();
+  const t = useTranslation();
 
   return (
     <Button
@@ -60,10 +62,8 @@ const SoundToggle = ({ onDark = false }) => {
       $playing={playing}
       $onDark={onDark}
       aria-pressed={playing}
-      aria-label={
-        playing ? "Couper l'ambiance sonore" : "Activer l'ambiance sonore"
-      }
-      title={playing ? "Ambiance sonore active" : "Ambiance sonore coupée"}
+      aria-label={playing ? t.sound.off : t.sound.on}
+      title={playing ? t.sound.playing : t.sound.muted}
     >
       <span />
       <span />

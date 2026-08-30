@@ -5,6 +5,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 import portrait from "../assets/optimized/portrait.jpg";
 import { profile } from "../data/profile";
+import { pick, useLanguage, useTranslation } from "../i18n";
 import useDocumentMeta from "../hooks/useDocumentMeta";
 import { darkTheme, layout, lightTheme, media } from "../styles/theme";
 import SoundToggle from "../components/ui/SoundToggle";
@@ -406,6 +407,8 @@ const Home = () => {
   const [open, setOpen] = useState(false);
   const [hovered, setHovered] = useState(false);
   const markRef = useRef(null);
+  const t = useTranslation();
+  const { language } = useLanguage();
   const reduce = useReducedMotion();
 
   // Décidé une seule fois, au premier rendu : l'intro ne doit pas réapparaître
@@ -430,21 +433,22 @@ const Home = () => {
 
   useDocumentMeta();
 
+  // Contact n'est pas repris ici : le lien est déjà en haut à droite.
   const sections = [
-    { to: "/a-propos", label: "À propos" },
-    { to: "/experiences", label: "Expériences" },
-    { to: "/projets", label: "Projets" },
-    { to: "/formation", label: "Formation" },
-    { to: "/passions", label: "Passions" },
-    { to: "/cv", label: "CV" },
-    // Contact n'est pas repris ici : le lien est déjà en haut à droite.
+    "/a-propos",
+    "/experiences",
+    "/projets",
+    "/formation",
+    "/passions",
+    "/cv",
   ];
 
   return (
     <ThemeProvider theme={lightTheme}>
       <Screen>
         <h1 className="visually-hidden">
-          {profile.fullName}, {profile.role} : {profile.disciplines.join(", ")}
+          {profile.fullName}, {pick(profile.role, language)} :{" "}
+          {pick(profile.disciplines, language).join(", ")}
         </h1>
 
         <AnimatePresence>
@@ -464,34 +468,36 @@ const Home = () => {
           <SoundToggle onDark={open} />
         </Wordmark>
 
-        <TopRight to="/contact">Contact</TopRight>
+        <TopRight to="/contact">{t.nav.items["/contact"]}</TopRight>
 
         <DesktopOnly>
           <RailLeft to="/a-propos" style={{ top: "36%" }} $onDark={open}>
-            À propos
+            {t.nav.items["/a-propos"]}
           </RailLeft>
           <RailLeft to="/formation" style={{ top: "64%" }} $onDark={open}>
-            Formation
+            {t.nav.items["/formation"]}
           </RailLeft>
 
           <RailRight to="/passions" style={{ top: "36%" }}>
-            Passions
+            {t.nav.items["/passions"]}
           </RailRight>
           <RailRight to="/projets" style={{ top: "64%" }}>
-            Projets
+            {t.nav.items["/projets"]}
           </RailRight>
 
           <BottomGroup $open={open}>
-            <BottomLink to="/experiences">Expériences</BottomLink>
-            <BottomLink to="/cv">CV</BottomLink>
+            <BottomLink to="/experiences">
+              {t.nav.items["/experiences"]}
+            </BottomLink>
+            <BottomLink to="/cv">{t.nav.items["/cv"]}</BottomLink>
           </BottomGroup>
         </DesktopOnly>
 
         {!open ? (
-          <MobileRail aria-label="Sections du portfolio">
-            {sections.map((section) => (
-              <Link key={section.to} to={section.to}>
-                {section.label}
+          <MobileRail aria-label={t.home.sections}>
+            {sections.map((path) => (
+              <Link key={path} to={path}>
+                {t.nav.items[path]}
               </Link>
             ))}
           </MobileRail>
@@ -508,9 +514,7 @@ const Home = () => {
           onBlur={() => setHovered(false)}
           aria-expanded={open}
           aria-controls="presentation"
-          aria-label={
-            open ? "Masquer la présentation" : "Afficher la présentation"
-          }
+          aria-label={open ? t.home.hide : t.home.open}
         >
           <span className="mark" ref={markRef}>
             <BrandMark
@@ -519,7 +523,7 @@ const Home = () => {
               paused={intro}
             />
           </span>
-          <span className="hint">Cliquez pour découvrir</span>
+          <span className="hint">{t.home.hint}</span>
         </Focal>
 
         <PanelAnchor>
@@ -539,29 +543,29 @@ const Home = () => {
             >
               <ThemeProvider theme={darkTheme}>
                 <TextSide>
-                  <Hello>Bonjour,</Hello>
+                  <Hello>{t.home.hello}</Hello>
 
                 <NameBlock>
-                  <p>Je suis</p>
+                  <p>{t.home.iam}</p>
                   <strong>{profile.fullName}</strong>
                 </NameBlock>
 
                 <Role>
-                  <span className="title">{profile.role}</span>
+                  <span className="title">{pick(profile.role, language)}</span>
                   <span className="disciplines">
-                    {profile.disciplines.join(" · ")}
+                    {pick(profile.disciplines, language).join(" · ")}
                   </span>
                 </Role>
 
-                <Quote>{profile.tagline}</Quote>
+                <Quote>{pick(profile.tagline, language)}</Quote>
 
                 <Ctas>
                   <Cta to="/a-propos">
-                    Découvrir mon parcours
+                    {t.home.discover}
                     <ArrowUpRight />
                   </Cta>
                   <Cta to="/cv">
-                    Voir mon CV
+                    {t.home.seeCv}
                     <ArrowUpRight />
                   </Cta>
                   </Ctas>
@@ -571,7 +575,7 @@ const Home = () => {
               <PhotoSide>
                 <img
                   src={portrait}
-                  alt={`Portrait de ${profile.fullName}`}
+                  alt={`${t.about.portrait} ${profile.fullName}`}
                   width="900"
                   height="980"
                 />

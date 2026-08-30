@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import OverlaySheet from "../overlay/OverlaySheet";
 import TagList from "../ui/Tag";
 import { ArrowUpRight, Github } from "../icons";
+import { pick, useLanguage, useTranslation } from "../../i18n";
 
 
 
@@ -191,7 +192,15 @@ const ListBlock = ({ title, items }) =>
   ) : null;
 
 const ProjectOverlay = ({ project, onClose }) => {
-  const meta = [project.type, project.context, project.year]
+  const t = useTranslation();
+  const { language } = useLanguage();
+  const s = t.projects.sheet;
+
+  const meta = [
+    pick(project.type, language),
+    pick(project.context, language),
+    project.year,
+  ]
     .filter(Boolean)
     .join(" · ");
 
@@ -202,13 +211,15 @@ const ProjectOverlay = ({ project, onClose }) => {
       onClose={onClose}
     >
       <Title>{project.title}</Title>
-      {project.description ? <Lead>{project.description}</Lead> : null}
+      {project.description ? (
+        <Lead>{pick(project.description, language)}</Lead>
+      ) : null}
 
       <Cover>
         {project.image ? (
           <img
             src={project.image}
-            alt={`Aperçu du projet ${project.title}`}
+            alt={`${t.projects.preview} ${project.title}`}
             loading="lazy"
           />
         ) : (
@@ -218,25 +229,28 @@ const ProjectOverlay = ({ project, onClose }) => {
         )}
       </Cover>
 
-      <TextBlock title="Contexte" text={project.context} />
-      <TextBlock title="Objectif" text={project.objective} />
-      <TextBlock title="Mon rôle" text={project.role} />
-      <TextBlock title="Le projet" text={project.longDescription} />
-      <ListBlock title="Difficultés" items={project.challenges} />
-      <ListBlock title="Solutions" items={project.solutions} />
-      <ListBlock title="Résultat" items={project.results} />
+      <TextBlock title={s.context} text={pick(project.context, language)} />
+      <TextBlock title={s.objective} text={pick(project.objective, language)} />
+      <TextBlock title={s.role} text={pick(project.role, language)} />
+      <TextBlock
+        title={s.project}
+        text={pick(project.longDescription, language)}
+      />
+      <ListBlock title={s.challenges} items={pick(project.challenges, language)} />
+      <ListBlock title={s.solutions} items={pick(project.solutions, language)} />
+      <ListBlock title={s.results} items={pick(project.results, language)} />
 
       {project.stack?.length ? (
-        <Block title="Stack">
+        <Block title={s.stack}>
           <TagList
             items={project.stack}
-            label={`Technologies du projet ${project.title}`}
+            label={`${s.stackOf} ${project.title}`}
           />
         </Block>
       ) : null}
 
       {project.gallery?.length ? (
-        <Block title="Captures">
+        <Block title={s.gallery}>
           <Gallery>
             {project.gallery.map((shot) => (
               <figure key={shot.src}>
@@ -255,7 +269,7 @@ const ProjectOverlay = ({ project, onClose }) => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              Voir sur GitHub
+              {s.github}
               <Github />
             </Action>
           ) : null}
@@ -266,7 +280,7 @@ const ProjectOverlay = ({ project, onClose }) => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              Voir la démo
+              {s.demo}
               <ArrowUpRight />
             </Action>
           ) : null}

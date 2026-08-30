@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 import { profile } from "../data/profile";
-import { useTranslation } from "../data/translations";
+import { useTranslation } from "../i18n";
 import { darkTheme, media } from "../styles/theme";
 import PageShell from "../components/layout/PageShell";
 import Reveal from "../components/ui/Reveal";

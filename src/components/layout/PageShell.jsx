@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from "framer-motion";
 
 import { layout, lightTheme } from "../../styles/theme";
 import useDocumentMeta from "../../hooks/useDocumentMeta";
+import { useTranslation } from "../../i18n";
 import Footer from "./Footer";
 import Nav from "./Nav";
 
@@ -23,9 +24,15 @@ const Sweep = styled(motion.span)`
   top: ${layout.navHeight};
   left: 0;
   z-index: 60;
-  width: 38vw;
-  height: 1px;
-  background: ${(props) => props.theme.text};
+  width: 46vw;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    ${(props) => props.theme.text} 35%,
+    ${(props) => props.theme.text} 65%,
+    transparent 100%
+  );
   pointer-events: none;
 `;
 
@@ -54,6 +61,7 @@ const PageShell = ({
   children,
 }) => {
   const reduce = useReducedMotion();
+  const t = useTranslation();
   useDocumentMeta(title, description);
 
   // La couleur de fond du document suit le thème de la page, sinon le
@@ -82,14 +90,14 @@ const PageShell = ({
         {reduce ? null : (
           <Sweep
             aria-hidden="true"
-            initial={{ x: "-42vw" }}
-            animate={{ x: "112vw" }}
-            transition={{ duration: 0.34, ease: [0.4, 0, 0.2, 1] }}
+            initial={{ x: "-50vw", opacity: 0 }}
+            animate={{ x: "116vw", opacity: [0, 1, 1, 0] }}
+            transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1] }}
           />
         )}
 
         <a className="skip-link" href="#contenu">
-          Aller au contenu
+          {t.common.skipToContent}
         </a>
         <Nav />
         <Main

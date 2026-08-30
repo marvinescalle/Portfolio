@@ -5,6 +5,7 @@ import { motion, useMotionValue } from "framer-motion";
 import BrandMark from "../brand/BrandMark";
 import { layout } from "../../styles/theme";
 import { createVortex } from "./vortexRenderer";
+import { useTranslation } from "../../i18n";
 
 /* ────────────────────────────────────────────────────────────────────────
    Rideau d'ouverture. L'écran est noir, le symbole tourne, puis le noir est
@@ -12,16 +13,19 @@ import { createVortex } from "./vortexRenderer";
 
    Découpage temporel, en secondes :
      0.00        écran noir
-     0.05 - 0.25 apparition du symbole
-     0.00 - 1.45 rotation, accélération puis décélération
-     0.32 - 1.18 aspiration du voile
-     1.18 - 1.45 dernières volutes, bascule de couleur du symbole
-     1.45        l'intro se retire, la page est interactive
+     0.06 - 0.30 apparition du symbole
+     0.00 - 1.75 rotation, accélération puis décélération
+     0.39 - 1.43 aspiration du voile
+     1.43 - 1.75 dernières volutes, bascule de couleur du symbole
+     1.75        l'intro se retire, la page est interactive
    ──────────────────────────────────────────────────────────────────────── */
 
-const TOTAL = 1.45;
-const VEIL_START = 0.32;
-const VEIL_END = 1.18;
+/* Durées allongées d'environ un cinquième par rapport au premier réglage,
+   en conservant exactement les mêmes proportions entre les phases : la
+   distorsion reste identique, elle est simplement plus lisible. */
+const TOTAL = 1.75;
+const VEIL_START = 0.39;
+const VEIL_END = 1.43;
 /* Trois tours complets : le symbole a une symétrie d'ordre trois, il
    retombe donc exactement dans l'orientation de repos de la page. */
 const TURNS = 1080;
@@ -93,6 +97,7 @@ const VortexIntro = ({ onDone, anchorRef }) => {
   const frameRef = useRef(0);
   const doneRef = useRef(false);
   const [leaving, setLeaving] = useState(false);
+  const t = useTranslation();
 
   const [anchor, setAnchor] = useState(null);
 
@@ -149,7 +154,7 @@ const VortexIntro = ({ onDone, anchorRef }) => {
 
       vortex.render(progress, t);
       rotate.set(TURNS * easeInOutCubic(Math.min(t / TOTAL, 1)));
-      markOpacity.set(Math.min(Math.max((t - 0.05) / 0.2, 0), 1));
+      markOpacity.set(Math.min(Math.max((t - 0.06) / 0.24, 0), 1));
       // Le symbole passe du clair au sombre quand le noir le quitte.
       markColor.set(lerpColor(PAPER, INK, (progress - 0.86) / 0.14));
 
@@ -206,7 +211,7 @@ const VortexIntro = ({ onDone, anchorRef }) => {
       </Mark>
 
       <Skip type="button" onClick={skip}>
-        Passer
+        {t.home.skipIntro}
       </Skip>
     </Overlay>
   );

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import { profile } from "../data/profile";
-import { useTranslation } from "../data/translations";
+import { useTranslation } from "../i18n";
 import { media } from "../styles/theme";
 import PageShell from "../components/layout/PageShell";
 import SectionHeader from "../components/ui/SectionHeader";

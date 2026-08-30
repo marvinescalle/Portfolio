@@ -2,6 +2,7 @@ import styled from "styled-components";
 
 import OverlaySheet from "../overlay/OverlaySheet";
 import { ArrowUpRight } from "../icons";
+import { pick, useLanguage, useTranslation } from "../../i18n";
 
 const Title = styled.h2`
   font-size: clamp(1.9rem, 5.5vw, 3.6rem);
@@ -130,39 +131,40 @@ const External = styled.a`
 `;
 
 /** Fiche détaillée d'une passion. Aucune rubrique vide n'est affichée. */
-const PassionOverlay = ({ passion, onClose }) => (
-  <OverlaySheet
-    label={passion.label}
-    meta={passion.label}
-    onClose={onClose}
-  >
-    <Title>{passion.label}</Title>
-    <Lead>{passion.text}</Lead>
+const PassionOverlay = ({ passion, onClose }) => {
+  const t = useTranslation();
+  const { language } = useLanguage();
+  const label = pick(passion.label, language);
+
+  return (
+  <OverlaySheet label={label} meta={label} onClose={onClose}>
+    <Title>{label}</Title>
+    <Lead>{pick(passion.text, language)}</Lead>
 
     <Visual>
       {passion.image ? (
-        <img src={passion.image} alt={passion.alt} loading="lazy" />
+        <img src={passion.image} alt={pick(passion.alt, language)} loading="lazy" />
       ) : (
         <span className="awaiting" aria-hidden="true">
-          Photo à venir
+          {t.passions.awaiting}
         </span>
       )}
     </Visual>
 
-    {passion.longText ? (
+    {pick(passion.longText, language) ? (
       <Section>
-        <h3>En savoir plus</h3>
-        {passion.longText.split("\n\n").map((paragraph) => (
+        <h3>{t.passions.sheet.details}</h3>
+        {pick(passion.longText, language).split("\n\n").map((paragraph) => (
           <p key={paragraph.slice(0, 24)}>{paragraph}</p>
         ))}
       </Section>
     ) : null}
 
-    {passion.highlights?.length ? (
+    {pick(passion.highlights, language)?.length ? (
       <Section>
-        <h3>À retenir</h3>
+        <h3>{t.passions.sheet.highlights}</h3>
         <ul>
-          {passion.highlights.map((item) => (
+          {pick(passion.highlights, language).map((item) => (
             <li key={item}>{item}</li>
           ))}
         </ul>
@@ -171,7 +173,7 @@ const PassionOverlay = ({ passion, onClose }) => (
 
     {passion.gallery?.length ? (
       <Section>
-        <h3>Images</h3>
+        <h3>{t.passions.sheet.gallery}</h3>
         <Gallery>
           {passion.gallery.map((shot) => (
             <figure key={shot.src}>
@@ -184,11 +186,12 @@ const PassionOverlay = ({ passion, onClose }) => (
 
     {passion.link ? (
       <External href={passion.link} target="_blank" rel="noopener noreferrer">
-        {passion.linkLabel ?? "Voir plus"}
+        {passion.linkLabel ?? t.passions.sheet.seeMore}
         <ArrowUpRight />
       </External>
     ) : null}
   </OverlaySheet>
-);
+  );
+};
 
 export default PassionOverlay;

@@ -3,6 +3,7 @@ import styled from "styled-components";
 import portrait from "../assets/optimized/portrait-about.jpg";
 import { profile } from "../data/profile";
 import { skillGroups } from "../data/skills";
+import { pick, useLanguage, useTranslation } from "../i18n";
 import { media } from "../styles/theme";
 import PageShell from "../components/layout/PageShell";
 import SectionHeader from "../components/ui/SectionHeader";
@@ -149,40 +150,29 @@ const Group = styled.div`
   }
 `;
 
-const About = () => (
-  <PageShell
-    title="À propos"
-    description="Ingénieur IT au profil polyvalent : automatisation, systèmes, données et problématiques métier. Parcours, approche et compétences techniques."
-  >
-    <SectionHeader index="01" title="À propos" />
+const About = () => {
+  const t = useTranslation();
+  const { language } = useLanguage();
+
+  // Les noms d'entreprise sont mis en valeur sans dupliquer le paragraphe
+  // dans le code : le dictionnaire porte des repères {thales} et {fiscalyse}.
+  const renderParagraph = (text) =>
+    text.split(/(\{thales\}|\{fiscalyse\})/).map((part, i) => {
+      if (part === "{thales}") return <strong key={i}>Thales</strong>;
+      if (part === "{fiscalyse}") return <strong key={i}>Fiscalyse</strong>;
+      return part;
+    });
+
+  return (
+  <PageShell title={t.about.title} description={t.about.seo}>
+    <SectionHeader index={t.about.index} title={t.about.title} />
 
     <Columns>
       <Reveal>
         <Prose>
-          <p>
-            Diplômé d'une formation DevOps et fort de plusieurs années
-            d'expérience en alternance, j'ai construit un profil IT polyvalent
-            à la croisée de l'automatisation, des systèmes, de la donnée et des
-            problématiques métier.
-          </p>
-          <p>
-            Mes expériences professionnelles, notamment chez{" "}
-            <strong>Thales</strong> et <strong>Fiscalyse</strong>, m'ont amené à
-            travailler sur des environnements et des besoins très différents :
-            automatisation de tâches, collecte et traitement de données,
-            développement d'outils, infrastructure, tests, amélioration de
-            processus et accompagnement des utilisateurs.
-          </p>
-          <p>
-            Ce que j'apprécie particulièrement est de comprendre un problème
-            dans son ensemble, puis de construire une solution réellement utile
-            plutôt que de me limiter à une technologie particulière.
-          </p>
-          <p>
-            Curieux et autonome, je continue également à développer des projets
-            personnels autour du développement, de l'intelligence artificielle,
-            de la 3D et des nouvelles technologies.
-          </p>
+          {t.about.paragraphs.map((paragraph) => (
+            <p key={paragraph.slice(0, 24)}>{renderParagraph(paragraph)}</p>
+          ))}
         </Prose>
       </Reveal>
 
@@ -191,14 +181,14 @@ const About = () => (
           <div className="frame">
             <img
               src={portrait}
-              alt={`Portrait de ${profile.fullName}`}
+              alt={`${t.about.portrait} ${profile.fullName}`}
               loading="lazy"
               width="900"
               height="1020"
             />
           </div>
           <figcaption>
-            {profile.fullName} · {profile.role}
+            {profile.fullName} · {pick(profile.role, language)}
           </figcaption>
         </Portrait>
       </Reveal>
@@ -206,17 +196,17 @@ const About = () => (
 
     <Skills aria-labelledby="competences">
       <Reveal>
-        <SkillsTitle id="competences">Compétences</SkillsTitle>
+        <SkillsTitle id="competences">{t.about.skills}</SkillsTitle>
       </Reveal>
 
       <Groups>
         {skillGroups.map((group, i) => (
           <Reveal key={group.id} delay={i * 0.06}>
             <Group>
-              <h3>{group.label}</h3>
+              <h3>{pick(group.label, language)}</h3>
               <ul>
                 {group.items.map((item) => (
-                  <li key={item}>{item}</li>
+                  <li key={pick(item, language)}>{pick(item, language)}</li>
                 ))}
               </ul>
             </Group>
@@ -225,6 +215,7 @@ const About = () => (
       </Groups>
     </Skills>
   </PageShell>
-);
+  );
+};
 
 export default About;

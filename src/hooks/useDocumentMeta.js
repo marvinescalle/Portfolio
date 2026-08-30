@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 
 import { seo } from "../data/profile";
+import { pick, useLanguage } from "../i18n";
 
 const setMeta = (selector, attribute, value) => {
   const tag = document.head.querySelector(selector);
@@ -15,9 +16,11 @@ const setMeta = (selector, attribute, value) => {
  * aperçus de partage.
  */
 const useDocumentMeta = (title, description) => {
+  const { language } = useLanguage();
+
   useEffect(() => {
     const fullTitle = title ? `${title} · ${seo.title}` : seo.title;
-    const text = description || seo.description;
+    const text = description || pick(seo.description, language);
 
     document.title = fullTitle;
     setMeta('meta[name="description"]', "content", text);
@@ -25,7 +28,7 @@ const useDocumentMeta = (title, description) => {
     setMeta('meta[property="og:description"]', "content", text);
     setMeta('meta[name="twitter:title"]', "content", fullTitle);
     setMeta('meta[name="twitter:description"]', "content", text);
-  }, [title, description]);
+  }, [title, description, language]);
 };
 
 export default useDocumentMeta;

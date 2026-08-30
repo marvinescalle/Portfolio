@@ -1,5 +1,7 @@
 import styled, { keyframes } from "styled-components";
 
+import { useTranslation } from "../../i18n";
+
 const pulse = keyframes`
   0%, 100% { opacity: 0.25; }
   50% { opacity: 1; }
@@ -23,10 +25,13 @@ const Label = styled.span`
 `;
 
 /** Écran d'attente pendant le chargement d'une page. */
-const Loading = () => (
+const Loading = () => {
+  const t = useTranslation();
+  return (
   <Screen role="status" aria-live="polite">
-    <Label>Chargement</Label>
+    <Label>{t.common.loading}</Label>
   </Screen>
-);
+  );
+};
 
 export default Loading;

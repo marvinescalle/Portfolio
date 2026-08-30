@@ -1,26 +1,26 @@
 /**
  * Parcours de formation, affiché en timeline du plus récent au plus ancien.
  *
- * POUR AJOUTER UNE FORMATION : copier un objet et le placer dans le tableau,
- * l'ordre du tableau étant l'ordre d'affichage. Les champs `period`,
- * `grade`, `description` et `skills` peuvent rester vides : la ligne
- * correspondante est simplement masquée, plutôt que d'afficher une valeur
- * approximative.
+ * Les champs traduisibles prennent la forme { fr, en }. Les champs simples
+ * (année, note) sont identiques dans les deux langues.
  *
- * `gradeLabel` précise ce que recouvre la note quand il ne s'agit pas de la
- * moyenne du diplôme. Laissé vide, la mention « Note » est utilisée.
+ * POUR AJOUTER UNE FORMATION : copier un objet et le placer dans le tableau,
+ * l'ordre du tableau étant l'ordre d'affichage. Un champ vide masque
+ * simplement la ligne correspondante.
  */
 
 export const education = [
   {
     id: "master-devops",
-    degree: "Master 2 DevOps",
-    school: "Paris Ynov Campus, Paris",
+    degree: { fr: "Master 2 DevOps", en: "Master's Degree (M2) in DevOps" },
+    school: { fr: "Paris Ynov Campus, Paris", en: "Paris Ynov Campus, Paris" },
     period: "2025",
     grade: "17,20/20",
     gradeLabel: null,
-    description:
-      "Formation spécialisée dans l'automatisation, le cloud, l'administration des systèmes, la conteneurisation, le CI/CD et le pilotage des infrastructures modernes. Elle s'est conclue par la réalisation d'un projet DevOps complet mobilisant plusieurs compétences techniques et organisationnelles.",
+    description: {
+      fr: "Formation spécialisée dans l'automatisation, le cloud, l'administration des systèmes, la conteneurisation, le CI/CD et le pilotage des infrastructures modernes. Elle s'est conclue par la réalisation d'un projet DevOps complet mobilisant plusieurs compétences techniques et organisationnelles.",
+      en: "A programme focused on automation, cloud, systems administration, containerisation, CI/CD and the management of modern infrastructures. It concluded with a full DevOps project drawing on a broad set of technical and organisational skills.",
+    },
     skills: [
       "Docker",
       "Kubernetes",
@@ -37,27 +37,40 @@ export const education = [
   },
   {
     id: "bachelor",
-    degree: "Bachelor 3 Développement Web",
-    school: "Ynov Campus, Aix-en-Provence",
+    degree: {
+      fr: "Bachelor 3 Développement Web",
+      en: "Bachelor's Degree in Web Development",
+    },
+    school: {
+      fr: "Ynov Campus, Aix-en-Provence",
+      en: "Ynov Campus, Aix-en-Provence",
+    },
     period: "2023",
-    // TODO à compléter : note obtenue, si tu souhaites l'afficher.
     grade: null,
     gradeLabel: null,
-    // TODO à compléter : deux ou trois phrases sur cette année, ainsi que
-    // les technologies travaillées dans `skills`.
-    description: null,
+    description: {
+      fr: "Approfondissement du développement web full-stack, des bases de données et de la conception d'applications, avec des projets techniques menés en équipe sur plusieurs frameworks.",
+      en: "A deeper dive into full-stack web development, databases and application design, through team projects built on several web frameworks.",
+    },
     skills: [],
   },
   {
     id: "bts-sio",
-    degree: "BTS SIO",
-    school: "Lycée Charles Péguy, Marseille",
+    degree: {
+      fr: "BTS SIO",
+      en: "BTS SIO",
+    },
+    school: {
+      fr: "Lycée Charles Péguy, Marseille",
+      en: "Lycée Charles Péguy, Marseille",
+    },
     period: "2022",
-    // TODO à compléter : note obtenue, si tu souhaites l'afficher.
     grade: null,
     gradeLabel: null,
-    description:
-      "Services informatiques aux organisations. Formation apportant les fondamentaux du développement, des bases de données, des systèmes d'information et de la gestion de projet.",
+    description: {
+      fr: "Services informatiques aux organisations. Formation apportant les fondamentaux du développement, des bases de données, des systèmes d'information et de la gestion de projet.",
+      en: "IT services for organisations. A course covering the fundamentals of development, databases, information systems and project management.",
+    },
     skills: [
       "SQL",
       "JavaScript",
@@ -68,12 +81,24 @@ export const education = [
   },
   {
     id: "bac-stmg",
-    degree: "Baccalauréat STMG",
-    school: "Sciences et technologies du management et de la gestion",
+    degree: {
+      fr: "Baccalauréat STMG",
+      en: "French Baccalauréat, STMG",
+    },
+    school: {
+      fr: "Sciences et technologies du management et de la gestion",
+      en: "Management and business sciences",
+    },
     period: "2020",
     grade: "17,72/20",
-    gradeLabel: "Épreuve anticipée de français",
-    description: null,
+    gradeLabel: {
+      fr: "Épreuve anticipée de français",
+      en: "French language exam",
+    },
+    description: {
+      fr: "Filière orientée gestion, économie et systèmes d'information, à l'origine de mon passage vers l'informatique.",
+      en: "A track built around management, economics and information systems, and the starting point of my move into IT.",
+    },
     skills: [],
   },
 ];
