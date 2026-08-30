@@ -240,8 +240,20 @@ export const createVortex = (canvas, { color = [0.039, 0.039, 0.039] } = {}) => 
 
   let width = 0;
   let height = 0;
+  let needsResize = true;
+
+  /* La taille n'est relue qu'au montage et lors d'un redimensionnement.
+     Interroger clientWidth à chaque image force le navigateur à recalculer
+     la mise en page en plein milieu de l'animation, ce qui suffit à la
+     rendre saccadée. */
+  const markDirty = () => {
+    needsResize = true;
+  };
+  window.addEventListener("resize", markDirty);
 
   const resize = () => {
+    if (!needsResize) return;
+    needsResize = false;
     // Plafonné à 1.5 : au-delà le gain visuel est nul et le coût réel.
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     const w = Math.floor(canvas.clientWidth * dpr);
@@ -261,6 +273,7 @@ export const createVortex = (canvas, { color = [0.039, 0.039, 0.039] } = {}) => 
    * conversion vers le repère du shader se fait ici.
    */
   const setEmission = ({ center, rect }) => {
+    markDirty();
     resize();
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     const h = canvas.height;
@@ -285,6 +298,7 @@ export const createVortex = (canvas, { color = [0.039, 0.039, 0.039] } = {}) => 
   };
 
   const destroy = () => {
+    window.removeEventListener("resize", markDirty);
     gl.deleteBuffer(buffer);
     gl.deleteShader(vertexShader);
     gl.deleteShader(fragmentShader);

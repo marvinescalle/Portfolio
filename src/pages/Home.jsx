@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import styled, { ThemeProvider, keyframes } from "styled-components";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
@@ -504,16 +504,6 @@ const Home = () => {
     if (!intro) markIntroPlayed();
   }, [intro]);
 
-  /* La zone visée est mesurée sur l'élément réel plutôt que déduite du
-     format de l'écran : la matière se range ainsi exactement là où le
-     panneau se trouvera, sans redire sa géométrie ici. */
-  useLayoutEffect(() => {
-    if (!emission || emission.rect || !darkRef.current) return;
-    const box = darkRef.current.getBoundingClientRect();
-    setEmission((current) =>
-      current && !current.rect ? { ...current, rect: box } : current
-    );
-  }, [emission]);
 
 
 
@@ -631,8 +621,30 @@ const Home = () => {
             if (reduce) {
               setRevealed(true);
               setSettled(true);
-            } else {
-              setEmission({ center, rect: null });
+              return;
+            }
+
+            /* Zone visée mesurée sur l'élément réel, dans le même geste :
+               la couche sombre est montée en permanence, il n'y a donc pas
+               à attendre un rendu supplémentaire pour la connaître. */
+            const zone = darkRef.current?.getBoundingClientRect();
+            setEmission(
+              zone
+                ? {
+                    center,
+                    rect: {
+                      left: zone.left,
+                      top: zone.top,
+                      right: zone.right,
+                      bottom: zone.bottom,
+                    },
+                  }
+                : null
+            );
+
+            if (!zone) {
+              setRevealed(true);
+              setSettled(true);
             }
           }}
           onMouseEnter={() => setHovered(true)}
@@ -701,10 +713,9 @@ const Home = () => {
         </PanelAnchor>
         </PanelLayer>
 
-        {emission?.rect && !reduce ? (
+        {!intro && !reduce ? (
           <VortexBurst
-            center={emission.center}
-            rect={emission.rect}
+            emission={emission}
             onReveal={() => setRevealed(true)}
             onSettle={() => setSettled(true)}
             onDone={() => setEmission(null)}

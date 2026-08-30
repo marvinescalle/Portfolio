@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import styled from "styled-components";
 
 import { createVortex } from "./vortexRenderer";
@@ -10,6 +10,10 @@ import { createVortex } from "./vortexRenderer";
    relâche la matière qu'il avait avalée à l'arrivée sur le site. Elle
    jaillit en tournant, se tord, puis se range dans la grande zone sombre
    de la composition.
+
+   Le contexte WebGL est préparé dès que la page d'accueil est prête, et
+   non au moment du clic : sa création coûte plusieurs dizaines de
+   millisecondes, ce qui se voyait comme un accroc au démarrage de l'effet.
 
    Découpage temporel, en secondes :
      0.00 - 0.12 les gouttes accélèrent, rien n'est encore sorti
@@ -33,43 +37,70 @@ const Canvas = styled.canvas`
   /* Au-dessus des zones sombres, sous le symbole qui doit rester visible. */
   z-index: 4;
   pointer-events: none;
-  transition: opacity 0.18s linear;
+  opacity: ${(props) => (props.$fading ? 0 : 1)};
+  transition: opacity 0.16s linear;
 `;
 
 /**
- * @param {{x: number, y: number}} props.center point d'expulsion
- * @param {object} props.rect zone sombre visée, en coordonnées du document
+ * @param {object|null} props.emission null tant que rien n'est expulsé, sinon
+ *        { center, rect } en coordonnées du document
  * @param {Function} props.onReveal appelé quand le contenu peut apparaître
  * @param {Function} props.onSettle appelé quand la matière a pris sa forme
  * @param {Function} props.onDone appelé à la fin
  */
-const VortexBurst = ({ center, rect, onReveal, onSettle, onDone }) => {
+const VortexBurst = ({ emission, onReveal, onSettle, onDone }) => {
   const canvasRef = useRef(null);
+  const vortexRef = useRef(null);
   const frameRef = useRef(0);
-  const revealedRef = useRef(false);
-  const settledRef = useRef(false);
-  const doneRef = useRef(false);
+  const guardRef = useRef(0);
+  const fadingRef = useRef(false);
+  const callbacks = useRef({ onReveal, onSettle, onDone });
+  callbacks.current = { onReveal, onSettle, onDone };
 
+  // Contexte préparé à l'avance, une seule fois.
   useLayoutEffect(() => {
     const canvas = canvasRef.current;
-    const vortex = canvas ? createVortex(canvas) : null;
+    if (!canvas) return undefined;
 
-    const finish = () => {
-      if (doneRef.current) return;
-      doneRef.current = true;
-      onDone();
+    const vortex = createVortex(canvas);
+    vortexRef.current = vortex;
+    // Une première image transparente, qui force aussi la compilation du
+    // programme avant qu'on en ait besoin.
+    vortex?.render(0, 0);
+
+    return () => {
+      cancelAnimationFrame(frameRef.current);
+      window.clearTimeout(guardRef.current);
+      vortex?.destroy();
+      vortexRef.current = null;
     };
+  }, []);
+
+  useEffect(() => {
+    if (!emission) return undefined;
+
+    const vortex = vortexRef.current;
+    const canvas = canvasRef.current;
+
+    let revealed = false;
+    let settled = false;
+    let done = false;
 
     const reveal = () => {
-      if (revealedRef.current) return;
-      revealedRef.current = true;
-      onReveal();
+      if (revealed) return;
+      revealed = true;
+      callbacks.current.onReveal();
     };
-
     const settle = () => {
-      if (settledRef.current) return;
-      settledRef.current = true;
-      onSettle();
+      if (settled) return;
+      settled = true;
+      if (canvas) canvas.style.opacity = "0";
+      callbacks.current.onSettle();
+    };
+    const finish = () => {
+      if (done) return;
+      done = true;
+      callbacks.current.onDone();
     };
 
     // Sans WebGL, la présentation s'ouvre directement.
@@ -80,8 +111,9 @@ const VortexBurst = ({ center, rect, onReveal, onSettle, onDone }) => {
       return undefined;
     }
 
-    vortex.setEmission({ center, rect });
-    vortex.render(0, 0);
+    if (canvas) canvas.style.opacity = "1";
+    fadingRef.current = false;
+    vortex.setEmission(emission);
 
     let start = 0;
 
@@ -89,18 +121,13 @@ const VortexBurst = ({ center, rect, onReveal, onSettle, onDone }) => {
       if (!start) start = now;
       const t = (now - start) / 1000;
 
-      const p = Math.min(Math.max((t - START) / (SETTLE - START), 0), 1);
-      vortex.render(p, t);
+      vortex.render(
+        Math.min(Math.max((t - START) / (SETTLE - START), 0), 1),
+        t
+      );
 
-      // Le contenu commence à se découvrir pendant que la matière se range.
       if (t >= REVEAL) reveal();
-
-      if (t >= SETTLE) {
-        settle();
-        // Le canvas s'efface pendant que les vrais éléments prennent le
-        // relais : les deux montrent alors exactement la même forme.
-        if (canvas) canvas.style.opacity = "0";
-      }
+      if (t >= SETTLE) settle();
 
       if (t < TOTAL) {
         frameRef.current = requestAnimationFrame(loop);
@@ -111,9 +138,9 @@ const VortexBurst = ({ center, rect, onReveal, onSettle, onDone }) => {
 
     frameRef.current = requestAnimationFrame(loop);
 
-    /* Filet de sécurité : si le navigateur suspend le rendu, la présentation
-       ne doit pas rester invisible derrière un canvas figé. */
-    const guard = window.setTimeout(() => {
+    /* Filet de sécurité : si le navigateur suspend le rendu, la
+       présentation ne doit pas rester invisible derrière un canvas figé. */
+    guardRef.current = window.setTimeout(() => {
       reveal();
       settle();
       finish();
@@ -121,13 +148,14 @@ const VortexBurst = ({ center, rect, onReveal, onSettle, onDone }) => {
 
     return () => {
       cancelAnimationFrame(frameRef.current);
-      window.clearTimeout(guard);
-      vortex.destroy();
+      window.clearTimeout(guardRef.current);
+      // Retour à l'état transparent pour la prochaine ouverture.
+      vortex.render(0, 0);
+      if (canvas) canvas.style.opacity = "0";
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [emission]);
 
-  return <Canvas ref={canvasRef} aria-hidden="true" />;
+  return <Canvas ref={canvasRef} aria-hidden="true" $fading />;
 };
 
 export default VortexBurst;
