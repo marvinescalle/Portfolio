@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import styled, { ThemeProvider, keyframes } from "styled-components";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
@@ -12,7 +12,6 @@ import SoundToggle from "../components/ui/SoundToggle";
 import { ArrowUpRight } from "../components/icons";
 import BrandMark from "../components/brand/BrandMark";
 import VortexIntro from "../components/intro/VortexIntro";
-import RevealBurst from "../components/intro/RevealBurst";
 import {
   markIntroPlayed,
   shouldPlayIntro,
@@ -35,6 +34,25 @@ const Screen = styled.div`
 `;
 
 /** Grande zone noire révélée à l'ouverture : le contraste est l'identité. */
+/* Toutes les surfaces noires de la présentation sont regroupées ici pour
+   être découvertes d'un seul geste : un cercle qui s'ouvre depuis le
+   symbole. Le noir semble ainsi jaillir de lui et remplir la composition.
+
+   Volontairement en CSS et non en WebGL : le tracé est calculé par le
+   navigateur, il ne dépend d'aucune particularité de compositing. */
+const DarkGroup = styled.div`
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  clip-path: ${(props) => props.$clip};
+  transition: clip-path 0.78s cubic-bezier(0.32, 0.72, 0.28, 1);
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+`;
+
 const DarkPanel = styled(motion.div)`
   position: absolute;
   inset: 0 auto 0 0;
@@ -264,9 +282,23 @@ const Focal = styled.button`
 
 /* Le centrage vit sur cette enveloppe : Framer Motion pilote la propriété
    `transform` du panneau animé et écraserait un translate posé en CSS. */
+/* Seconde couche découpée, au-dessus des libellés : le panneau apparaît
+   avec le même cercle que la grande zone noire, d'un seul geste. */
+const PanelLayer = styled.div`
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  clip-path: ${(props) => props.$clip};
+  transition: clip-path 0.78s cubic-bezier(0.32, 0.72, 0.28, 1);
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+`;
+
 const PanelAnchor = styled.div`
   position: absolute;
-  z-index: 4;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -434,11 +466,8 @@ const Home = () => {
   const [open, setOpen] = useState(false);
   const [hovered, setHovered] = useState(false);
   const markRef = useRef(null);
-  const darkRef = useRef(null);
-
-  // Pendant la libération du noir, les vraies zones sombres restent
-  // invisibles : c'est le rendu qui les dessine, avant de leur passer la main.
-  const [burst, setBurst] = useState(null);
+  // Point d'où le noir se libère : le centre du symbole, mesuré au clic.
+  const [origin, setOrigin] = useState(null);
   const t = useTranslation();
   const { language, setLanguage } = useLanguage();
   const reduce = useReducedMotion();
@@ -457,15 +486,26 @@ const Home = () => {
     if (!intro) markIntroPlayed();
   }, [intro]);
 
-  // La zone à remplir est mesurée sur l'élément réel plutôt que déduite du
-  // format de l'écran : elle suit ainsi la mise en page sans la redire.
-  useLayoutEffect(() => {
-    if (!burst || burst.rect || !darkRef.current) return;
-    const box = darkRef.current.getBoundingClientRect();
-    setBurst((current) =>
-      current && !current.rect ? { ...current, rect: box } : current
+  /* Rayon nécessaire pour que le cercle couvre l'écran depuis ce point :
+     la distance jusqu'au coin le plus éloigné. */
+  const clip = (() => {
+    const point = origin ?? {
+      x: typeof window === "undefined" ? 0 : window.innerWidth / 2,
+      y: typeof window === "undefined" ? 0 : window.innerHeight / 2,
+    };
+    const w = typeof window === "undefined" ? 0 : window.innerWidth;
+    const h = typeof window === "undefined" ? 0 : window.innerHeight;
+    const reach = Math.hypot(
+      Math.max(point.x, w - point.x),
+      Math.max(point.y, h - point.y)
     );
-  }, [burst]);
+    const at = `at ${Math.round(point.x)}px ${Math.round(point.y)}px`;
+    return {
+      closed: `circle(0px ${at})`,
+      open: `circle(${Math.ceil(reach)}px ${at})`,
+    };
+  })();
+
 
   // L'accueil ne passe pas par PageShell : il pose lui-même la couleur de
   // fond du document, pour éviter un fond hérité de la page précédente.
@@ -495,22 +535,13 @@ const Home = () => {
           {pick(profile.disciplines, language).join(", ")}
         </h1>
 
-        <AnimatePresence>
-          {open ? (
-            <DarkPanel
-              key="dark"
-              ref={darkRef}
-              initial={reduce ? false : { opacity: 0 }}
-              animate={{ opacity: burst ? 0 : 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: reduce ? 0 : 0.24, ease: "easeOut" }}
-            />
-          ) : null}
-        </AnimatePresence>
+        <DarkGroup $clip={open ? clip.open : clip.closed}>
+          <DarkPanel />
+        </DarkGroup>
 
-        <Wordmark $onDark={open && !burst}>
+        <Wordmark $onDark={open}>
           {profile.fullName}
-          <SoundToggle onDark={open && !burst} />
+          <SoundToggle onDark={open} />
         </Wordmark>
 
         <TopRight role="group" aria-label={t.nav.language}>
@@ -530,10 +561,10 @@ const Home = () => {
         </TopRight>
 
         <DesktopOnly>
-          <RailLeft to="/a-propos" style={{ top: "36%" }} $onDark={open && !burst}>
+          <RailLeft to="/a-propos" style={{ top: "36%" }} $onDark={open}>
             {t.nav.items["/a-propos"]}
           </RailLeft>
-          <RailLeft to="/contact" style={{ top: "64%" }} $onDark={open && !burst}>
+          <RailLeft to="/contact" style={{ top: "64%" }} $onDark={open}>
             {t.nav.items["/contact"]}
           </RailLeft>
 
@@ -572,23 +603,18 @@ const Home = () => {
           onClick={() => {
             if (open) {
               setOpen(false);
-              setBurst(null);
               return;
             }
 
+            // Mesuré avant que le symbole ne quitte le centre : le noir doit
+            // partir de là où le visiteur vient de cliquer.
             const box = markRef.current?.getBoundingClientRect();
+            setOrigin(
+              box
+                ? { x: box.left + box.width / 2, y: box.top + box.height / 2 }
+                : { x: window.innerWidth / 2, y: window.innerHeight / 2 }
+            );
             setOpen(true);
-
-            // Sans WebGL ni mouvement réduit, l'ouverture reste immédiate.
-            if (!reduce && box) {
-              setBurst({
-                center: {
-                  x: box.left + box.width / 2,
-                  y: box.top + box.height / 2,
-                },
-                rect: null,
-              });
-            }
           }}
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
@@ -602,7 +628,7 @@ const Home = () => {
             <BrandMark
               size="100%"
               state={
-                burst ? "loading" : hovered && !open ? "hover" : "idle"
+                open && origin ? "loading" : hovered && !open ? "hover" : "idle"
               }
               paused={intro}
             />
@@ -610,21 +636,13 @@ const Home = () => {
           <span className="hint">{t.home.hint}</span>
         </Focal>
 
+        <PanelLayer
+          $clip={open ? clip.open : clip.closed}
+          aria-hidden={!open}
+          inert={!open}
+        >
         <PanelAnchor>
-          <AnimatePresence>
-            {open ? (
-              <Panel
-                id="presentation"
-              key="panel"
-              initial={reduce ? false : { opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={reduce ? { opacity: 0 } : { opacity: 0, y: 12 }}
-              transition={{
-                duration: 0.55,
-                delay: reduce ? 0 : 0.35,
-                ease: [0.22, 0.61, 0.36, 1],
-              }}
-            >
+          <Panel id="presentation">
               <ThemeProvider theme={darkTheme}>
                 <TextSide>
                   <Hello>{t.home.hello}</Hello>
@@ -664,17 +682,9 @@ const Home = () => {
                   height="980"
                 />
               </PhotoSide>
-              </Panel>
-            ) : null}
-          </AnimatePresence>
+          </Panel>
         </PanelAnchor>
-        {burst?.rect ? (
-          <RevealBurst
-            center={burst.center}
-            rect={burst.rect}
-            onDone={() => setBurst(null)}
-          />
-        ) : null}
+        </PanelLayer>
 
         {intro ? (
           <VortexIntro
