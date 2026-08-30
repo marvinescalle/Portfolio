@@ -1,7 +1,6 @@
 import styled from "styled-components";
 
 import { education } from "../data/education";
-import { media } from "../styles/theme";
 import PageShell from "../components/layout/PageShell";
 import SectionHeader from "../components/ui/SectionHeader";
 import Reveal from "../components/ui/Reveal";
@@ -79,70 +78,40 @@ const Body = styled.p`
   color: ${(props) => props.theme.textSoft};
 `;
 
-const Minor = styled.div`
-  display: flex;
-  align-items: baseline;
-  gap: 1rem;
-  padding-top: 1.75rem;
-  border-top: 1px solid ${(props) => props.theme.line};
-  margin-top: clamp(2rem, 5vw, 3rem);
-  font-size: 0.88rem;
-  color: ${(props) => props.theme.textFaint};
-
-  ${media.sm`
-    flex-direction: column;
-    gap: 0.25rem;
-  `}
-`;
-
-const Education = () => {
-  const main = education.filter((item) => item.primary);
-  const minor = education.filter((item) => !item.primary);
-
-  return (
-    <PageShell
+const Education = () => (
+  <PageShell
+    title="Formation"
+    description="Baccalauréat STMG, BTS SIO, Bachelor Informatique et Master DevOps chez Ynov : du développement et des bases de données vers l'infrastructure et l'automatisation."
+  >
+    <SectionHeader
+      index="04"
       title="Formation"
-      description="Mastère DevOps chez Ynov et BTS SIO : automatisation, cloud, conteneurisation, CI/CD et fondamentaux du développement."
-    >
-      <SectionHeader
-        index="04"
-        title="Formation"
-        lead="Un parcours qui part du développement et des bases de données pour aller vers l'infrastructure et l'automatisation."
-      />
+      lead="Un parcours qui part du développement et des bases de données pour aller vers l'infrastructure et l'automatisation."
+    />
 
-      <Timeline>
-        {main.map((item, i) => (
-          <Entry key={item.id}>
-            <Reveal delay={i * 0.08}>
-              <Head>
-                <h2>{item.degree}</h2>
-                {item.period ? (
-                  <span className="period">{item.period}</span>
-                ) : null}
-              </Head>
+    <Timeline>
+      {education.map((item, i) => (
+        <Entry key={item.id}>
+          <Reveal delay={i * 0.08}>
+            <Head>
+              <h2>{item.degree}</h2>
+              {item.period ? (
+                <span className="period">{item.period}</span>
+              ) : null}
+            </Head>
 
-              {item.school ? <School>{item.school}</School> : null}
-              {item.description ? <Body>{item.description}</Body> : null}
+            {item.school ? <School>{item.school}</School> : null}
+            {item.description ? <Body>{item.description}</Body> : null}
 
-              <TagList
-                items={item.skills}
-                label={`Compétences travaillées : ${item.degree}`}
-              />
-            </Reveal>
-          </Entry>
-        ))}
-      </Timeline>
-
-      {minor.map((item) => (
-        <Reveal key={item.id}>
-          <Minor>
-            <span>{item.degree}</span>
-            {item.period ? <span>{item.period}</span> : null}
-          </Minor>
-        </Reveal>
+            <TagList
+              items={item.skills}
+              label={`Compétences travaillées : ${item.degree}`}
+            />
+          </Reveal>
+        </Entry>
       ))}
-    </PageShell>
-  );
-};
+    </Timeline>
+  </PageShell>
+);
 
 export default Education;

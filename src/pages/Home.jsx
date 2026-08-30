@@ -62,11 +62,11 @@ const Wordmark = styled.span`
   transition: color 0.6s ease;
 `;
 
-const EdgeLink = styled(Link)`
-  ${edge};
-  color: ${(props) => (props.$onDark ? props.theme.body : props.theme.text)};
-  transition: color 0.6s ease, opacity 0.3s ease;
+const linkVisual = `
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
   padding: 0.5rem 0;
+  transition: color 0.6s ease, opacity 0.3s ease;
 
   &::after {
     content: "";
@@ -83,15 +83,21 @@ const EdgeLink = styled(Link)`
   }
 `;
 
+const EdgeLink = styled(Link)`
+  ${edge};
+  ${linkVisual};
+  color: ${(props) => (props.$onDark ? props.theme.body : props.theme.text)};
+`;
+
 const TopRight = styled(EdgeLink)`
   top: ${layout.gutter};
   right: ${layout.gutter};
 `;
 
-/* Trois libellés de chaque côté, régulièrement espacés : la composition
-   encadre le point focal au lieu de laisser des vides irréguliers. La
-   position verticale est passée en style en ligne, pour ne pas transmettre
-   une prop inconnue au lien de React Router. */
+/* Deux libellés par côté, plus deux au centre en bas : trois groupes
+   équilibrés autour du point focal. La position verticale est passée en
+   style en ligne, pour ne pas transmettre une prop inconnue au lien de
+   React Router. */
 const RailLeft = styled(EdgeLink)`
   left: ${layout.gutter};
   transform: translateY(-50%);
@@ -105,30 +111,22 @@ const RailRight = styled(EdgeLink)`
   writing-mode: vertical-rl;
 `;
 
-/* Le bas à droite reste libre : le point focal vient s'y loger une fois la
-   présentation ouverte. */
-const Caption = styled.div`
+/* Le groupe du bas glisse vers la moitié claire à l'ouverture : centré, il
+   se retrouverait à cheval sur la grande zone noire, illisible d'un côté. */
+const BottomGroup = styled.div`
   ${edge};
   bottom: ${layout.gutter};
-  left: ${layout.gutter};
-  font-family: ${(props) => props.theme.fontMono};
-  font-size: 0.7rem;
-  letter-spacing: 0.14em;
-  line-height: 1.9;
-  text-transform: uppercase;
-  color: ${(props) => (props.$onDark ? props.theme.body : props.theme.text)};
-  /* Masquée une fois la présentation ouverte : celle-ci reprend déjà le
-     titre et les domaines. */
-  opacity: ${(props) => (props.$onDark ? 0 : 1)};
-  transition: color 0.6s ease, opacity 0.5s ease;
+  left: ${(props) => (props.$open ? "74%" : "50%")};
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: clamp(1.75rem, 4vw, 3.5rem);
+  transition: left 0.8s ease;
+`;
 
-  span {
-    display: block;
-  }
-
-  span:last-child {
-    opacity: 0.55;
-  }
+const BottomLink = styled(Link)`
+  ${linkVisual};
+  color: ${(props) => props.theme.text};
 `;
 
 /** Sur mobile, les libellés verticaux deviennent une liste lisible. */
@@ -443,30 +441,24 @@ const Home = () => {
         <TopRight to="/contact">Contact</TopRight>
 
         <DesktopOnly>
-          <RailLeft to="/a-propos" style={{ top: "28%" }} $onDark={open}>
+          <RailLeft to="/a-propos" style={{ top: "36%" }} $onDark={open}>
             À propos
           </RailLeft>
-          <RailLeft to="/experiences" style={{ top: "50%" }} $onDark={open}>
-            Expériences
-          </RailLeft>
-          <RailLeft to="/projets" style={{ top: "72%" }} $onDark={open}>
-            Projets
+          <RailLeft to="/formation" style={{ top: "64%" }} $onDark={open}>
+            Formation
           </RailLeft>
 
-          <RailRight to="/formation" style={{ top: "28%" }}>
-            Formation
-          </RailRight>
-          <RailRight to="/passions" style={{ top: "50%" }}>
+          <RailRight to="/passions" style={{ top: "36%" }}>
             Passions
           </RailRight>
-          <RailRight to="/cv" style={{ top: "72%" }}>
-            CV
+          <RailRight to="/projets" style={{ top: "64%" }}>
+            Projets
           </RailRight>
 
-          <Caption $onDark={open}>
-            <span>{profile.role}</span>
-            <span>{profile.disciplines.join(" · ")}</span>
-          </Caption>
+          <BottomGroup $open={open}>
+            <BottomLink to="/experiences">Expériences</BottomLink>
+            <BottomLink to="/cv">CV</BottomLink>
+          </BottomGroup>
         </DesktopOnly>
 
         {!open ? (
