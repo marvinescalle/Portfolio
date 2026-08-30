@@ -133,7 +133,6 @@ const Frame = styled.div`
   aspect-ratio: ${(props) => props.$ratio};
   overflow: hidden;
 
-  object,
   iframe {
     display: block;
     width: 100%;
@@ -200,24 +199,15 @@ const CvColumn = ({ texts, file, downloadName, active, canEmbed, ratio }) => (
 
     <Frame $ratio={ratio}>
       {canEmbed ? (
-        <object
-          data={`${file}#view=FitH&toolbar=0`}
-          type="application/pdf"
-          aria-label={texts.viewerLabel}
-        >
-          {/* Rendu par le navigateur si le PDF ne peut pas être intégré. */}
-          <Fallback>
-            <p>{texts.fallback}</p>
-            <FallbackAction
-              href={file}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {texts.open}
-              <ArrowUpRight />
-            </FallbackAction>
-          </Fallback>
-        </object>
+        /* iframe et non object : Safari n'initialise pas le lecteur PDF d'un
+           object créé dans un sous-arbre encore invisible, et ne réessaie
+           jamais ensuite. Le document n'apparaissait alors qu'après un
+           rechargement complet de la page. */
+        <iframe
+          src={`${file}#view=FitH&toolbar=0`}
+          title={texts.viewerLabel}
+          loading="lazy"
+        />
       ) : (
         <Fallback>
           <p>{texts.fallback}</p>
@@ -285,8 +275,7 @@ const Cv = () => {
         </Switch>
       </Reveal>
 
-      <Reveal delay={0.06}>
-        <Columns>
+      <Columns>
           {versions.map((version) => (
             <CvColumn
               key={version.id}
@@ -297,9 +286,8 @@ const Cv = () => {
               canEmbed={canEmbed}
               ratio={PAGE_RATIOS[profile.cv.format] ?? PAGE_RATIOS.a4}
             />
-          ))}
-        </Columns>
-      </Reveal>
+        ))}
+      </Columns>
     </PageShell>
   );
 };

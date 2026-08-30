@@ -1,6 +1,10 @@
+import { Link, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
+import { AnimatePresence } from "framer-motion";
 
-import { passions } from "../data/passions";
+import { findPassion, passions } from "../data/passions";
+import PassionOverlay from "../components/passions/PassionOverlay";
+import useBodyScrollLock from "../hooks/useBodyScrollLock";
 import { darkTheme, media } from "../styles/theme";
 import PageShell from "../components/layout/PageShell";
 import SectionHeader from "../components/ui/SectionHeader";
@@ -46,7 +50,8 @@ const Cell = styled(Reveal)`
   `}
 `;
 
-const Tile = styled.figure`
+const Tile = styled(Link)`
+  display: block;
   position: relative;
   width: 100%;
   height: 100%;
@@ -65,7 +70,8 @@ const Tile = styled.figure`
     transition: filter 0.8s ease, transform 0.9s cubic-bezier(0.22, 0.61, 0.36, 1);
   }
 
-  &:hover img {
+  &:hover img,
+  &:focus-visible img {
     filter: grayscale(0) contrast(1);
     transform: scale(1.05);
   }
@@ -86,7 +92,7 @@ const Tile = styled.figure`
 
 `;
 
-const Caption = styled.figcaption`
+const Caption = styled.div`
   position: absolute;
   inset: auto 0 0 0;
   z-index: 2;
@@ -109,26 +115,31 @@ const Caption = styled.figcaption`
     max-width: 44ch;
   }
 
-  a {
+  .more {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
     font-family: ${(props) => props.theme.fontMono};
     font-size: 0.72rem;
     letter-spacing: 0.06em;
-    align-self: flex-start;
-    border-bottom: 1px solid ${(props) => props.theme.lineStrong};
-    padding-bottom: 0.1rem;
-    transition: border-color 0.3s ease;
+    color: ${(props) => props.theme.textSoft};
+    transition: color 0.3s ease, transform 0.3s ease;
   }
 
-  a:hover {
-    border-color: ${(props) => props.theme.text};
+  ${Tile}:hover .more,
+  ${Tile}:focus-visible .more {
+    color: ${(props) => props.theme.text};
   }
 
-  a svg {
+  ${Tile}:hover .more svg,
+  ${Tile}:focus-visible .more svg {
+    transform: translate(2px, -2px);
+  }
+
+  .more svg {
     width: 13px;
     height: 13px;
+    transition: transform 0.3s ease;
   }
 `;
 
@@ -147,7 +158,19 @@ const Awaiting = styled.span`
   padding: 0.3rem 0.5rem;
 `;
 
-const Passions = () => (
+const Passions = () => {
+  const { slug } = useParams();
+  const navigate = useNavigate();
+  const passion = slug ? findPassion(slug) : null;
+
+  useBodyScrollLock(Boolean(passion));
+
+  const close = () => {
+    if (window.history.state?.idx > 0) navigate(-1);
+    else navigate("/passions", { replace: true });
+  };
+
+  return (
   <PageShell
     theme={darkTheme}
     title="Passions"
@@ -166,7 +189,11 @@ const Passions = () => (
           $span={item.span}
           delay={Math.min(i * 0.07, 0.25)}
         >
-          <Tile $hasImage={Boolean(item.image)}>
+          <Tile
+            to={`/passions/${item.id}`}
+            aria-label={`${item.label} : ouvrir la fiche`}
+            $hasImage={Boolean(item.image)}
+          >
             {item.image ? (
               <img src={item.image} alt={item.alt} loading="lazy" />
             ) : (
@@ -176,18 +203,27 @@ const Passions = () => (
             <Caption>
               <h2>{item.label}</h2>
               <p>{item.text}</p>
-              {item.link ? (
-                <a href={item.link} target="_blank" rel="noopener noreferrer">
-                  {item.linkLabel}
-                  <ArrowUpRight />
-                </a>
-              ) : null}
+              <span className="more">
+                En savoir plus
+                <ArrowUpRight />
+              </span>
             </Caption>
           </Tile>
         </Cell>
       ))}
     </Mosaic>
+
+    <AnimatePresence>
+      {passion ? (
+        <PassionOverlay
+          key={passion.id}
+          passion={passion}
+          onClose={close}
+        />
+      ) : null}
+    </AnimatePresence>
   </PageShell>
-);
+  );
+};
 
 export default Passions;

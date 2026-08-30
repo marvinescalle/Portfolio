@@ -72,6 +72,7 @@ function App() {
             <Route path="/projets/:slug" element={<Projects />} />
             <Route path="/formation" element={<Education />} />
             <Route path="/passions" element={<Passions />} />
+            <Route path="/passions/:slug" element={<Passions />} />
             <Route path="/cv" element={<Cv />} />
             <Route path="/contact" element={<Contact />} />
 

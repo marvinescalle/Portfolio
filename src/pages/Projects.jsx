@@ -1,6 +1,6 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import styled, { css } from "styled-components";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 
 import {
   archivedProjects,
@@ -188,10 +188,6 @@ const RepoBadge = styled.span`
   }
 `;
 
-const Shell = styled(motion.div)`
-  height: 100%;
-`;
-
 const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
@@ -312,7 +308,6 @@ const Projects = () => {
 
         {featuredProjects.map((project, i) => (
           <Reveal key={project.id} delay={i * 0.08}>
-            <Shell layoutId={`project-${project.id}`}>
             <FeaturedCard
               {...cardLink(project)}
               style={{ marginBottom: "1.5rem" }}
@@ -338,7 +333,6 @@ const Projects = () => {
                 <ProjectCta />
               </Body>
             </FeaturedCard>
-            </Shell>
           </Reveal>
         ))}
       </Block>
@@ -359,8 +353,7 @@ const Projects = () => {
         <Grid>
           {archivedProjects.map((project, i) => (
             <Reveal key={project.id} delay={Math.min(i * 0.04, 0.3)}>
-              <Shell layoutId={`project-${project.id}`}>
-              <SmallCard {...cardLink(project)}>
+                <SmallCard {...cardLink(project)}>
                 {project.github ? (
                   <RepoBadge aria-hidden="true">
                     <Github />
@@ -380,8 +373,7 @@ const Projects = () => {
                   <ProjectCta />
                 </Body>
               </SmallCard>
-              </Shell>
-            </Reveal>
+              </Reveal>
           ))}
         </Grid>
       </Block>

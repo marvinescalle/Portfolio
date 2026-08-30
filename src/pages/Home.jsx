@@ -104,11 +104,14 @@ const TopRight = styled(EdgeLink)`
    équilibrés autour du point focal. La position verticale est passée en
    style en ligne, pour ne pas transmettre une prop inconnue au lien de
    React Router. */
+/* Rotation et translation dans une seule déclaration transform : la
+   propriété `rotate` s'applique avant `transform`, si bien que le décalage
+   vertical partait dans le mauvais sens et désalignait la colonne de gauche
+   d'une centaine de pixels par rapport à celle de droite. */
 const RailLeft = styled(EdgeLink)`
   left: ${layout.gutter};
-  transform: translateY(-50%);
+  transform: translateY(-50%) rotate(180deg);
   writing-mode: vertical-rl;
-  rotate: 180deg;
 `;
 
 const RailRight = styled(EdgeLink)`
@@ -126,7 +129,7 @@ const BottomGroup = styled.div`
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: clamp(1.75rem, 4vw, 3.5rem);
+  gap: clamp(3rem, 7vw, 6rem);
   transition: left 0.8s ease;
 `;
 

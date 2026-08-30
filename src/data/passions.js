@@ -17,6 +17,15 @@
  *
  * Formats conseillés : JPG ou WebP, ~1600px de large, moins de 400 Ko.
  * ─────────────────────────────────────────────────────────────────────────
+ *
+ * FICHE DÉTAILLÉE
+ * Chaque vignette ouvre une fiche à l'adresse /passions/<id>. Les champs
+ * suivants sont facultatifs et n'apparaissent que s'ils sont renseignés :
+ *
+ *   longText   Texte développé, un ou plusieurs paragraphes séparés par une
+ *              ligne vide.
+ *   highlights Tableau de points marquants, par exemple des résultats.
+ *   gallery    Tableau de { src, alt } pour plusieurs images.
  */
 
 export const passions = [
@@ -27,6 +36,10 @@ export const passions = [
     image: null, // → /images/passions/sport.jpg
     alt: "Marvin Escalle pendant une séance de sport",
     span: "large",
+    // TODO à compléter : texte développé et points marquants.
+    longText: null,
+    highlights: [],
+    gallery: [],
   },
   {
     id: "dessin",
@@ -37,6 +50,9 @@ export const passions = [
     span: "tall",
     link: "https://www.instagram.com/marmar_drw/",
     linkLabel: "@marmar_drw",
+    longText: null,
+    highlights: [],
+    gallery: [],
   },
   {
     id: "voyage",
@@ -45,6 +61,9 @@ export const passions = [
     image: null, // → /images/passions/voyage.jpg
     alt: "Photographie prise lors d'un voyage en Asie",
     span: "wide",
+    longText: null,
+    highlights: [],
+    gallery: [],
   },
   {
     id: "tech",
@@ -53,7 +72,14 @@ export const passions = [
     image: null, // → /images/passions/tech.jpg
     alt: "Visuel d'un projet personnel autour de l'IA et de la 3D",
     span: "tall",
+    longText: null,
+    highlights: [],
+    gallery: [],
   },
 ];
+
+/** Retrouve une passion depuis son adresse, pour la fiche détaillée. */
+export const findPassion = (slug) =>
+  passions.find((item) => item.id === slug) ?? null;
 
 export default passions;

@@ -1,100 +1,15 @@
-import { useEffect, useRef } from "react";
-import { createPortal } from "react-dom";
 import styled from "styled-components";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 
-import { layout, media } from "../../styles/theme";
+import OverlaySheet from "../overlay/OverlaySheet";
 import TagList from "../ui/Tag";
-import { ArrowUpRight, Close, Github } from "../icons";
+import { ArrowUpRight, Github } from "../icons";
 
-/* ────────────────────────────────────────────────────────────────────────
-   Fiche projet en surimpression. La liste reste visible derrière, et
-   conserve sa position de défilement : la fiche est une couche, pas une
-   page qui remplace la précédente.
 
-   L'adresse change malgré tout, ce qui rend chaque fiche partageable, et
-   permet à Précédent et Suivant de la fermer et de la rouvrir.
-   ──────────────────────────────────────────────────────────────────────── */
 
-/* Racine unique : AnimatePresence n'anime la sortie que de son enfant
-   direct, les deux couches doivent donc vivre sous un même parent animé. */
-const Root = styled(motion.div)`
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-`;
 
-const Backdrop = styled.div`
-  position: absolute;
-  inset: 0;
-  background: rgba(10, 10, 10, 0.55);
-`;
 
-const Sheet = styled(motion.div)`
-  position: fixed;
-  z-index: 101;
-  top: 4vh;
-  bottom: 4vh;
-  left: 50%;
-  width: min(1100px, 92vw);
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  background: ${(props) => props.theme.body};
-  border: 1px solid ${(props) => props.theme.text};
-  overflow: hidden;
 
-  ${media.md`
-    top: 0;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    transform: none;
-    border: 0;
-  `}
-`;
-
-const Bar = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem clamp(1.25rem, 3vw, 2.5rem);
-  border-bottom: 1px solid ${(props) => props.theme.line};
-  flex: 0 0 auto;
-
-  .meta {
-    font-family: ${(props) => props.theme.fontMono};
-    font-size: 0.7rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: ${(props) => props.theme.textFaint};
-  }
-`;
-
-const CloseButton = styled.button`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: ${(props) => props.theme.fontMono};
-  font-size: 0.7rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-
-  svg {
-    width: 16px;
-    height: 16px;
-  }
-`;
-
-/* Le défilement a lieu ici, jamais sur la page derrière. */
-const Scroller = styled.div`
-  flex: 1 1 auto;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  padding: clamp(1.5rem, 4vw, 3rem) clamp(1.25rem, 3vw, 2.5rem)
-    clamp(2.5rem, 6vw, 4rem);
-`;
 
 const Title = styled.h2`
   font-size: clamp(1.9rem, 5.5vw, 3.6rem);
@@ -245,9 +160,6 @@ const Action = styled.a`
   }
 `;
 
-const FOCUSABLE =
-  'a[href], button:not([disabled]), input, textarea, select, [tabindex]:not([tabindex="-1"])';
-
 const Block = ({ title, children }) =>
   children ? (
     <Section>
@@ -279,163 +191,88 @@ const ListBlock = ({ title, items }) =>
   ) : null;
 
 const ProjectOverlay = ({ project, onClose }) => {
-  const sheetRef = useRef(null);
-  const closeRef = useRef(null);
-  const returnFocusRef = useRef(null);
-  const reduce = useReducedMotion();
-
-  useEffect(() => {
-    returnFocusRef.current = document.activeElement;
-    closeRef.current?.focus();
-
-    const onKeyDown = (event) => {
-      if (event.key === "Escape") {
-        event.stopPropagation();
-        onClose();
-        return;
-      }
-
-      if (event.key !== "Tab") return;
-
-      // Piège à focus : la tabulation ne sort pas de la fiche tant qu'elle
-      // est ouverte.
-      const nodes = sheetRef.current?.querySelectorAll(FOCUSABLE);
-      if (!nodes?.length) return;
-      const first = nodes[0];
-      const last = nodes[nodes.length - 1];
-
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
-    };
-
-    document.addEventListener("keydown", onKeyDown, true);
-
-    return () => {
-      document.removeEventListener("keydown", onKeyDown, true);
-      // Le focus revient sur la carte d'où l'on vient.
-      if (returnFocusRef.current instanceof HTMLElement) {
-        returnFocusRef.current.focus({ preventScroll: true });
-      }
-    };
-  }, [onClose]);
-
   const meta = [project.type, project.context, project.year]
     .filter(Boolean)
     .join(" · ");
 
-  const spring = reduce
-    ? { duration: 0 }
-    : { type: "spring", stiffness: 260, damping: 32 };
-
-  return createPortal(
-    <Root
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: reduce ? 0 : 0.22 }}
+  return (
+    <OverlaySheet
+      label={project.title}
+      meta={meta}
+      onClose={onClose}
     >
-      <Backdrop onClick={onClose} />
+      <Title>{project.title}</Title>
+      {project.description ? <Lead>{project.description}</Lead> : null}
 
-      <Sheet
-        ref={sheetRef}
-        role="dialog"
-        aria-modal="true"
-        aria-label={project.title}
-        layoutId={reduce ? undefined : `project-${project.id}`}
-        initial={reduce ? { opacity: 0 } : undefined}
-        animate={reduce ? { opacity: 1 } : undefined}
-        exit={reduce ? { opacity: 0 } : undefined}
-        transition={spring}
-      >
-        <Bar>
-          <span className="meta">{meta}</span>
-          <CloseButton type="button" onClick={onClose} ref={closeRef}>
-            Fermer
-            <Close />
-          </CloseButton>
-        </Bar>
+      <Cover>
+        {project.image ? (
+          <img
+            src={project.image}
+            alt={`Aperçu du projet ${project.title}`}
+            loading="lazy"
+          />
+        ) : (
+          <span className="placeholder" aria-hidden="true">
+            {project.title}
+          </span>
+        )}
+      </Cover>
 
-        <Scroller>
-          <Title>{project.title}</Title>
-          {project.description ? <Lead>{project.description}</Lead> : null}
+      <TextBlock title="Contexte" text={project.context} />
+      <TextBlock title="Objectif" text={project.objective} />
+      <TextBlock title="Mon rôle" text={project.role} />
+      <TextBlock title="Le projet" text={project.longDescription} />
+      <ListBlock title="Difficultés" items={project.challenges} />
+      <ListBlock title="Solutions" items={project.solutions} />
+      <ListBlock title="Résultat" items={project.results} />
 
-          <Cover>
-            {project.image ? (
-              <img
-                src={project.image}
-                alt={`Aperçu du projet ${project.title}`}
-                loading="lazy"
-              />
-            ) : (
-              <span className="placeholder" aria-hidden="true">
-                {project.title}
-              </span>
-            )}
-          </Cover>
+      {project.stack?.length ? (
+        <Block title="Stack">
+          <TagList
+            items={project.stack}
+            label={`Technologies du projet ${project.title}`}
+          />
+        </Block>
+      ) : null}
 
-          <TextBlock title="Contexte" text={project.context} />
-          <TextBlock title="Objectif" text={project.objective} />
-          <TextBlock title="Mon rôle" text={project.role} />
-          <TextBlock title="Le projet" text={project.longDescription} />
-          <ListBlock title="Difficultés" items={project.challenges} />
-          <ListBlock title="Solutions" items={project.solutions} />
-          <ListBlock title="Résultat" items={project.results} />
+      {project.gallery?.length ? (
+        <Block title="Captures">
+          <Gallery>
+            {project.gallery.map((shot) => (
+              <figure key={shot.src}>
+                <img src={shot.src} alt={shot.alt ?? ""} loading="lazy" />
+              </figure>
+            ))}
+          </Gallery>
+        </Block>
+      ) : null}
 
-          {project.stack?.length ? (
-            <Block title="Stack">
-              <TagList
-                items={project.stack}
-                label={`Technologies du projet ${project.title}`}
-              />
-            </Block>
+      {project.github || project.demo ? (
+        <Actions>
+          {project.github ? (
+            <Action
+              href={project.github}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Voir sur GitHub
+              <Github />
+            </Action>
           ) : null}
-
-          {project.gallery?.length ? (
-            <Block title="Captures">
-              <Gallery>
-                {project.gallery.map((shot) => (
-                  <figure key={shot.src}>
-                    <img src={shot.src} alt={shot.alt ?? ""} loading="lazy" />
-                  </figure>
-                ))}
-              </Gallery>
-            </Block>
+          {project.demo ? (
+            <Action
+              className="ghost"
+              href={project.demo}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Voir la démo
+              <ArrowUpRight />
+            </Action>
           ) : null}
-
-          {project.github || project.demo ? (
-            <Actions>
-              {project.github ? (
-                <Action
-                  href={project.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Voir sur GitHub
-                  <Github />
-                </Action>
-              ) : null}
-              {project.demo ? (
-                <Action
-                  className="ghost"
-                  href={project.demo}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Voir la démo
-                  <ArrowUpRight />
-                </Action>
-              ) : null}
-            </Actions>
-          ) : null}
-        </Scroller>
-      </Sheet>
-    </Root>,
-    document.body
+        </Actions>
+      ) : null}
+    </OverlaySheet>
   );
 };
 
