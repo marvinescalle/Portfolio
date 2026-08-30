@@ -66,7 +66,7 @@ const motionSpec = {
    l'angle vaut la distance divisée par le rayon, donnerait plus de deux tours
    entiers sur la diagonale : les trois formes ne seraient plus lisibles. Ce
    coefficient garde le rapport entre trajet et rotation, en le ramenant à un
-   tour et demi environ. */
+   tour environ. */
 const ROLL_RATIO = 0.6;
 
 const Screen = styled.div`
@@ -630,8 +630,15 @@ const Home = () => {
        sens des aiguilles, vers le centre il déroule en sens inverse. */
     const radius = (from.width + target.width) / 4;
     if (spin && radius > 0) {
-      const turn =
-        ((Math.hypot(dx, dy) / radius) * 180 * ROLL_RATIO) / Math.PI;
+      const raw = ((Math.hypot(dx, dy) / radius) * 180 * ROLL_RATIO) / Math.PI;
+      /* Arrondi au tour entier. Les trois formes ne sont pas réparties
+         exactement à 120 degrés et ne s'équilibrent donc pas autour du centre :
+         une orientation résiduelle décale leur contour de plusieurs pixels vers
+         le bas et en change la hauteur. Le symbole se reposait ainsi légèrement
+         penché, et ce rattrapage en fin de course se lisait comme un petit saut.
+         Sur un tour plein, il retrouve exactement l'aspect qu'il avait au
+         départ. */
+      const turn = Math.max(1, Math.round(raw / 360)) * 360;
       rollRef.current += dx > 0 ? -turn : turn;
     }
 
