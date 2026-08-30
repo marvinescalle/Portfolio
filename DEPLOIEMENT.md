@@ -8,7 +8,6 @@ vérifié en local uniquement.
 
 ## Checklist du jour J
 
-- [ ] Remplacer les deux CV dans `public/cv/` (voir plus bas)
 - [ ] Compléter les champs marqués `TODO` dans `src/data/`
 - [ ] Fusionner la branche `v2` dans `main`
 - [ ] Déployer la version finale sur Netlify
@@ -112,9 +111,10 @@ noms :
 
 Aucun code n'est à modifier : la page les reprend automatiquement.
 
-**Les deux fichiers actuellement en place sont une copie de l'ancien CV
-français.** La colonne anglaise affiche donc pour l'instant un document en
-français, à remplacer avant toute mise en ligne.
+Les deux CV en place sont les versions Business Analyst IT, au format
+US Letter. Si un futur fichier est au format A4, basculer `cv.format` sur
+`"a4"` dans `src/data/profile.js`, sans quoi une bande vide apparaîtra sous
+le document.
 
 Pour afficher une date de mise à jour sous le titre de la page, renseigner
 `cv.updatedAt` dans `src/data/profile.js`, par exemple `"Août 2026"`.

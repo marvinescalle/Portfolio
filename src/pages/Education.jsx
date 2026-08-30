@@ -1,6 +1,7 @@
 import styled from "styled-components";
 
 import { education } from "../data/education";
+import { media } from "../styles/theme";
 import PageShell from "../components/layout/PageShell";
 import SectionHeader from "../components/ui/SectionHeader";
 import Reveal from "../components/ui/Reveal";
@@ -43,17 +44,21 @@ const Entry = styled.li`
 `;
 
 const Head = styled.div`
-  display: flex;
+  /* Une grille plutôt qu'un flex : l'année reste calée à droite même quand
+     l'intitulé du diplôme passe sur deux lignes. */
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: baseline;
-  justify-content: space-between;
   gap: 1rem;
-  flex-wrap: wrap;
 
   h2 {
-    font-size: clamp(1.5rem, 3.4vw, 2.35rem);
+    /* Calé sur le mot le plus long des intitulés, « développement », pour
+       qu'il tienne sans être coupé jusqu'à 375px de large. */
+    font-size: clamp(1.35rem, 5.5vw, 2.35rem);
     font-weight: 800;
     letter-spacing: -0.03em;
     text-transform: uppercase;
+    overflow-wrap: break-word;
   }
 
   .period {
@@ -62,12 +67,42 @@ const Head = styled.div`
     letter-spacing: 0.14em;
     color: ${(props) => props.theme.textFaint};
   }
+
+  /* Sur mobile, l'année passe au-dessus du titre : côte à côte, elle ne
+     laisserait pas assez de place aux intitulés longs. */
+  ${media.sm`
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+
+    .period {
+      grid-row: 1;
+    }
+  `}
 `;
 
 const School = styled.p`
   margin-top: 0.35rem;
   font-size: 0.95rem;
   color: ${(props) => props.theme.textFaint};
+`;
+
+const Grade = styled.p`
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid ${(props) => props.theme.line};
+  font-family: ${(props) => props.theme.fontMono};
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: ${(props) => props.theme.textSoft};
+
+  strong {
+    font-weight: 500;
+    color: ${(props) => props.theme.text};
+  }
 `;
 
 const Body = styled.p`
@@ -101,6 +136,13 @@ const Education = () => (
             </Head>
 
             {item.school ? <School>{item.school}</School> : null}
+
+            {item.grade ? (
+              <Grade>
+                {item.gradeLabel ?? "Note"} : <strong>{item.grade}</strong>
+              </Grade>
+            ) : null}
+
             {item.description ? <Body>{item.description}</Body> : null}
 
             <TagList

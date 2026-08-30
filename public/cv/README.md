@@ -9,9 +9,16 @@ code n'est à modifier.
 | `Marvin_Escalle_CV_FR.pdf` | Français, colonne de gauche |
 | `Marvin_Escalle_CV_EN.pdf` | Anglais, colonne de droite |
 
-Les deux fichiers actuellement en place sont **une copie de l'ancien CV
-français**. La colonne anglaise affiche donc pour l'instant un CV en
-français : à remplacer avant toute mise en ligne.
+## Format des pages
 
-Pour changer un nom de fichier ou afficher une date de mise à jour, voir
-`cv` dans `src/data/profile.js`.
+Le cadre d'affichage reprend les proportions du document, sinon une bande
+vide apparaît sous le PDF. Les fichiers actuels sont au format **US Letter**
+(612 x 792 points), ce qui est indiqué par `cv.format: "letter"` dans
+`src/data/profile.js`.
+
+Si un futur CV est au format A4, remplacer cette valeur par `"a4"`.
+
+## Autres réglages
+
+Pour afficher une date de mise à jour sous le titre de la page, renseigner
+`cv.updatedAt` dans `src/data/profile.js`, par exemple `"Août 2026"`.

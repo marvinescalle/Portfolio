@@ -40,6 +40,13 @@ export const profile = {
       file: "/cv/Marvin_Escalle_CV_EN.pdf",
       downloadName: "Marvin_Escalle_CV_EN.pdf",
     },
+    /**
+     * Format des pages, utilisé pour donner au cadre d'affichage les mêmes
+     * proportions que le document : sans cela une bande vide apparaît sous
+     * le PDF. Les CV actuels sont au format US Letter (612 x 792 points).
+     * Basculer sur "a4" si les futurs fichiers sont au format A4.
+     */
+    format: "letter",
     // TODO à compléter : date de dernière mise à jour, ex. "Août 2026".
     updatedAt: null,
   },

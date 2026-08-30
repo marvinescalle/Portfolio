@@ -117,15 +117,20 @@ const Action = styled.a`
   }
 `;
 
-/* Le cadre suit exactement les proportions d'une page A4 : le document
-   remplit alors la zone, sans la marge vide qui entourait l'ancien
-   affichage. */
+/** Proportions des formats de page courants, hauteur / largeur. */
+const PAGE_RATIOS = {
+  a4: "1 / 1.4142",
+  letter: "1 / 1.2941",
+};
+
+/* Le cadre reprend exactement les proportions du document : le PDF remplit
+   alors toute la zone, sans bande vide au-dessous ni marge autour. */
 const Frame = styled.div`
   position: relative;
   flex: 1;
   border: 1px solid ${(props) => props.theme.line};
   background: ${(props) => props.theme.surface};
-  aspect-ratio: 1 / 1.414;
+  aspect-ratio: ${(props) => props.$ratio};
   overflow: hidden;
 
   object,
@@ -175,7 +180,7 @@ const FallbackAction = styled.a`
   }
 `;
 
-const CvColumn = ({ texts, file, downloadName, active, canEmbed }) => (
+const CvColumn = ({ texts, file, downloadName, active, canEmbed, ratio }) => (
   <Column data-active={active} aria-label={texts.label}>
     <Head>
       <h2>{texts.label}</h2>
@@ -193,7 +198,7 @@ const CvColumn = ({ texts, file, downloadName, active, canEmbed }) => (
       </Action>
     </Actions>
 
-    <Frame>
+    <Frame $ratio={ratio}>
       {canEmbed ? (
         <object
           data={`${file}#view=FitH&toolbar=0`}
@@ -290,6 +295,7 @@ const Cv = () => {
               downloadName={version.downloadName}
               active={language === version.id}
               canEmbed={canEmbed}
+              ratio={PAGE_RATIOS[profile.cv.format] ?? PAGE_RATIOS.a4}
             />
           ))}
         </Columns>
