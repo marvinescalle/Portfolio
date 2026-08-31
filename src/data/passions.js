@@ -211,12 +211,8 @@ export const passions = [
       fr: "Après mes études, j'ai consacré une longue période à voyager et découvrir différents pays d'Asie.",
       en: "After my studies, I spent a long stretch travelling across several countries in Asia.",
     },
-    image: "/images/passions/voyage/vietnam1.jpg",
-    /* Photo verticale dans une case horizontale : seuls 42 % de sa hauteur
-       restent visibles. Le visage et l'inscription du sommet sont trop
-       éloignés pour tenir tous les deux ; le cadrage est descendu juste assez
-       pour cadrer la borne et son altitude en gardant le visage entier. */
-    imagePosition: "center 62%",
+    // Déjà en 16/9, soit exactement le format de la case : aucun recadrage.
+    image: "/images/passions/voyage/top.jpg",
     alt: {
       fr: "Photographie prise lors d'un voyage en Asie",
       en: "A photograph taken while travelling in Asia",
