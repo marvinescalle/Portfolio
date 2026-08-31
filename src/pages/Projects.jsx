@@ -72,6 +72,14 @@ const Cover = styled.div`
     height: 100%;
     /* Les visuels sont hétérogènes : captures d'écran et logos : le mode
        contain évite de rogner un titre ou un logo en plein milieu. */
+    /* Une image en élément de grille reçoit une hauteur minimale automatique,
+       déduite de sa largeur définie et de son rapport d'origine. Dès que ce
+       rapport est plus haut que celui du cadre, ce plancher dépasse la hauteur
+       demandée : l'image déborde et se retrouve plaquée vers le bas, rognée.
+       Le schéma d'architecture, en 1,70, débordait ainsi de 41 px dans un
+       cadre en 16/9. */
+    min-height: 0;
+    min-width: 0;
     object-fit: contain;
     padding: 1.25rem;
     filter: grayscale(1);

@@ -40,6 +40,14 @@ const Cover = styled(motion.div)`
   img {
     width: 100%;
     height: 100%;
+    /* Une image en élément de grille reçoit une hauteur minimale automatique,
+       déduite de sa largeur définie et de son rapport d'origine. Dès que ce
+       rapport est plus haut que celui du cadre, ce plancher dépasse la hauteur
+       demandée : l'image déborde et se retrouve plaquée vers le bas, rognée.
+       Le schéma d'architecture, en 1,70, débordait ainsi de 41 px dans un
+       cadre en 16/9. */
+    min-height: 0;
+    min-width: 0;
     object-fit: contain;
     padding: clamp(1rem, 2vw, 2rem);
   }
