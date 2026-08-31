@@ -512,6 +512,30 @@ export const passions = [
             },
           },
           {
+            src: "/images/passions/jeux/mw3.jpg",
+            caption: { fr: "Call of Duty : Modern Warfare 3", en: "Call of Duty: Modern Warfare 3" },
+            alt: {
+              fr: "Jaquette de Call of Duty : Modern Warfare 3",
+              en: "Cover art for Call of Duty: Modern Warfare 3",
+            },
+          },
+          {
+            src: "/images/passions/jeux/subnautica.png",
+            caption: { fr: "Subnautica", en: "Subnautica" },
+            alt: {
+              fr: "Jaquette de Subnautica",
+              en: "Cover art for Subnautica",
+            },
+          },
+          {
+            src: "/images/passions/jeux/fallout-new-vegas.jpg",
+            caption: { fr: "Fallout : New Vegas", en: "Fallout: New Vegas" },
+            alt: {
+              fr: "Jaquette de Fallout : New Vegas",
+              en: "Cover art for Fallout: New Vegas",
+            },
+          },
+          {
             src: "/images/passions/jeux/lotro.png",
             caption: { fr: "The Lord of the Rings Online", en: "The Lord of the Rings Online" },
             alt: {
@@ -528,35 +552,11 @@ export const passions = [
             },
           },
           {
-            src: "/images/passions/jeux/mw3.jpg",
-            caption: { fr: "Call of Duty : Modern Warfare 3", en: "Call of Duty: Modern Warfare 3" },
+            src: "/images/passions/jeux/titan-quest.jpg",
+            caption: { fr: "Titan Quest", en: "Titan Quest" },
             alt: {
-              fr: "Jaquette de Call of Duty : Modern Warfare 3",
-              en: "Cover art for Call of Duty: Modern Warfare 3",
-            },
-          },
-          {
-            src: "/images/passions/jeux/zelda-skyward.jpg",
-            caption: { fr: "Zelda : Skyward Sword", en: "Zelda: Skyward Sword" },
-            alt: {
-              fr: "Jaquette de Zelda : Skyward Sword",
-              en: "Cover art for Zelda: Skyward Sword",
-            },
-          },
-          {
-            src: "/images/passions/jeux/zelda-phantom.jpg",
-            caption: { fr: "Zelda : Phantom Hourglass", en: "Zelda: Phantom Hourglass" },
-            alt: {
-              fr: "Jaquette de Zelda : Phantom Hourglass",
-              en: "Cover art for Zelda: Phantom Hourglass",
-            },
-          },
-          {
-            src: "/images/passions/jeux/subnautica.png",
-            caption: { fr: "Subnautica", en: "Subnautica" },
-            alt: {
-              fr: "Jaquette de Subnautica",
-              en: "Cover art for Subnautica",
+              fr: "Jaquette de Titan Quest",
+              en: "Cover art for Titan Quest",
             },
           },
           {
@@ -576,11 +576,11 @@ export const passions = [
             },
           },
           {
-            src: "/images/passions/jeux/sonic-adventure.jpg",
-            caption: { fr: "Sonic Adventure DX", en: "Sonic Adventure DX" },
+            src: "/images/passions/jeux/zelda-skyward.jpg",
+            caption: { fr: "Zelda : Skyward Sword", en: "Zelda: Skyward Sword" },
             alt: {
-              fr: "Jaquette de Sonic Adventure DX",
-              en: "Cover art for Sonic Adventure DX",
+              fr: "Jaquette de Zelda : Skyward Sword",
+              en: "Cover art for Zelda: Skyward Sword",
             },
           },
           ],

@@ -44,6 +44,11 @@ const Sheet = styled(motion.div)`
   display: flex;
   flex-direction: column;
   background: ${(props) => props.theme.body};
+  /* Couleur de texte posée sur la feuille elle-même : sans elle, tout élément
+     qui n'en déclare pas hérite de celle de la page, restée sombre. Le bouton
+     de fermeture se retrouvait ainsi en noir sur le fond noir des fiches de
+     passion, donc invisible. */
+  color: ${(props) => props.theme.text};
   border: 1px solid ${(props) => props.theme.text};
   overflow: hidden;
 
