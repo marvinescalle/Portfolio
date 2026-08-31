@@ -77,8 +77,8 @@ export const projects = [
       en: "A complete chain from commit to production on AWS: infrastructure described in Terraform, image built and scanned in continuous integration, deployment behind a load balancer, monitoring and alerting.",
     },
     context: {
-      fr: "Projet de fin de formation, Mastère DevOps",
-      en: "Final project, DevOps master's degree",
+      fr: "Projet de fin de formation, Master 2 DevOps",
+      en: "Final project, Master's Degree (M2) in DevOps",
     },
     objective: {
       fr: "Construire une chaîne de livraison de bout en bout, où un commit sur la branche principale mène à une application servie en ligne, sans aucune action manuelle sur l'infrastructure et sans jamais ouvrir d'accès SSH.",
@@ -232,7 +232,7 @@ export const projects = [
     github: "https://github.com/marvinescalle/Portfolio",
     demo: null,
     category: "web",
-    featured: true,
+    featured: false,
     published: true,
   },
 
