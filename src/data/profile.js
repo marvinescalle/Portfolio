@@ -9,8 +9,8 @@ export const profile = {
   fullName: "Marvin Escalle",
   role: { fr: "Ingénieur IT", en: "IT Engineer" },
   disciplines: {
-    fr: ["Automatisation", "Systèmes", "Data", "DevOps"],
-    en: ["Automation", "Systems", "Data", "DevOps"],
+    fr: ["Automatisation", "Business Analyst", "Data", "DevOps"],
+    en: ["Automation", "Business Analyst", "Data", "DevOps"],
   },
   tagline: {
     fr: "J'aime transformer des problématiques techniques et métier en solutions concrètes, automatisées et réellement utilisables.",

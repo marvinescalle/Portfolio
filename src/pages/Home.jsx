@@ -759,15 +759,15 @@ const Home = () => {
           <RailLeft to="/a-propos" style={{ top: "36%" }} $onDark={open}>
             {t.nav.items["/a-propos"]}
           </RailLeft>
-          <RailLeft to="/contact" style={{ top: "64%" }} $onDark={open}>
-            {t.nav.items["/contact"]}
+          <RailLeft to="/passions" style={{ top: "64%" }} $onDark={open}>
+            {t.nav.items["/passions"]}
           </RailLeft>
 
-          <RailRight to="/passions" style={{ top: "36%" }}>
-            {t.nav.items["/passions"]}
+          <RailRight to="/contact" style={{ top: "36%" }}>
+            {t.nav.items["/contact"]}
           </RailRight>
-          <RailRight to="/projets" style={{ top: "64%" }}>
-            {t.nav.items["/projets"]}
+          <RailRight to="/cv" style={{ top: "64%" }}>
+            {t.nav.items["/cv"]}
           </RailRight>
 
           <BottomGroup>
@@ -777,7 +777,7 @@ const Home = () => {
             <BottomLink to="/experiences">
               {t.nav.items["/experiences"]}
             </BottomLink>
-            <BottomLink to="/cv">{t.nav.items["/cv"]}</BottomLink>
+            <BottomLink to="/projets">{t.nav.items["/projets"]}</BottomLink>
           </BottomGroup>
 
           {/* Rendue en `span` : la ligne est déjà lisible et cliquable
@@ -792,7 +792,7 @@ const Home = () => {
                 {t.nav.items["/experiences"]}
               </BottomLink>
               <BottomLink as="span" $ghost>
-                {t.nav.items["/cv"]}
+                {t.nav.items["/projets"]}
               </BottomLink>
             </BottomGroup>
           </BottomGhost>

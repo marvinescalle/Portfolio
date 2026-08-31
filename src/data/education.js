@@ -46,7 +46,7 @@ export const education = [
       en: "Ynov Campus, Aix-en-Provence",
     },
     period: "2023",
-    grade: null,
+    grade: "14,00/20",
     gradeLabel: null,
     description: {
       fr: "Approfondissement du développement web full-stack, des bases de données et de la conception d'applications, avec des projets techniques menés en équipe sur plusieurs frameworks.",
@@ -65,7 +65,7 @@ export const education = [
       en: "Lycée Charles Péguy, Marseille",
     },
     period: "2022",
-    grade: null,
+    grade: "13,40/20",
     gradeLabel: null,
     description: {
       fr: "Services informatiques aux organisations. Formation apportant les fondamentaux du développement, des bases de données, des systèmes d'information et de la gestion de projet.",
