@@ -204,6 +204,15 @@ const ProjectOverlay = ({ project, onClose }) => {
     .filter(Boolean)
     .join(" · ");
 
+  /* Les dépôts ne sont pas tous sur GitHub : annoncer « Voir sur GitHub » pour
+     un lien GitLab enverrait le visiteur ailleurs que là où il croit aller. Le
+     libellé est donc déduit de l'adresse. */
+  const repoLabel = project.github?.includes("gitlab.")
+    ? s.gitlab
+    : project.github?.includes("github.")
+      ? s.github
+      : s.repo;
+
   return (
     <OverlaySheet
       label={project.title}
@@ -269,7 +278,7 @@ const ProjectOverlay = ({ project, onClose }) => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              {s.github}
+              {repoLabel}
               <Github />
             </Action>
           ) : null}

@@ -65,26 +65,97 @@
 
 export const projects = [
   {
-    id: "devops-diplome",
-    title: "Projet DevOps de fin de formation",
-    year: null,
-    description: null,
-    context: null,
-    stack: [],
-    image: null,
-    github: null,
+    id: "bloc4",
+    title: "Chaîne de livraison sur AWS",
+    year: "2025",
+    type: {
+      fr: "Infrastructure et chaîne de livraison",
+      en: "Infrastructure and delivery pipeline",
+    },
+    description: {
+      fr: "Chaîne complète du commit à la production sur AWS : infrastructure décrite en Terraform, image construite et analysée en intégration continue, déploiement derrière un répartiteur de charge, supervision et alertes.",
+      en: "A complete chain from commit to production on AWS: infrastructure described in Terraform, image built and scanned in continuous integration, deployment behind a load balancer, monitoring and alerting.",
+    },
+    context: {
+      fr: "Projet de fin de formation, Mastère DevOps",
+      en: "Final project, DevOps master's degree",
+    },
+    objective: {
+      fr: "Construire une chaîne de livraison de bout en bout, où un commit sur la branche principale mène à une application servie en ligne, sans aucune action manuelle sur l'infrastructure et sans jamais ouvrir d'accès SSH.",
+      en: "Build an end-to-end delivery chain where a commit on the main branch leads to an application served online, with no manual action on the infrastructure and without ever opening SSH access.",
+    },
+    role: {
+      fr: "Réalisation intégrale : architecture, écriture de l'infrastructure, conception du pipeline, choix des contrôles de sécurité, supervision et documentation d'exploitation.",
+      en: "Built end to end: architecture, infrastructure code, pipeline design, choice of security gates, monitoring and operational documentation.",
+    },
+    longDescription: {
+      fr: "L'application déployée est volontairement minimale, un service Flask exposant une page et une sonde de santé. Ce n'est pas elle le sujet : elle sert de charge utile à la chaîne construite autour, qui est l'objet du projet.\n\nToute l'infrastructure est décrite en Terraform, seize ressources AWS formant une architecture complète. Un registre ECR héberge les images, un groupe d'autoscaling adossé à un modèle de lancement porte les instances, et un répartiteur de charge applicatif les expose avec un groupe cible et sa sonde de santé. Deux groupes de sécurité distincts isolent le répartiteur des instances, seules joignables depuis lui. Un rôle IAM attaché aux instances leur donne la lecture du registre et l'accès à Session Manager, ce qui supprime le besoin d'une paire de clés SSH. La supervision repose sur un tableau de bord CloudWatch et une alarme sur les erreurs 5xx du répartiteur, reliée à un sujet SNS qui notifie par courriel.\n\nLe pipeline GitLab compte treize tâches réparties sur huit étapes. L'analyse de sécurité intervient à trois niveaux distincts : recherche de secrets dans le dépôt, contrôle des mauvaises configurations de l'infrastructure, et analyse de vulnérabilités de l'image construite. Suivent les tests unitaires, la validation puis le plan Terraform, la construction et la publication de l'image sur le registre, l'application du plan, un test de fumée contre le répartiteur, et une tâche de destruction pour rendre l'environnement.\n\nL'exploitation est documentée à part : un protocole décrivant les étapes et les critères de qualité, et un plan de réponse aux alertes précisant les rôles, la détection, le diagnostic et les actions immédiates.",
+      en: "The deployed application is deliberately minimal, a Flask service exposing one page and a health probe. It is not the point: it acts as the payload for the chain built around it, which is what the project is about.\n\nThe whole infrastructure is described in Terraform, sixteen AWS resources forming a complete architecture. An ECR registry holds the images, an autoscaling group backed by a launch template carries the instances, and an application load balancer exposes them through a target group and its health probe. Two separate security groups isolate the balancer from the instances, which are reachable only from it. An IAM role attached to the instances grants them registry read access and Session Manager access, removing the need for an SSH key pair. Monitoring rests on a CloudWatch dashboard and an alarm on the balancer's 5xx errors, wired to an SNS topic that notifies by email.\n\nThe GitLab pipeline has thirteen jobs across eight stages. Security scanning happens at three distinct levels: secret detection in the repository, misconfiguration checks on the infrastructure, and vulnerability scanning of the built image. Then come unit tests, Terraform validation and plan, image build and publication to the registry, applying the plan, a smoke test against the balancer, and a teardown job to return the environment.\n\nOperations are documented separately: a protocol setting out the stages and quality criteria, and an alert response plan covering roles, detection, diagnosis and immediate actions.",
+    },
+    challenges: {
+      fr: [
+        "Déployer et intervenir sur des instances sans jamais ouvrir le port SSH ni distribuer de clé.",
+        "Éviter qu'un simple push applique des changements d'infrastructure sans relecture.",
+        "S'assurer que le déploiement fonctionne réellement, et pas seulement que Terraform s'est terminé sans erreur.",
+        "Garder la facture d'un projet d'école proche de zéro entre deux sessions de travail.",
+      ],
+      en: [
+        "Deploying to and operating instances without ever opening the SSH port or handing out a key.",
+        "Preventing a plain push from applying infrastructure changes without review.",
+        "Making sure the deployment actually works, not merely that Terraform finished without error.",
+        "Keeping the bill of a school project close to zero between working sessions.",
+      ],
+    },
+    solutions: {
+      fr: [
+        "Accès par Session Manager via le rôle IAM des instances : aucune paire de clés, aucun port d'administration ouvert, et le répartiteur reste la seule entrée publique.",
+        "Application et destruction déclenchées manuellement, le plan étant transmis en artefact d'une étape à l'autre : ce qui est appliqué est exactement ce qui a été relu.",
+        "Étape de test de fumée interrogeant le répartiteur après déploiement, qui échoue si le service ne répond pas.",
+        "Tâche de destruction dédiée, qui rend l'ensemble de l'infrastructure en une action.",
+      ],
+      en: [
+        "Access through Session Manager via the instances' IAM role: no key pair, no administration port open, and the balancer remains the only public entry point.",
+        "Apply and teardown triggered manually, with the plan passed as an artefact between stages: what is applied is exactly what was reviewed.",
+        "A smoke test stage querying the balancer after deployment, failing if the service does not answer.",
+        "A dedicated teardown job returning the whole infrastructure in a single action.",
+      ],
+    },
+    results: {
+      fr: [
+        "Chaîne complète du commit à une application servie derrière le répartiteur de charge.",
+        "Alarme sur les erreurs 5xx vérifiée en conditions réelles, du passage en alerte jusqu'au retour à la normale notifié par courriel.",
+        "Analyse de sécurité systématique à trois niveaux : secrets, configuration de l'infrastructure et image conteneur.",
+        "127 commits sur six semaines de travail.",
+      ],
+      en: [
+        "A complete chain from commit to an application served behind the load balancer.",
+        "The 5xx alarm verified under real conditions, from raising the alert to the return to normal notified by email.",
+        "Systematic security scanning at three levels: secrets, infrastructure configuration and container image.",
+        "127 commits over six weeks of work.",
+      ],
+    },
+    stack: [
+      "Terraform",
+      "AWS ECR",
+      "AWS EC2 / Auto Scaling",
+      "AWS ALB",
+      "AWS IAM",
+      "CloudWatch",
+      "SNS",
+      "Docker",
+      "GitLab CI/CD",
+      "Python / Flask",
+      "pytest",
+      "Trivy",
+      "TFLint",
+      "Gitleaks",
+    ],
+    image: "/images/projects/bloc4-architecture.svg",
+    github: "https://gitlab.com/marvinescalle/bloc4",
     demo: null,
     category: "devops",
     featured: true,
-    // ────────────────────────────────────────────────────────────────
-    // EMPLACEMENT RÉSERVÉ au gros projet DevOps de fin de diplôme.
-    // Renseigner title / year / description / stack / github / image,
-    // puis passer `published` à true : la grande carte apparaîtra en tête
-    // de la page Projets, avant le portfolio.
-    // Déposer la capture d'écran dans public/images/projects/ et indiquer
-    // image: "/images/projects/nom-du-fichier.png".
-    // ────────────────────────────────────────────────────────────────
-    published: false,
+    published: true,
   },
   {
     id: "portfolio",

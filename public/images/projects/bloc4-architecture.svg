@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 940" width="1600" height="940" role="img" aria-label="Architecture de la chaîne de livraison : pipeline GitLab CI, registre ECR, répartiteur de charge et groupe d'autoscaling sur AWS, supervision CloudWatch et alertes SNS">
+  <defs>
+    <style>
+      .paper { fill: #FCF6F4; }
+      .ink   { fill: #0A0A0A; }
+      .box   { fill: none; stroke: #0A0A0A; stroke-width: 1.4; }
+      .soft  { fill: none; stroke: #0A0A0A; stroke-width: 1.1; opacity: 0.32; stroke-dasharray: 7 6; }
+      .rule  { stroke: #0A0A0A; stroke-width: 1.1; opacity: 0.18; }
+      .flow  { fill: none; stroke: #0A0A0A; stroke-width: 1.6; }
+      .mono  { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #0A0A0A; }
+      .band  { font-size: 20px; letter-spacing: 5px; opacity: 0.45; }
+      .name  { font-size: 25px; letter-spacing: 1.5px; font-weight: 600; }
+      .lab   { font-size: 19px; letter-spacing: 1px; }
+      .note  { font-size: 17px; letter-spacing: 0.6px; opacity: 0.55; }
+      .tiny  { font-size: 15px; letter-spacing: 2.2px; opacity: 0.45; }
+    </style>
+    <marker id="tip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#0A0A0A"/>
+    </marker>
+  </defs>
+
+  <rect class="paper" x="0" y="0" width="1600" height="940"/>
+
+  <!-- ═════════ 1. INTEGRATION CONTINUE ═════════ -->
+  <text class="mono band" x="90" y="66">01 · INTÉGRATION CONTINUE</text>
+  <line class="rule" x1="90" y1="86" x2="1510" y2="86"/>
+
+  <g class="mono">
+    <rect class="box" x="90"   y="118" width="160" height="86"/>
+    <text class="name" x="170" y="152" text-anchor="middle">LINT</text>
+    <text class="note" x="170" y="180" text-anchor="middle">gitleaks</text>
+
+    <rect class="box" x="270"  y="118" width="160" height="86"/>
+    <text class="name" x="350" y="152" text-anchor="middle">LINT</text>
+    <text class="note" x="350" y="180" text-anchor="middle">tflint · trivy</text>
+
+    <rect class="box" x="450"  y="118" width="160" height="86"/>
+    <text class="name" x="530" y="152" text-anchor="middle">TESTS</text>
+    <text class="note" x="530" y="180" text-anchor="middle">pytest</text>
+
+    <rect class="box" x="630"  y="118" width="160" height="86"/>
+    <text class="name" x="710" y="152" text-anchor="middle">VALIDATE</text>
+    <text class="note" x="710" y="180" text-anchor="middle">terraform</text>
+
+    <rect class="box" x="810"  y="118" width="160" height="86"/>
+    <text class="name" x="890" y="152" text-anchor="middle">PLAN</text>
+    <text class="note" x="890" y="180" text-anchor="middle">artefact</text>
+
+    <rect class="box" x="990"  y="118" width="160" height="86"/>
+    <text class="name" x="1070" y="152" text-anchor="middle">BUILD</text>
+    <text class="note" x="1070" y="180" text-anchor="middle">image · trivy</text>
+
+    <rect class="box" x="1170" y="118" width="160" height="86"/>
+    <text class="name" x="1250" y="152" text-anchor="middle">DEPLOY</text>
+    <text class="note" x="1250" y="180" text-anchor="middle">manuel</text>
+
+    <rect class="box" x="1350" y="118" width="160" height="86"/>
+    <text class="name" x="1430" y="152" text-anchor="middle">SMOKE</text>
+    <text class="note" x="1430" y="180" text-anchor="middle">test réel</text>
+  </g>
+
+  <g class="flow">
+    <path d="M 254 161 L 264 161" marker-end="url(#tip)"/>
+    <path d="M 434 161 L 444 161" marker-end="url(#tip)"/>
+    <path d="M 614 161 L 624 161" marker-end="url(#tip)"/>
+    <path d="M 794 161 L 804 161" marker-end="url(#tip)"/>
+    <path d="M 974 161 L 984 161" marker-end="url(#tip)"/>
+    <path d="M 1154 161 L 1164 161" marker-end="url(#tip)"/>
+    <path d="M 1334 161 L 1344 161" marker-end="url(#tip)"/>
+  </g>
+
+  <text class="mono tiny" x="90" y="236">SÉCURITÉ À TROIS NIVEAUX : SECRETS, CONFIGURATION, IMAGE</text>
+
+  <!-- ═════════ 2. INFRASTRUCTURE ═════════ -->
+  <text class="mono band" x="90" y="322">02 · INFRASTRUCTURE DÉCRITE EN TERRAFORM</text>
+  <line class="rule" x1="90" y1="342" x2="1510" y2="342"/>
+
+  <!-- registre -->
+  <g class="mono">
+    <rect class="box" x="90" y="382" width="300" height="150"/>
+    <text class="name" x="240" y="437" text-anchor="middle">ECR</text>
+    <text class="note" x="240" y="468" text-anchor="middle">registre d'images privé</text>
+  </g>
+
+  <!-- entree publique -->
+  <g class="mono">
+    <rect class="box" x="490" y="382" width="300" height="150"/>
+    <text class="name" x="640" y="437" text-anchor="middle">ALB</text>
+    <text class="note" x="640" y="468" text-anchor="middle">seule entrée publique</text>
+    <text class="note" x="640" y="494" text-anchor="middle">sonde de santé /health</text>
+  </g>
+
+  <!-- calcul -->
+  <rect class="soft" x="870" y="358" width="640" height="230" rx="4"/>
+  <text class="mono tiny" x="890" y="384">GROUPE DE SÉCURITÉ : JOIGNABLE DEPUIS L'ALB UNIQUEMENT</text>
+  <g class="mono">
+    <rect class="box" x="900" y="404" width="270" height="150"/>
+    <text class="name" x="1035" y="459" text-anchor="middle">EC2</text>
+    <text class="note" x="1035" y="490" text-anchor="middle">conteneur applicatif</text>
+
+    <rect class="box" x="1210" y="404" width="270" height="150"/>
+    <text class="name" x="1345" y="459" text-anchor="middle">AUTO SCALING</text>
+    <text class="note" x="1345" y="490" text-anchor="middle">modèle de lancement</text>
+  </g>
+
+  <g class="flow">
+    <path d="M 394 457 L 484 457" marker-end="url(#tip)"/>
+    <path d="M 794 457 L 894 457" marker-end="url(#tip)"/>
+  </g>
+  <text class="mono note" x="439" y="440" text-anchor="middle">pull</text>
+
+  <text class="mono note" x="90" y="628">Rôle IAM porté par les instances : lecture du registre et accès Session Manager.</text>
+  <text class="mono note" x="90" y="656">Aucune paire de clés, aucun port d'administration ouvert.</text>
+
+  <!-- ═════════ 3. SUPERVISION ═════════ -->
+  <text class="mono band" x="90" y="742">03 · SUPERVISION ET ALERTES</text>
+  <line class="rule" x1="90" y1="762" x2="1510" y2="762"/>
+
+  <g class="mono">
+    <rect class="box" x="90" y="796" width="380" height="112"/>
+    <text class="name" x="280" y="845" text-anchor="middle">CLOUDWATCH</text>
+    <text class="note" x="280" y="875" text-anchor="middle">tableau de bord · alarme 5xx</text>
+
+    <rect class="box" x="570" y="796" width="380" height="112"/>
+    <text class="name" x="760" y="845" text-anchor="middle">SNS</text>
+    <text class="note" x="760" y="875" text-anchor="middle">notification par courriel</text>
+
+    <rect class="box" x="1050" y="796" width="460" height="112"/>
+    <text class="name" x="1280" y="845" text-anchor="middle">ASTREINTE</text>
+    <text class="note" x="1280" y="875" text-anchor="middle">plan de réponse documenté</text>
+  </g>
+
+  <g class="flow">
+    <path d="M 474 852 L 564 852" marker-end="url(#tip)"/>
+    <path d="M 954 852 L 1044 852" marker-end="url(#tip)"/>
+  </g>
+
+  <!-- lien supervision vers infra -->
+  <path class="soft" d="M 640 796 L 640 700 L 640 592"/>
+</svg>
