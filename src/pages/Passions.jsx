@@ -66,6 +66,10 @@ const Tile = styled(Link)`
     width: 100%;
     height: 100%;
     object-fit: cover;
+    /* Le cadrage par défaut garde la bande centrale. Une photo verticale
+       posée dans une case horizontale y perd ses deux extrémités, d'où ce
+       réglage facultatif par entrée. */
+    object-position: ${(props) => props.$position ?? "center"};
     filter: grayscale(1) contrast(1.05);
     transform: scale(1.01);
     transition: filter 0.8s ease, transform 0.9s cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -196,6 +200,7 @@ const Passions = () => {
             to={`/passions/${item.id}`}
             aria-label={`${pick(item.label, language)} : ${t.passions.openSheet}`}
             $hasImage={Boolean(item.image)}
+            $position={item.imagePosition}
           >
             {item.image ? (
               <img src={item.image} alt={pick(item.alt, language)} loading="lazy" />

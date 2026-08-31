@@ -20,32 +20,6 @@ const Lead = styled.p`
   line-height: 1.7;
 `;
 
-const Visual = styled.div`
-  margin-top: clamp(1.5rem, 4vw, 2.5rem);
-  border: 1px solid ${(props) => props.theme.line};
-  background: ${(props) => props.theme.surface};
-  aspect-ratio: 16 / 9;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .awaiting {
-    font-family: ${(props) => props.theme.fontMono};
-    font-size: 0.7rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: ${(props) => props.theme.textFaint};
-    border: 1px dashed ${(props) => props.theme.line};
-    padding: 0.4rem 0.7rem;
-  }
-`;
-
 const Section = styled.section`
   margin-top: clamp(2rem, 5vw, 3.25rem);
 
@@ -154,8 +128,17 @@ const Shots = styled.div`
   grid-template-columns: repeat(${(props) => props.$columns}, minmax(0, 1fr));
   gap: clamp(0.6rem, 1.6vw, 1rem);
 
+  align-items: start;
+
   figure {
     margin: 0;
+    grid-column: span 1;
+  }
+
+  /* Une photo peut occuper la place de deux, quand elle mérite plus de place
+     ou qu'une ligne resterait incomplète. */
+  figure[data-span="2"] {
+    grid-column: span 2;
   }
 
   figcaption {
@@ -170,8 +153,13 @@ const Shots = styled.div`
   img {
     display: block;
     width: 100%;
-    aspect-ratio: ${(props) => props.$ratio};
-    object-fit: cover;
+    /* Sans cadrage commun, les proportions d'origine sont conservées et rien
+       n'est rogné. C'est ce qu'il faut pour des dessins, qu'un recadrage
+       amputerait. */
+    ${(props) =>
+      props.$ratio
+        ? `aspect-ratio: ${props.$ratio}; object-fit: cover;`
+        : "height: auto;"}
     border: 1px solid ${(props) => props.theme.line};
     background: ${(props) => props.theme.surface};
   }
@@ -184,6 +172,9 @@ const Shots = styled.div`
 
   ${media.sm`
     grid-template-columns: minmax(0, 1fr);
+
+    /* Une seule colonne : plus rien ne peut en occuper deux. */
+    figure[data-span="2"] { grid-column: span 1; }
   `}
 `;
 
@@ -218,16 +209,6 @@ const PassionOverlay = ({ passion, onClose }) => {
   <OverlaySheet label={label} meta={label} onClose={onClose}>
     <Title>{label}</Title>
     <Lead>{pick(passion.text, language)}</Lead>
-
-    <Visual>
-      {passion.image ? (
-        <img src={passion.image} alt={pick(passion.alt, language)} loading="lazy" />
-      ) : (
-        <span className="awaiting" aria-hidden="true">
-          {t.passions.awaiting}
-        </span>
-      )}
-    </Visual>
 
     {pick(passion.longText, language) ? (
       <Section>
@@ -280,13 +261,15 @@ const PassionOverlay = ({ passion, onClose }) => {
               $ratio={passion.story.ratio}
             >
               {group.photos.map((shot) => (
-                <figure key={shot.src}>
+                <figure key={shot.src} data-span={shot.span ?? 1}>
                   {shot.caption ? (
                     <figcaption>{pick(shot.caption, language)}</figcaption>
                   ) : null}
                   <img
                     src={shot.src}
                     alt={pick(shot.alt, language) ?? ""}
+                    width={shot.width}
+                    height={shot.height}
                     loading="lazy"
                   />
                 </figure>

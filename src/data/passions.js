@@ -144,6 +144,65 @@ export const passions = [
     longText: null,
     highlights: [],
     gallery: [],
+    story: {
+      intro: { fr: "texte", en: "texte" },
+      columns: 2,
+      /* Aucun cadrage commun : recadrer un dessin l'amputerait. Chaque
+         planche garde ses proportions d'origine, ce qui oblige à donner ses
+         dimensions : sans elles le navigateur ne réserve aucune hauteur, les
+         images s'effondrent avant chargement et le chargement différé ne se
+         déclenche jamais. */
+      ratio: null,
+      groups: [
+        {
+          id: "planches",
+          title: null,
+          text: null,
+          photos: [
+          {
+            src: "/images/passions/dessin/eclipse.jpg",
+            width: 1125,
+            height: 1400,
+            caption: { fr: "Eclipse", en: "Eclipse" },
+            alt: {
+              fr: "Dessin de Marvin Escalle : Eclipse",
+              en: "Drawing by Marvin Escalle: Eclipse",
+            },
+          },
+          {
+            src: "/images/passions/dessin/griffith.jpg",
+            width: 780,
+            height: 1400,
+            caption: { fr: "Griffith", en: "Griffith" },
+            alt: {
+              fr: "Dessin de Marvin Escalle : Griffith",
+              en: "Drawing by Marvin Escalle: Griffith",
+            },
+          },
+          {
+            src: "/images/passions/dessin/jolyne.jpg",
+            width: 1400,
+            height: 1004,
+            caption: { fr: "Jolyne", en: "Jolyne" },
+            alt: {
+              fr: "Dessin de Marvin Escalle : Jolyne",
+              en: "Drawing by Marvin Escalle: Jolyne",
+            },
+          },
+          {
+            src: "/images/passions/dessin/kaido.jpg",
+            width: 1116,
+            height: 1400,
+            caption: { fr: "Kaido", en: "Kaido" },
+            alt: {
+              fr: "Dessin de Marvin Escalle : Kaido",
+              en: "Drawing by Marvin Escalle: Kaido",
+            },
+          },
+          ],
+        },
+      ],
+    },
   },
   {
     id: "voyage",
@@ -152,7 +211,12 @@ export const passions = [
       fr: "Après mes études, j'ai consacré une longue période à voyager et découvrir différents pays d'Asie.",
       en: "After my studies, I spent a long stretch travelling across several countries in Asia.",
     },
-    image: "/images/passions/voyage/thailande1.jpg",
+    image: "/images/passions/voyage/vietnam1.jpg",
+    /* Photo verticale dans une case horizontale : seuls 42 % de sa hauteur
+       restent visibles. Le visage et l'inscription du sommet sont trop
+       éloignés pour tenir tous les deux ; le cadrage est descendu juste assez
+       pour cadrer la borne et son altitude en gardant le visage entier. */
+    imagePosition: "center 62%",
     alt: {
       fr: "Photographie prise lors d'un voyage en Asie",
       en: "A photograph taken while travelling in Asia",
@@ -162,7 +226,7 @@ export const passions = [
     highlights: [],
     gallery: [],
     story: {
-      intro: null,
+      intro: { fr: "texte", en: "texte" },
       columns: 3,
       ratio: "4 / 5",
       groups: [
@@ -278,6 +342,7 @@ export const passions = [
         photos: [
           {
             src: "/images/passions/voyage/ouzbekistan1.jpg",
+            span: 2,
             alt: {
               fr: "Photographie prise en Ouzbékistan",
               en: "Photograph taken in Uzbekistan",
