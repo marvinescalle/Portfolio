@@ -95,7 +95,68 @@ export const projects = [
       en: "The site you are looking at. A bespoke React interface, with no component framework or template: typographic composition, black and white contrast, restrained motion and content driven entirely by data files.",
     },
     context: { fr: "Projet personnel", en: "Personal project" },
-    stack: ["React", "Vite", "styled-components", "Framer Motion"],
+    type: { fr: "Application web", en: "Web application" },
+    objective: {
+      fr: "Remplacer un portfolio devenu inutilisable, dont la chaîne de build ne démarrait plus, par un site que je puisse faire évoluer seul et dont le contenu se modifie sans toucher au code.",
+      en: "Replace a portfolio that had become unusable, its build chain no longer starting, with a site I can maintain alone and whose content changes without touching the code.",
+    },
+    role: {
+      fr: "Conception et développement intégral : migration de la chaîne de build, architecture des données, interface, animations et accessibilité.",
+      en: "Design and development throughout: build chain migration, data architecture, interface, motion and accessibility.",
+    },
+    longDescription: {
+      fr: "Le site est entièrement piloté par des fichiers de données. Chaque expérience, projet, diplôme ou passion est un objet dans src/data/, avec ses champs en français et en anglais. Ajouter une entrée ne demande aucune modification de composant, ce qui rend le site maintenable dans le temps sans replonger dans le code.\n\nL'interface est écrite à la main, sans bibliothèque de composants ni thème acheté : composition typographique, contraste noir et blanc, et une page d'accueil traitée comme une couverture plutôt que comme un sommaire. L'animation d'introduction est un shader WebGL écrit en GLSL, qui applique une rotation dont l'intensité dépend de la distance au centre. Un masque CSS ou SVG n'aurait pas permis cette torsion, tous deux appliquant la même transformation à l'ensemble de la forme.\n\nLe reste du mouvement passe volontairement par des transitions CSS plutôt que par des boucles JavaScript : rien ne reste bloqué si le navigateur suspend le rendu, et il n'y a aucun état à remettre en place quand une animation est interrompue.",
+      en: "The site is driven entirely by data files. Every role, project, qualification and interest is an object in src/data/, carrying its French and English fields. Adding an entry requires no component change, which keeps the site maintainable over time without diving back into the code.\n\nThe interface is written by hand, with no component library or purchased theme: typographic composition, black and white contrast, and a home page treated as a cover rather than a table of contents. The intro animation is a WebGL shader written in GLSL, applying a rotation whose strength depends on the distance from the centre. A CSS or SVG mask could not produce that torsion, since both apply the same transformation to the whole shape.\n\nThe remaining motion deliberately runs on CSS transitions rather than JavaScript loops: nothing stays stuck if the browser suspends rendering, and there is no state to restore when an animation is interrupted.",
+    },
+    challenges: {
+      fr: [
+        "La version précédente reposait sur Create React App, dont la chaîne de build ne fonctionnait plus sur une version récente de Node.",
+        "Obtenir une vraie torsion à l'écran, et non une forme qui pivote d'un bloc.",
+        "Tenir un site bilingue sans dupliquer les pages ni les composants.",
+        "Garder le contenu modifiable par une personne qui ne veut pas relire le code à chaque ajout.",
+      ],
+      en: [
+        "The previous version relied on Create React App, whose build chain no longer worked on a recent Node release.",
+        "Producing a genuine torsion on screen rather than a shape rotating as one block.",
+        "Running a bilingual site without duplicating pages or components.",
+        "Keeping the content editable by someone who does not want to re-read the code for every addition.",
+      ],
+    },
+    solutions: {
+      fr: [
+        "Migration vers Vite, qui a ramené le démarrage à moins d'une seconde et supprimé la dette de configuration.",
+        "Rendu par pixel dans un shader WebGL, seule approche permettant une rotation dont l'intensité varie avec le rayon.",
+        "Traductions portées par les données elles-mêmes, chaque champ existant en deux langues, et choix mémorisé d'une visite à l'autre.",
+        "Documentation en tête de chaque fichier de données, indiquant quoi renseigner et où déposer les images.",
+      ],
+      en: [
+        "Migration to Vite, which brought start-up under a second and removed the configuration debt.",
+        "Per-pixel rendering in a WebGL shader, the only approach allowing a rotation whose strength varies with the radius.",
+        "Translations carried by the data itself, every field existing in both languages, with the choice remembered between visits.",
+        "Documentation at the top of each data file, stating what to fill in and where to put the images.",
+      ],
+    },
+    results: {
+      fr: [
+        "Site entièrement bilingue, du contenu éditorial aux libellés d'interface.",
+        "Mouvement respectant le réglage système de réduction des animations, sur l'ensemble des pages.",
+        "Ajout d'une expérience, d'un projet ou d'une passion sans écrire une ligne de composant.",
+      ],
+      en: [
+        "A fully bilingual site, from editorial content down to interface labels.",
+        "Motion that honours the system setting for reduced animation, across every page.",
+        "Adding a role, project or interest without writing a line of component code.",
+      ],
+    },
+    stack: [
+      "React 19",
+      "Vite",
+      "React Router",
+      "styled-components",
+      "Framer Motion",
+      "WebGL / GLSL",
+      "Netlify",
+    ],
     image: null,
     github: "https://github.com/marvinescalle/Portfolio",
     demo: null,
