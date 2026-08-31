@@ -228,17 +228,42 @@ const RailRight = styled(EdgeLink)`
 const BottomGroup = styled.div`
   ${edge};
   bottom: ${layout.gutter};
-  left: ${(props) => (props.$open ? "74%" : "50%")};
+  left: 50%;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
   gap: clamp(3rem, 7vw, 6rem);
-  transition: left 0.8s ease;
+`;
+
+/* Doublure claire de la ligne du bas, dévoilée derrière le panneau noir.
+
+   Les trois libellés restent centrés, si bien que la limite du panneau tombe
+   au milieu de « Expériences ». Teinter chaque lien selon sa position le
+   couperait donc en plein mot : c'est un masque qu'il faut, pas un booléen.
+
+   Le masque part du bord gauche et s'ouvre jusqu'à la moitié de l'écran. Avec
+   la même durée et la même courbe que le panneau, sa limite suit exactement
+   celle du noir : un retrait qui va de 100 % à 50 % place le bord à
+   largeur x 0,5 x avancement, soit la position du bord d'un panneau large de
+   moitié mis à l'échelle depuis la gauche. */
+const BottomGhost = styled.div`
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  color: ${(props) => props.theme.body};
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path ${motionSpec.panelBack};
+
+  &[data-visible="true"] {
+    clip-path: inset(0 50% 0 0);
+    transition: clip-path ${motionSpec.panel};
+  }
 `;
 
 const BottomLink = styled(Link)`
   ${linkVisual};
-  color: ${(props) => props.theme.text};
+  color: ${(props) => props.$ghost ? "currentColor" : props.theme.text};
 `;
 
 /** Sur mobile, les libellés verticaux deviennent une liste lisible. */
@@ -745,7 +770,7 @@ const Home = () => {
             {t.nav.items["/projets"]}
           </RailRight>
 
-          <BottomGroup $open={open}>
+          <BottomGroup>
             <BottomLink to="/formation">
               {t.nav.items["/formation"]}
             </BottomLink>
@@ -754,6 +779,23 @@ const Home = () => {
             </BottomLink>
             <BottomLink to="/cv">{t.nav.items["/cv"]}</BottomLink>
           </BottomGroup>
+
+          {/* Rendue en `span` : la ligne est déjà lisible et cliquable
+              au-dessus, cette doublure ne doit ni recevoir le focus ni
+              apparaître deux fois pour un lecteur d'écran. */}
+          <BottomGhost data-visible={open} aria-hidden="true">
+            <BottomGroup>
+              <BottomLink as="span" $ghost>
+                {t.nav.items["/formation"]}
+              </BottomLink>
+              <BottomLink as="span" $ghost>
+                {t.nav.items["/experiences"]}
+              </BottomLink>
+              <BottomLink as="span" $ghost>
+                {t.nav.items["/cv"]}
+              </BottomLink>
+            </BottomGroup>
+          </BottomGhost>
         </DesktopOnly>
 
         {!open ? (
