@@ -464,7 +464,9 @@ export const passions = [
       fr: "Des salons en réseau aux longues sessions solo, une pratique qui va de la GameCube aux jeux en ligne d'aujourd'hui.",
       en: "From living-room multiplayer to long solo sessions, a habit running from the GameCube to today's online games.",
     },
-    image: "/images/passions/jeux/elden-ring.jpg",
+    /* Illustration en 16/9, soit exactement le format de la case large :
+       aucun recadrage, contrairement à une jaquette verticale. */
+    image: "/images/passions/jeux/vignette.jpg",
     alt: {
       fr: "Sélection de jeux marquants",
       en: "A selection of memorable games",
