@@ -52,9 +52,13 @@ void main() {
   float p = clamp(uProgress, 0.0, 1.0);
   float ease = p * p * (3.0 - 2.0 * p);
 
-  // Rotation différentielle : forte au centre, quasi nulle sur les bords.
-  // C'est elle qui tord la matière au lieu de la faire pivoter en bloc.
-  float swirl = exp(-r * 2.2) * (6.2 * p + 1.6 * uTime);
+  /* Rotation différentielle : forte au centre, faible sur les bords. C'est
+     elle qui tord la matière au lieu de la faire pivoter en bloc.
+
+     La décroissance est adoucie en même temps que la torsion est augmentée :
+     à décroissance rapide, le surplus de rotation se concentre là où le voile
+     a déjà disparu, et ne se voit donc pas. */
+  float swirl = exp(-r * 1.6) * (9.6 * p + 2.6 * uTime);
   float twisted = angle + swirl;
 
   // Rayon du voile : il part au-delà des coins et converge vers le centre.
