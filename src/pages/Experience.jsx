@@ -49,10 +49,22 @@ const Logo = styled.div`
   overflow: hidden;
 
   img {
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
+    /* Dimensionner par max-width et max-height avec des dimensions
+       automatiques ne suffit pas : la largeur maximale est appliquée en
+       premier, et la hauteur qui en découle peut dépasser le cadre sans être
+       ramenée dedans. Le logo Fiscalyse débordait ainsi de 8 px et se
+       retrouvait plaqué contre le bord inférieur. On remplit donc le cadre et
+       c'est object-fit qui inscrit le logo dedans, en le centrant. */
+    width: 100%;
+    height: 100%;
+    /* Un élément de grille a une hauteur minimale automatique, déduite de sa
+       largeur définie et du rapport d'origine de l'image. Pour Fiscalyse cela
+       valait 44 px contre les 36 px du cadre : la hauteur imposée ici était
+       donc écrasée, l'image débordait et se retrouvait plaquée en bas. Le
+       logo Thales y échappait, son rapport très allongé donnant un minimum
+       inférieur à la hauteur du cadre. */
+    min-height: 0;
+    min-width: 0;
     object-fit: contain;
   }
 
