@@ -33,19 +33,27 @@ const Card = styled.article`
 /* Accroche visuelle en tête de carte : le logo de l'entreprise, ou son
    initiale tant qu'aucun fichier n'a été déposé. */
 const Logo = styled.div`
-  width: clamp(3.75rem, 6vw, 5rem);
-  height: clamp(3.75rem, 6vw, 5rem);
+  /* Deux formats distincts. Sans logo, un carré porte l'initiale. Avec logo,
+     un cadre allongé : les logotypes d'entreprise sont des mots, souvent très
+     larges, et un cadre carré les réduirait à un filet de quelques pixels de
+     haut. Celui de Thales fait 8,4 pour 1. */
+  width: ${(props) =>
+    props.$hasLogo ? "clamp(9rem, 15vw, 12rem)" : "clamp(3.75rem, 6vw, 5rem)"};
+  height: ${(props) =>
+    props.$hasLogo ? "clamp(3rem, 4.5vw, 3.5rem)" : "clamp(3.75rem, 6vw, 5rem)"};
   margin-bottom: 1.5rem;
   border: 1px solid ${(props) => props.theme.lineStrong};
   display: grid;
   place-items: center;
+  padding: ${(props) => (props.$hasLogo ? "0.5rem 0.8rem" : "0")};
   overflow: hidden;
 
   img {
-    width: 100%;
-    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
     object-fit: contain;
-    padding: 0.6rem;
   }
 
   span {
@@ -217,7 +225,7 @@ const Experience = () => {
         <Reveal key={job.id} delay={i * 0.08}>
           <Card>
             <Identity>
-              <Logo>
+              <Logo $hasLogo={Boolean(job.logo)}>
                 {job.logo ? (
                   <img src={job.logo} alt={`${t.experience.logoOf} ${job.company}`} />
                 ) : (

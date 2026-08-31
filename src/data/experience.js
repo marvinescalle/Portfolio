@@ -28,10 +28,7 @@ export const mainExperiences = [
     period: null,
     location: "Gennevilliers",
     website: null,
-    // Déposer le fichier dans public/images/logos/ puis indiquer son chemin,
-    // par exemple "/images/logos/thales.png". Sans logo, l'initiale de
-    // l'entreprise s'affiche dans le cadre.
-    logo: null,
+    logo: "/images/logos/thales.webp",
     summary: {
       fr: "Plusieurs années d'expérience dans un environnement industriel exigeant, avec des missions mêlant automatisation, systèmes, données et activités d'intégration / vérification / validation.",
       en: "Several years in a demanding industrial environment, on assignments combining automation, systems, data and integration, verification and validation work.",
@@ -73,7 +70,7 @@ export const mainExperiences = [
     period: null,
     location: null,
     website: "https://www.fiscalyse.fr",
-    logo: null, // voir public/images/logos/README.md
+    logo: "/images/logos/fiscalyse.png",
     summary: {
       fr: "Expérience orientée développement et amélioration d'outils internes dans une PME, au plus proche des besoins des utilisateurs et des problématiques métier.",
       en: "A role centred on building and improving internal tools in a small company, close to user needs and business realities.",
