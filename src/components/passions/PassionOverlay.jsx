@@ -167,10 +167,16 @@ const Shots = styled.div`
     width: 100%;
     /* Sans cadrage commun, les proportions d'origine sont conservées et rien
        n'est rogné. C'est ce qu'il faut pour des dessins, qu'un recadrage
-       amputerait. */
+       amputerait.
+
+       Avec un cadrage commun, deux comportements possibles. Le remplissage
+       remplit la vignette en rognant, ce qui convient à des photographies.
+       L'inscription y place l'image entière, ce qu'il faut pour des visuels
+       graphiques dont on ne peut rien retrancher : une jaquette verticale et
+       un logotype large ne se recadrent pas au même format sans perte. */
     ${(props) =>
       props.$ratio
-        ? `aspect-ratio: ${props.$ratio}; object-fit: cover;`
+        ? `aspect-ratio: ${props.$ratio}; object-fit: ${props.$fit};`
         : "height: auto;"}
     border: 1px solid ${(props) => props.theme.line};
     background: ${(props) => props.theme.surface};
@@ -288,6 +294,7 @@ const PassionOverlay = ({ passion, onClose }) => {
             <Shots
               $columns={passion.story.columns}
               $ratio={passion.story.ratio}
+              $fit={passion.story.fit ?? "cover"}
             >
               {group.photos.map((shot) => (
                 <figure key={shot.src} data-span={shot.span ?? 1}>

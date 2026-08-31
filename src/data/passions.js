@@ -457,6 +457,137 @@ export const passions = [
     highlights: [],
     gallery: [],
   },
+  {
+    id: "jeux",
+    label: { fr: "Jeux vidéo", en: "Video games" },
+    text: {
+      fr: "Des salons en réseau aux longues sessions solo, une pratique qui va de la GameCube aux jeux en ligne d'aujourd'hui.",
+      en: "From living-room multiplayer to long solo sessions, a habit running from the GameCube to today's online games.",
+    },
+    image: "/images/passions/jeux/lol.jpg",
+    alt: {
+      fr: "Sélection de jeux marquants",
+      en: "A selection of memorable games",
+    },
+    span: "wide",
+    longText: null,
+    highlights: [],
+    gallery: [],
+    story: {
+      intro: { fr: "texte", en: "texte" },
+      columns: 3,
+      ratio: "4 / 5",
+      /* Jaquettes verticales et logotypes larges se côtoient, de 0,65 à 2,24
+         de rapport. Les inscrire dans la vignette plutôt que les y rogner :
+         un recadrage commun amputerait les seconds. */
+      fit: "contain",
+      groups: [
+        {
+          id: "selection",
+          title: null,
+          text: null,
+          photos: [
+          {
+            src: "/images/passions/jeux/r6.jpg",
+            caption: { fr: "Rainbow Six Siege", en: "Rainbow Six Siege" },
+            alt: {
+              fr: "Jaquette de Rainbow Six Siege",
+              en: "Cover art for Rainbow Six Siege",
+            },
+          },
+          {
+            src: "/images/passions/jeux/lol.jpg",
+            caption: { fr: "League of Legends", en: "League of Legends" },
+            alt: {
+              fr: "Jaquette de League of Legends",
+              en: "Cover art for League of Legends",
+            },
+          },
+          {
+            src: "/images/passions/jeux/elden-ring.jpg",
+            caption: { fr: "Elden Ring", en: "Elden Ring" },
+            alt: {
+              fr: "Jaquette de Elden Ring",
+              en: "Cover art for Elden Ring",
+            },
+          },
+          {
+            src: "/images/passions/jeux/lotro.png",
+            caption: { fr: "The Lord of the Rings Online", en: "The Lord of the Rings Online" },
+            alt: {
+              fr: "Jaquette de The Lord of the Rings Online",
+              en: "Cover art for The Lord of the Rings Online",
+            },
+          },
+          {
+            src: "/images/passions/jeux/dofus.png",
+            caption: { fr: "Dofus", en: "Dofus" },
+            alt: {
+              fr: "Jaquette de Dofus",
+              en: "Cover art for Dofus",
+            },
+          },
+          {
+            src: "/images/passions/jeux/mw3.jpg",
+            caption: { fr: "Call of Duty : Modern Warfare 3", en: "Call of Duty: Modern Warfare 3" },
+            alt: {
+              fr: "Jaquette de Call of Duty : Modern Warfare 3",
+              en: "Cover art for Call of Duty: Modern Warfare 3",
+            },
+          },
+          {
+            src: "/images/passions/jeux/zelda-skyward.jpg",
+            caption: { fr: "Zelda : Skyward Sword", en: "Zelda: Skyward Sword" },
+            alt: {
+              fr: "Jaquette de Zelda : Skyward Sword",
+              en: "Cover art for Zelda: Skyward Sword",
+            },
+          },
+          {
+            src: "/images/passions/jeux/zelda-phantom.jpg",
+            caption: { fr: "Zelda : Phantom Hourglass", en: "Zelda: Phantom Hourglass" },
+            alt: {
+              fr: "Jaquette de Zelda : Phantom Hourglass",
+              en: "Cover art for Zelda: Phantom Hourglass",
+            },
+          },
+          {
+            src: "/images/passions/jeux/subnautica.png",
+            caption: { fr: "Subnautica", en: "Subnautica" },
+            alt: {
+              fr: "Jaquette de Subnautica",
+              en: "Cover art for Subnautica",
+            },
+          },
+          {
+            src: "/images/passions/jeux/smash-melee.jpg",
+            caption: { fr: "Super Smash Bros. Melee", en: "Super Smash Bros. Melee" },
+            alt: {
+              fr: "Jaquette de Super Smash Bros. Melee",
+              en: "Cover art for Super Smash Bros. Melee",
+            },
+          },
+          {
+            src: "/images/passions/jeux/mario-kart.jpg",
+            caption: { fr: "Mario Kart : Double Dash", en: "Mario Kart: Double Dash" },
+            alt: {
+              fr: "Jaquette de Mario Kart : Double Dash",
+              en: "Cover art for Mario Kart: Double Dash",
+            },
+          },
+          {
+            src: "/images/passions/jeux/sonic-adventure.jpg",
+            caption: { fr: "Sonic Adventure DX", en: "Sonic Adventure DX" },
+            alt: {
+              fr: "Jaquette de Sonic Adventure DX",
+              en: "Cover art for Sonic Adventure DX",
+            },
+          },
+          ],
+        },
+      ],
+    },
+  },
 ];
 
 /** Retrouve une passion depuis son adresse, pour la fiche détaillée. */
