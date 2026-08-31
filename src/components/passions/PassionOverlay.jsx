@@ -3,6 +3,7 @@ import styled from "styled-components";
 import OverlaySheet from "../overlay/OverlaySheet";
 import { ArrowUpRight } from "../icons";
 import { pick, useLanguage, useTranslation } from "../../i18n";
+import { media } from "../../styles/theme";
 
 const Title = styled.h2`
   font-size: clamp(1.9rem, 5.5vw, 3.6rem);
@@ -109,6 +110,83 @@ const Gallery = styled.div`
   }
 `;
 
+/* Récit illustré : une suite de sections titrées, chacune suivie de ses
+   photos alignées.
+
+   Les originaux sont tantôt verticaux tantôt horizontaux. Sans cadrage
+   commun, une ligne de trois mélangerait les hauteurs et se lirait comme un
+   empilement accidentel : les vignettes partagent donc un même rapport et
+   recadrent l'image, plutôt que de conserver ses proportions. */
+const StoryIntro = styled.p`
+  margin-top: clamp(2rem, 5vw, 3.25rem);
+  max-width: 62ch;
+  line-height: 1.7;
+  color: ${(props) => props.theme.textSoft};
+`;
+
+const StoryGroup = styled.section`
+  margin-top: clamp(2.25rem, 5vw, 3.5rem);
+
+  h3 {
+    /* Couleur posée explicitement : sans elle le titre hérite du noir de la
+       page qui porte l'overlay, et disparaît sur le fond sombre de la fiche. */
+    color: ${(props) => props.theme.text};
+    font-family: ${(props) => props.theme.fontDisplay};
+    font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    padding-bottom: 0.7rem;
+    border-bottom: 1px solid ${(props) => props.theme.line};
+  }
+
+  h3 + p {
+    margin-top: 1rem;
+    max-width: 62ch;
+    line-height: 1.7;
+    color: ${(props) => props.theme.textSoft};
+  }
+`;
+
+const Shots = styled.div`
+  margin-top: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(${(props) => props.$columns}, minmax(0, 1fr));
+  gap: clamp(0.6rem, 1.6vw, 1rem);
+
+  figure {
+    margin: 0;
+  }
+
+  figcaption {
+    font-family: ${(props) => props.theme.fontMono};
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: ${(props) => props.theme.textFaint};
+    margin-bottom: 0.6rem;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    aspect-ratio: ${(props) => props.$ratio};
+    object-fit: cover;
+    border: 1px solid ${(props) => props.theme.line};
+    background: ${(props) => props.theme.surface};
+  }
+
+  /* Sous 860 px trois colonnes réduiraient chaque photo à une vignette :
+     on descend d'un cran, puis à une seule sur les écrans étroits. */
+  ${media.md`
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  `}
+
+  ${media.sm`
+    grid-template-columns: minmax(0, 1fr);
+  `}
+`;
+
 const External = styled.a`
   display: inline-flex;
   align-items: center;
@@ -182,6 +260,41 @@ const PassionOverlay = ({ passion, onClose }) => {
           ))}
         </Gallery>
       </Section>
+    ) : null}
+
+    {passion.story ? (
+      <>
+        {pick(passion.story.intro, language) ? (
+          <StoryIntro>{pick(passion.story.intro, language)}</StoryIntro>
+        ) : null}
+
+        {passion.story.groups.map((group) => (
+          <StoryGroup key={group.id}>
+            {group.title ? <h3>{pick(group.title, language)}</h3> : null}
+            {pick(group.text, language) ? (
+              <p>{pick(group.text, language)}</p>
+            ) : null}
+
+            <Shots
+              $columns={passion.story.columns}
+              $ratio={passion.story.ratio}
+            >
+              {group.photos.map((shot) => (
+                <figure key={shot.src}>
+                  {shot.caption ? (
+                    <figcaption>{pick(shot.caption, language)}</figcaption>
+                  ) : null}
+                  <img
+                    src={shot.src}
+                    alt={pick(shot.alt, language) ?? ""}
+                    loading="lazy"
+                  />
+                </figure>
+              ))}
+            </Shots>
+          </StoryGroup>
+        ))}
+      </>
     ) : null}
 
     {passion.link ? (

@@ -29,3 +29,8 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+# Photos sources : les originaux pleine résolution restent sur le disque,
+# hors du dossier publié et hors du dépôt. Les versions web générées à partir
+# d'eux vivent dans public/images/.
+photos-source/
