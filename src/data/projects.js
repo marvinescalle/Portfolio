@@ -228,7 +228,7 @@ export const projects = [
       "WebGL / GLSL",
       "Netlify",
     ],
-    image: null,
+    image: "/images/projects/Portfolio.png",
     github: "https://github.com/marvinescalle/Portfolio",
     demo: null,
     category: "web",

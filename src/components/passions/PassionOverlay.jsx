@@ -3,7 +3,7 @@ import styled from "styled-components";
 import OverlaySheet from "../overlay/OverlaySheet";
 import { ArrowUpRight } from "../icons";
 import { pick, useLanguage, useTranslation } from "../../i18n";
-import { media } from "../../styles/theme";
+import { breakpoints, media } from "../../styles/theme";
 
 const Title = styled.h2`
   font-size: clamp(1.9rem, 5.5vw, 3.6rem);
@@ -136,9 +136,21 @@ const Shots = styled.div`
   }
 
   /* Une photo peut occuper la place de deux, quand elle mérite plus de place
-     ou qu'une ligne resterait incomplète. */
+     ou qu'une ligne resterait incomplète.
+
+     Elle ne reçoit alors aucun rapport imposé : en garder un doublerait sa
+     hauteur en même temps que sa largeur, et une photo horizontale se
+     retrouverait en énorme carré. Elle s'étire sur la hauteur de la ligne,
+     fixée par la photo normale qui l'accompagne, et reste donc alignée avec
+     le reste de la grille. */
   figure[data-span="2"] {
     grid-column: span 2;
+    align-self: stretch;
+  }
+
+  figure[data-span="2"] img {
+    aspect-ratio: auto;
+    height: 100%;
   }
 
   figcaption {
@@ -166,9 +178,26 @@ const Shots = styled.div`
 
   /* Sous 860 px trois colonnes réduiraient chaque photo à une vignette :
      on descend d'un cran, puis à une seule sur les écrans étroits. */
-  ${media.md`
+  /* Sous 860 px il ne reste que deux colonnes : une photo double occuperait
+     la ligne entière, sans voisine pour en fixer la hauteur, et s'effondrerait.
+     Elle repasse donc sur une seule colonne, avec le rapport commun.
+
+     Media query écrite à la main plutôt qu'avec le raccourci media.md : ce
+     dernier concatène ses valeurs sans les évaluer, si bien qu'une fonction de
+     props s'y retrouve insérée sous forme de texte et la règle est ignorée. */
+  @media (max-width: ${breakpoints.md}px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  `}
+
+    figure[data-span="2"] {
+      grid-column: span 1;
+      align-self: start;
+    }
+
+    figure[data-span="2"] img {
+      aspect-ratio: ${(props) => props.$ratio || "auto"};
+      height: ${(props) => (props.$ratio ? "auto" : "100%")};
+    }
+  }
 
   ${media.sm`
     grid-template-columns: minmax(0, 1fr);

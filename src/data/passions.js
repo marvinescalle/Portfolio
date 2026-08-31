@@ -53,7 +53,7 @@ export const passions = [
       fr: "Athlétisme, sprint, puis boxe thaïlandaise et MMA. L'entraînement reste ma manière de couper avec l'écran.",
       en: "Athletics and sprinting, then Muay Thai and MMA. Training is still how I switch off from the screen.",
     },
-    image: "/images/passions/sport/alpinisme.jpg",
+    image: "/images/passions/sport/boxe.jpg",
     alt: {
       fr: "Marvin Escalle pendant une séance de sport",
       en: "Marvin Escalle during a training session",
@@ -82,11 +82,11 @@ export const passions = [
             },
           },
           {
-            src: "/images/passions/sport/badminton.jpg",
-            caption: { fr: "Badminton", en: "Badminton" },
+            src: "/images/passions/sport/escalade.jpg",
+            caption: { fr: "Escalade", en: "Climbing" },
             alt: {
-              fr: "Marvin Escalle, badminton",
-              en: "Marvin Escalle, badminton",
+              fr: "Marvin Escalle, escalade",
+              en: "Marvin Escalle, climbing",
             },
           },
           {
@@ -106,11 +106,11 @@ export const passions = [
             },
           },
           {
-            src: "/images/passions/sport/escalade.jpg",
-            caption: { fr: "Escalade", en: "Climbing" },
+            src: "/images/passions/sport/badminton.jpg",
+            caption: { fr: "Badminton", en: "Badminton" },
             alt: {
-              fr: "Marvin Escalle, escalade",
-              en: "Marvin Escalle, climbing",
+              fr: "Marvin Escalle, badminton",
+              en: "Marvin Escalle, badminton",
             },
           },
           {
@@ -206,7 +206,7 @@ export const passions = [
   },
   {
     id: "voyage",
-    label: { fr: "Voyage", en: "Travel" },
+    label: { fr: "Voyages", en: "Travel" },
     text: {
       fr: "Après mes études, j'ai consacré une longue période à voyager et découvrir différents pays d'Asie.",
       en: "After my studies, I spent a long stretch travelling across several countries in Asia.",
