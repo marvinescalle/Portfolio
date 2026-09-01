@@ -20,12 +20,7 @@ export const mainExperiences = [
       en: "IVVQ / Automation Engineer",
     },
     contract: { fr: "Alternance", en: "Apprenticeship" },
-    // TODO à compléter : période exacte, ex. "2023-2025".
-    // Les anciennes données du site indiquaient « 2022-2023 » tout en
-    // décrivant le poste comme en cours en 2024 : l'information est
-    // contradictoire, elle n'a donc pas été reprise. La ligne reste masquée
-    // tant que cette valeur est `null`.
-    period: null,
+    period: "2023 - 2025",
     location: "Gennevilliers",
     website: null,
     logo: "/images/logos/thales.webp",
@@ -64,10 +59,7 @@ export const mainExperiences = [
     company: "Fiscalyse",
     role: { fr: "Développeur / IT", en: "Developer / IT" },
     contract: { fr: "Alternance", en: "Apprenticeship" },
-    // TODO à compléter : période exacte, ex. "2022-2023".
-    // Les anciennes données mentionnaient « 12 mois » sans année de début
-    // fiable.
-    period: null,
+    period: "2022 - 2023",
     location: null,
     website: "https://www.fiscalyse.fr",
     logo: "/images/logos/fiscalyse.png",

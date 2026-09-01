@@ -41,8 +41,25 @@ const Cell = styled(Reveal)`
   position: relative;
   ${(props) => spans[props.$span] ?? spans.tall};
 
+  /* Décalage vers le bas de la colonne étroite : la césure entre ses deux
+     cases tombe alors au milieu de la carte centrale au lieu d'être à sa
+     hauteur, et la composition se lit en escalier.
+
+     Posé sur la tuile et non sur la case : celle-ci est animée par Framer
+     Motion, qui pilote sa propriété transform et écraserait la nôtre. La
+     valeur est un pourcentage de la hauteur de la tuile, donc identique pour
+     les deux cases puisqu'elles partagent le même gabarit. */
+  ${(props) =>
+    props.$offset
+      ? "> a { transform: translateY(53%); }"
+      : ""}
+
+  /* Sous 860 px il ne reste qu'une colonne de cartes : l'escalier n'a plus
+     d'objet et ne ferait que désaligner la pile. */
   ${media.md`
     grid-column: span 2;
+
+    > a { transform: none; }
   `}
 
   ${media.sm`
@@ -194,6 +211,7 @@ const Passions = () => {
         <Cell
           key={item.id}
           $span={item.span}
+          $offset={item.offset}
           delay={Math.min(i * 0.07, 0.25)}
         >
           <Tile

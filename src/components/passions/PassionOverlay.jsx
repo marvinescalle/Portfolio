@@ -155,7 +155,7 @@ const Shots = styled.div`
 
   figcaption {
     font-family: ${(props) => props.theme.fontMono};
-    font-size: 0.68rem;
+    font-size: 0.85rem;
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: ${(props) => props.theme.textFaint};
@@ -292,9 +292,9 @@ const PassionOverlay = ({ passion, onClose }) => {
             ) : null}
 
             <Shots
-              $columns={passion.story.columns}
-              $ratio={passion.story.ratio}
-              $fit={passion.story.fit ?? "cover"}
+              $columns={group.columns ?? passion.story.columns}
+              $ratio={group.ratio ?? passion.story.ratio}
+              $fit={group.fit ?? passion.story.fit ?? "cover"}
             >
               {group.photos.map((shot) => (
                 <figure key={shot.src} data-span={shot.span ?? 1}>

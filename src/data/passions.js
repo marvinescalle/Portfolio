@@ -50,7 +50,7 @@ export const passions = [
     id: "sport",
     label: { fr: "Sport", en: "Sport" },
     text: {
-      fr: "Athlétisme, sprint, puis boxe thaïlandaise et MMA. L'entraînement reste ma manière de couper avec l'écran.",
+      fr: "Je suis un passionné de sport, c'est l'une des choses les plus importantes de ma vie. J'ai été Vice champion départemental en duo mixte et vice champion régional en sprint 100m.",
       en: "Athletics and sprinting, then Muay Thai and MMA. Training is still how I switch off from the screen.",
     },
     image: "/images/passions/sport/boxe.jpg",
@@ -130,7 +130,7 @@ export const passions = [
     id: "dessin",
     label: { fr: "Dessin", en: "Drawing" },
     text: {
-      fr: "Le dessin reste l'une de mes façons préférées de créer sans écran.",
+      fr: "J'adore lire des mangas, mais j'aime aussi dessiner les planches qui me fascinent.",
       en: "Drawing is still one of my favourite ways to create away from a screen.",
     },
     image: "/images/passions/dessin/griffith.jpg",
@@ -139,6 +139,9 @@ export const passions = [
       en: "A drawing by Marvin Escalle",
     },
     span: "tall",
+    /* Décalée vers le bas, voir le commentaire de Cell dans la page
+       Passions : la colonne étroite se lit alors en escalier. */
+    offset: true,
     link: "https://www.instagram.com/marmar_drw/",
     linkLabel: "@marmar_drw",
     longText: null,
@@ -147,22 +150,21 @@ export const passions = [
     story: {
       intro: { fr: "texte", en: "texte" },
       columns: 2,
-      /* Aucun cadrage commun : recadrer un dessin l'amputerait. Chaque
-         planche garde ses proportions d'origine, ce qui oblige à donner ses
-         dimensions : sans elles le navigateur ne réserve aucune hauteur, les
-         images s'effondrent avant chargement et le chargement différé ne se
-         déclenche jamais. */
-      ratio: null,
+      /* Rien n'est rogné : un recadrage amputerait le trait. Les planches sont
+         donc inscrites dans leur vignette. Le cadrage est en revanche propre à
+         chaque groupe, celui des planches verticales n'ayant aucune raison de
+         convenir aux horizontales : un rapport unique aurait réduit les unes
+         ou les autres à une bande. */
+      fit: "contain",
       groups: [
         {
-          id: "planches",
+          id: "portraits",
           title: null,
           text: null,
+          ratio: "3 / 4",
           photos: [
           {
             src: "/images/passions/dessin/eclipse.jpg",
-            width: 1125,
-            height: 1400,
             caption: { fr: "Eclipse", en: "Eclipse" },
             alt: {
               fr: "Dessin de Marvin Escalle : Eclipse",
@@ -171,8 +173,6 @@ export const passions = [
           },
           {
             src: "/images/passions/dessin/griffith.jpg",
-            width: 780,
-            height: 1400,
             caption: { fr: "Griffith", en: "Griffith" },
             alt: {
               fr: "Dessin de Marvin Escalle : Griffith",
@@ -180,9 +180,31 @@ export const passions = [
             },
           },
           {
+            src: "/images/passions/dessin/kaido.jpg",
+            caption: { fr: "Kaido", en: "Kaido" },
+            alt: {
+              fr: "Dessin de Marvin Escalle : Kaido",
+              en: "Drawing by Marvin Escalle: Kaido",
+            },
+          },
+          {
+            src: "/images/passions/dessin/jotaro.jpg",
+            caption: { fr: "Jotaro", en: "Jotaro" },
+            alt: {
+              fr: "Dessin de Marvin Escalle : Jotaro",
+              en: "Drawing by Marvin Escalle: Jotaro",
+            },
+          },
+          ],
+        },
+        {
+          id: "paysages",
+          title: null,
+          text: null,
+          ratio: "4 / 3",
+          photos: [
+          {
             src: "/images/passions/dessin/jolyne.jpg",
-            width: 1400,
-            height: 1004,
             caption: { fr: "Jolyne", en: "Jolyne" },
             alt: {
               fr: "Dessin de Marvin Escalle : Jolyne",
@@ -190,13 +212,11 @@ export const passions = [
             },
           },
           {
-            src: "/images/passions/dessin/kaido.jpg",
-            width: 1116,
-            height: 1400,
-            caption: { fr: "Kaido", en: "Kaido" },
+            src: "/images/passions/dessin/griffith2.jpg",
+            caption: { fr: "Griffith", en: "Griffith" },
             alt: {
-              fr: "Dessin de Marvin Escalle : Kaido",
-              en: "Drawing by Marvin Escalle: Kaido",
+              fr: "Dessin de Marvin Escalle : Griffith",
+              en: "Drawing by Marvin Escalle: Griffith",
             },
           },
           ],
@@ -453,6 +473,9 @@ export const passions = [
       en: "Visual from a personal project around AI and 3D",
     },
     span: "tall",
+    /* Décalée vers le bas, voir le commentaire de Cell dans la page
+       Passions : la colonne étroite se lit alors en escalier. */
+    offset: true,
     longText: null,
     highlights: [],
     gallery: [],
