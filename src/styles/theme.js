@@ -18,8 +18,11 @@
  *   veil     Fond des surfaces posées par-dessus le contenu, barre de
  *            navigation et fiches en surimpression.
  *   card     Fond d'une carte. Identique au fond de page en MONO. En CHROMA
- *            légèrement plus clair que le sol teinté, pour que la carte se
- *            lise comme une feuille posée dessus.
+ *            un papier légèrement plus clair que le sol teinté, et très
+ *            légèrement translucide : la composition du fond continue de
+ *            passer dessous, comme un calque posé sur une affiche.
+ *   sheet    Fond d'une fiche en surimpression. Opaque, lui : une fiche se
+ *            détache de la page, elle ne la laisse pas transparaître.
  *   band     Dégradé entre les deux teintes de la rubrique.
  *   accentBar  Le même dégradé, mais transparent en MONO. Sert aux repères
  *            décoratifs propres à CHROMA : MONO ne les peint simplement pas,
@@ -51,6 +54,7 @@ export const lightTheme = {
   canvas: "#FCF6F4",
   veil: "#FCF6F4",
   card: "#FCF6F4",
+  sheet: "#FCF6F4",
   band: "#0A0A0A",
   accentBar: "transparent",
   accentLabel: "rgba(10, 10, 10, 0.58)",
@@ -75,6 +79,7 @@ export const darkTheme = {
   canvas: "#0A0A0A",
   veil: "#0A0A0A",
   card: "#0A0A0A",
+  sheet: "#0A0A0A",
   band: "#FCF6F4",
   accentBar: "transparent",
   accentLabel: "rgba(252, 246, 244, 0.48)",
@@ -105,7 +110,8 @@ export const chromaLightTheme = {
   /* La page ne peint rien : le fond en couches est derrière elle. */
   canvas: "transparent",
   veil: "rgba(246, 241, 234, 0.82)",
-  card: "#FDFAF5",
+  card: "rgba(253, 250, 245, 0.86)",
+  sheet: "#FDFAF5",
   band:
     "linear-gradient(90deg, var(--chroma-accent) 0%, var(--chroma-second) 100%)",
   accentBar:
@@ -134,7 +140,8 @@ export const chromaDarkTheme = {
   body: ground.dark.canvas,
   canvas: "transparent",
   veil: "rgba(11, 10, 20, 0.82)",
-  card: "#12101F",
+  card: "rgba(18, 16, 31, 0.86)",
+  sheet: "#12101F",
   band:
     "linear-gradient(90deg, var(--chroma-accent) 0%, var(--chroma-second) 100%)",
   accentBar:

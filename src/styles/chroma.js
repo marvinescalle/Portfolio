@@ -2,64 +2,44 @@
  * CHROMA : la seconde peau du portfolio.
  *
  * Même site, même structure, même contenu. Ce fichier ne décrit qu'une chose,
- * la matière : une palette, un fond en couches, et un accent par page.
+ * la matière : une palette, deux champs de couleur, et une composition de
+ * signes par rubrique.
  *
  * L'inspiration est celle des affiches de JoJo's Bizarre Adventure, prise par
- * son versant graphique et non narratif : des aplats colorés inattendus posés
- * côte à côte, une énergie d'affiche sérigraphiée, des motifs abstraits en
- * arrière-plan. Aucun personnage, aucun visuel emprunté, rien de figuratif.
+ * son versant graphique et non narratif : des encres franches posées côte à
+ * côte, une énergie de sérigraphie, de grands signes abstraits qui sortent du
+ * cadre. Aucun personnage, aucun visuel emprunté, rien de figuratif.
+ *
+ * La première version répétait de petits motifs en tuile. C'était du papier
+ * peint : une texture uniforme, sans intention, que l'oeil finit par lire
+ * comme une trame. Ici les signes sont comptés, posés grand, recadrés par les
+ * bords et parfois superposés. Ce sont des éléments de composition.
  */
 
 /* ────────────────────────────────────────────────────────────────────────
    1. PALETTE
 
-   Cinq teintes, pas une de plus, chacune déclinée en deux valeurs : celle
-   qui tient sur l'ivoire, celle qui tient sur l'encre. Une page n'en montre
-   jamais plus de deux à la fois.
+   Six teintes, pas une de plus, chacune en quatre valeurs.
+
+     light / dark  Le décor : filets, bordures, puces, signes, champs de
+                   couleur. Ce sont des aplats et des traits, jamais du texte.
+     deep / pale   Le texte. Une même teinte posée en petit corps sur un fond
+                   qu'elle a elle-même coloré ne se détache plus : au coeur
+                   d'un champ, le fuchsia sur fuchsia tombait à 2,1 pour 1.
+                   Ces deux variantes tiennent 4,5 pour 1 dans ce pire cas, et
+                   dépassent 9 pour 1 sur le papier nu.
    ──────────────────────────────────────────────────────────────────────── */
 
-/*
- * Quatre valeurs par teinte, et chacune a son emploi.
- *
- *   light / dark  Le décor : filets, bordures, puces, motif, masses de fond.
- *                 Ce sont des aplats et des traits, jamais du texte.
- *   deep / pale   Le texte. Une même teinte posée en petit corps sur un fond
- *                 qu'elle a elle-même coloré ne se détache plus : au coeur
- *                 d'une masse, le fuchsia sur fuchsia tombait à 2,1 pour 1.
- *                 Ces deux variantes sont calculées pour tenir 4,5 pour 1
- *                 dans ce pire cas, et dépassent 9 pour 1 sur le papier nu.
- */
 export const hues = {
-  cobalt: {
-    light: "#2438C8",
-    dark: "#8496FF",
-    deep: "#162278",
-    pale: "#B5C0FF",
-  },
-  fuchsia: {
-    light: "#BE1668",
-    dark: "#FF74B4",
-    deep: "#630B36",
-    pale: "#FFAED4",
-  },
-  turquoise: {
-    light: "#0A7F7B",
-    dark: "#45DCD2",
-    deep: "#054542",
-    pale: "#9BECE7",
-  },
-  violet: {
-    light: "#6231C4",
-    dark: "#B394FF",
-    deep: "#391C72",
-    pale: "#D1BFFF",
-  },
-  gold: {
-    light: "#8F5D00",
-    dark: "#F2C468",
-    deep: "#533600",
-    pale: "#F8DEAA",
-  },
+  cobalt: { light: "#2438C8", dark: "#8496FF", deep: "#162278", pale: "#B5C0FF" },
+  fuchsia: { light: "#BE1668", dark: "#FF74B4", deep: "#630B36", pale: "#FFAED4" },
+  turquoise: { light: "#0A7F7B", dark: "#45DCD2", deep: "#054542", pale: "#9BECE7" },
+  violet: { light: "#6231C4", dark: "#B394FF", deep: "#391C72", pale: "#D1BFFF" },
+  gold: { light: "#8F5D00", dark: "#F2C468", deep: "#533600", pale: "#F8DEAA" },
+  /* Le vert est la teinte la plus lumineuse du jeu : sa valeur sombre a été
+     rabattue de 4 % pour qu'un libellé posé au coeur de son champ tienne le
+     seuil de 4,5 pour 1, qu'il manquait de peu. */
+  lime: { light: "#4C7A0B", dark: "#AFDF66", deep: "#2C4706", pale: "#DAF5B0" },
 };
 
 /** Fonds et encres des deux ambiances. */
@@ -69,85 +49,175 @@ export const ground = {
 };
 
 /* ────────────────────────────────────────────────────────────────────────
-   2. MOTIFS
+   2. COMPOSITION PAR RUBRIQUE
 
-   Une seule famille : des traits fins de même épaisseur, posés de façon
-   irrégulière sur une tuile large, à opacité très basse. Chaque page reçoit
-   sa variante, mais toutes se lisent comme un même dessin.
+   Chaque page reçoit une paire de teintes et une poignée de signes. Un signe
+   se décrit par sa forme, sa place et sa taille, toutes exprimées en unités
+   de fenêtre : la composition tient donc à toutes les tailles d'écran sans
+   qu'aucune valeur soit à reprendre.
 
-   Le motif est dessiné à la couleur d'accent de la page : il n'a donc jamais
-   besoin d'être opaque pour exister.
+     m     Nom du signe, dans la bibliothèque de motifs.
+     x, y  Centre du signe, en pourcentage de la fenêtre. Volontairement
+           au-delà de 0 et 100 pour la plupart : un signe recadré par le bord
+           se lit comme une composition, un signe entier posé au milieu se lit
+           comme un logo.
+     size  Diamètre, en vmin.
+     rot   Rotation, en degrés.
+     ink   "accent" ou "second".
+     op    Opacité. Un tracé filaire couvre très peu de pixels : il peut
+           monter bien plus haut qu'un aplat sans jamais gêner la lecture.
+     w     Épaisseur du trait, en pixels réels, indépendante de la taille.
    ──────────────────────────────────────────────────────────────────────── */
 
-const TILE = 260;
+const pageDesign = {
+  /* Un portail : un grand anneau derrière le symbole, deux trajectoires qui
+     le traversent, une étoile en écho. */
+  "/": {
+    accent: "cobalt",
+    second: "fuchsia",
+    decor: [
+      /* Assez large pour sortir par le haut et par le bas : il n'en reste
+         que deux arcs de part et d'autre du symbole. Un cercle entier posé
+         au milieu se serait lu comme une cible, et aurait pris le pas sur la
+         marque qu'il est censé entourer. */
+      { m: "bubble", x: 50, y: 54, size: 138, rot: 0, ink: "accent", op: 0.15, w: 1.1 },
+      { m: "strings", x: 4, y: 90, size: 66, rot: -8, ink: "accent", op: 0.28, w: 1.2 },
+      { m: "star", x: 95, y: 17, size: 30, rot: 14, ink: "second", op: 0.26, w: 1.3 },
+      { m: "marker", x: 88, y: 90, size: 12, rot: 0, ink: "accent", op: 0.26, w: 1.1 },
+    ],
+  },
 
-/* Le contenu de chaque tuile, sans l'enveloppe SVG qui est commune. Les
-   coordonnées sont volontairement irrégulières : une trame régulière se
-   verrait immédiatement comme un papier peint. */
-const motifShapes = {
-  /* Petites étoiles à quatre branches, très espacées. */
-  stars:
-    "<path d='M40 18c1.4 11 4.6 14.2 15.6 15.6C44.6 35 41.4 38.2 40 49.2c-1.4-11-4.6-14.2-15.6-15.6C35.4 32.2 38.6 29 40 18z'/>" +
-    "<path d='M186 96c1 7.6 3.2 9.8 10.8 10.8-7.6 1-9.8 3.2-10.8 10.8-1-7.6-3.2-9.8-10.8-10.8 7.6-1 9.8-3.2 10.8-10.8z'/>" +
-    "<path d='M104 198c1.2 9.4 4 12.2 13.4 13.4-9.4 1.2-12.2 4-13.4 13.4-1.2-9.4-4-12.2-13.4-13.4 9.4-1.2 12.2-4 13.4-13.4z'/>",
+  /* Le fer à cheval en héros, sorti par la droite, et une orbite à gauche. */
+  "/a-propos": {
+    accent: "cobalt",
+    second: "violet",
+    decor: [
+      { m: "horseshoe", x: 96, y: 34, size: 72, rot: 12, ink: "accent", op: 0.26, w: 1.4 },
+      { m: "bubble", x: -14, y: 62, size: 66, rot: 0, ink: "second", op: 0.22, w: 1.2 },
+      { m: "star", x: 72, y: 84, size: 22, rot: -8, ink: "second", op: 0.32, w: 1.3 },
+      { m: "star", x: 14, y: 12, size: 13, rot: 18, ink: "accent", op: 0.3, w: 1.2 },
+    ],
+  },
 
-  /* Cercles filaires, comme des bulles qui remontent. */
-  bubbles:
-    "<circle cx='54' cy='46' r='17' fill='none' stroke-width='1.1'/>" +
-    "<circle cx='196' cy='84' r='9' fill='none' stroke-width='1.1'/>" +
-    "<circle cx='128' cy='176' r='24' fill='none' stroke-width='1.1'/>" +
-    "<circle cx='38' cy='206' r='6' fill='none' stroke-width='1.1'/>",
+  /* Une chaîne : deux maillons accrochés, sortis par la droite. */
+  "/experiences": {
+    accent: "cobalt",
+    second: "gold",
+    decor: [
+      { m: "link", x: 90, y: 22, size: 56, rot: 34, ink: "accent", op: 0.28, w: 1.4 },
+      { m: "link", x: 104, y: 44, size: 56, rot: 34, ink: "accent", op: 0.22, w: 1.4 },
+      { m: "marker", x: 8, y: 78, size: 16, rot: 0, ink: "second", op: 0.34, w: 1.2 },
+      { m: "burst", x: 26, y: 8, size: 24, rot: 0, ink: "second", op: 0.24, w: 1.1 },
+    ],
+  },
 
-  /* Anneaux concentriques, plus calmes. */
-  rings:
-    "<circle cx='62' cy='62' r='30' fill='none' stroke-width='1.1'/>" +
-    "<circle cx='62' cy='62' r='16' fill='none' stroke-width='1.1'/>" +
-    "<circle cx='188' cy='178' r='21' fill='none' stroke-width='1.1'/>" +
-    "<circle cx='188' cy='178' r='9' fill='none' stroke-width='1.1'/>",
+  /* Des bulles qui se recouvrent, de tailles franchement différentes. */
+  "/projets": {
+    accent: "fuchsia",
+    second: "turquoise",
+    decor: [
+      { m: "bubble", x: -10, y: 20, size: 76, rot: 0, ink: "accent", op: 0.26, w: 1.3 },
+      { m: "bubble", x: 22, y: 46, size: 40, rot: 0, ink: "second", op: 0.24, w: 1.2 },
+      { m: "bubble", x: 98, y: 76, size: 92, rot: 0, ink: "second", op: 0.2, w: 1.3 },
+      { m: "burst", x: 84, y: 14, size: 26, rot: 0, ink: "accent", op: 0.3, w: 1.1 },
+    ],
+  },
 
-  /* Pétales : deux arcs qui se referment. */
-  petals:
-    "<path d='M46 34c17 3 26 14 24 31-17-3-26-14-24-31z' fill='none' stroke-width='1.1'/>" +
-    "<path d='M182 112c-16 6-27 1-32-14 16-6 27-1 32 14z' fill='none' stroke-width='1.1'/>" +
-    "<path d='M96 190c14 9 17 21 9 34-14-9-17-21-9-34z' fill='none' stroke-width='1.1'/>",
+  /* Deux pétales opposés, l'un montant, l'autre retombant. */
+  "/formation": {
+    accent: "violet",
+    second: "gold",
+    decor: [
+      { m: "petal", x: -6, y: 30, size: 78, rot: -26, ink: "accent", op: 0.26, w: 1.4 },
+      { m: "petal", x: 98, y: 82, size: 62, rot: 152, ink: "second", op: 0.24, w: 1.3 },
+      { m: "bubble", x: 74, y: 16, size: 28, rot: 0, ink: "accent", op: 0.24, w: 1.2 },
+      { m: "star", x: 40, y: 94, size: 15, rot: 0, ink: "second", op: 0.3, w: 1.2 },
+    ],
+  },
 
-  /* Maillons : deux boucles qui s'accrochent. */
-  chain:
-    "<rect x='40' y='44' width='34' height='19' rx='9.5' fill='none' stroke-width='1.1'/>" +
-    "<rect x='64' y='44' width='34' height='19' rx='9.5' fill='none' stroke-width='1.1'/>" +
-    "<rect x='168' y='166' width='19' height='34' rx='9.5' fill='none' stroke-width='1.1'/>" +
-    "<rect x='168' y='190' width='19' height='34' rx='9.5' fill='none' stroke-width='1.1'/>",
+  /* La page la plus libre : une étoile pleine en masse, un éclat, un écho. */
+  "/passions": {
+    accent: "fuchsia",
+    second: "lime",
+    tone: "dark",
+    decor: [
+      { m: "starSolid", x: 94, y: 26, size: 66, rot: 12, ink: "accent", op: 0.16 },
+      { m: "burst", x: 6, y: 70, size: 62, rot: 0, ink: "second", op: 0.26, w: 1.2 },
+      { m: "star", x: 62, y: 90, size: 26, rot: -14, ink: "second", op: 0.3, w: 1.3 },
+      { m: "star", x: 28, y: 12, size: 16, rot: 8, ink: "accent", op: 0.34, w: 1.2 },
+    ],
+  },
 
-  /* Lignes rayonnantes, la variante la plus discrète. */
-  rays:
-    "<path d='M18 8 62 52M40 4 68 32M6 32 40 66' fill='none' stroke-width='1.1'/>" +
-    "<path d='M242 128 198 172M254 152 226 180' fill='none' stroke-width='1.1'/>" +
-    "<path d='M120 232 152 200M96 246 140 202' fill='none' stroke-width='1.1'/>",
+  /* La plus construite : des filaments et des repères de calage. */
+  "/cv": {
+    accent: "turquoise",
+    second: "cobalt",
+    decor: [
+      { m: "strings", x: 94, y: 44, size: 96, rot: 6, ink: "accent", op: 0.3, w: 1.2 },
+      { m: "marker", x: 5, y: 40, size: 14, rot: 0, ink: "second", op: 0.34, w: 1.1 },
+      { m: "marker", x: 5, y: 78, size: 14, rot: 0, ink: "second", op: 0.26, w: 1.1 },
+      { m: "link", x: 40, y: 104, size: 40, rot: 90, ink: "accent", op: 0.22, w: 1.3 },
+    ],
+  },
 
-  /* Croisillons fins, pour les pages les plus structurées. */
-  grid:
-    "<path d='M52 44v18M43 53h18M180 92v14M173 99h14M108 188v20M98 198h20M214 208v12M208 214h12' fill='none' stroke-width='1.1'/>",
+  /* Une source de lumière hors champ, et le fer à cheval en contre-jour. */
+  "/contact": {
+    accent: "turquoise",
+    second: "fuchsia",
+    tone: "dark",
+    decor: [
+      { m: "burst", x: 94, y: 30, size: 108, rot: 0, ink: "accent", op: 0.2, w: 1.2 },
+      { m: "horseshoe", x: -8, y: 76, size: 72, rot: -16, ink: "second", op: 0.24, w: 1.4 },
+      { m: "star", x: 54, y: 12, size: 20, rot: 10, ink: "second", op: 0.3, w: 1.3 },
+      { m: "marker", x: 78, y: 90, size: 13, rot: 0, ink: "accent", op: 0.3, w: 1.1 },
+    ],
+  },
+};
+
+const DEFAULT_DESIGN = { ...pageDesign["/"], tone: "light" };
+
+/** Première partie du chemin, qui identifie la rubrique. */
+const sectionOf = (pathname) =>
+  pathname === "/" ? "/" : `/${pathname.split("/")[1] ?? ""}`;
+
+/** Composition de la rubrique en cours, replis compris. */
+export const designFor = (pathname) => ({
+  tone: "light",
+  ...DEFAULT_DESIGN,
+  ...(pageDesign[sectionOf(pathname)] ?? {}),
+});
+
+/**
+ * Variables CSS d'une page : la teinte principale, la secondaire, et celle
+ * réservée au texte. Tout le reste du décor s'en déduit, ce qui évite d'avoir
+ * à décliner une feuille de style par rubrique.
+ */
+export const chromaVars = (pathname, tone) => {
+  const page = designFor(pathname);
+  const key = tone === "dark" ? "dark" : "light";
+
+  return {
+    "--chroma-accent": hues[page.accent][key],
+    "--chroma-second": hues[page.second][key],
+    /* Le texte prend la variante contrastée de la même teinte, jamais celle
+       du décor : elle s'effondrerait sur le fond qu'elle a servi à teinter. */
+    "--chroma-label": hues[page.accent][tone === "dark" ? "pale" : "deep"],
+  };
 };
 
 /**
- * Fabrique l'adresse d'un motif, dessiné à la couleur demandée.
+ * Pose ces variables sur la racine du document.
  *
- * Encodé à la main plutôt qu'en base64 : le SVG reste lisible dans
- * l'inspecteur, et la chaîne est plus courte.
+ * Sur la racine et non sur la page : les fiches en surimpression sont rendues
+ * dans un portail, donc en dehors de l'arbre de la page. Posées plus bas,
+ * les variables ne les atteignaient pas, et leurs filets d'accent retombaient
+ * silencieusement sur la couleur du texte.
  */
-export const motifUrl = (name, color) => {
-  const shapes = motifShapes[name] ?? motifShapes.rays;
-  const svg =
-    `<svg xmlns='http://www.w3.org/2000/svg' width='${TILE}' height='${TILE}' ` +
-    `viewBox='0 0 ${TILE} ${TILE}' fill='${color}' stroke='${color}'>` +
-    shapes +
-    "</svg>";
-
-  return `url("data:image/svg+xml,${svg
-    .replace(/#/g, "%23")
-    .replace(/</g, "%3C")
-    .replace(/>/g, "%3E")
-    .replace(/"/g, "'")}")`;
+export const applyChromaVars = (pathname, tone) => {
+  const root = document.documentElement;
+  Object.entries(chromaVars(pathname, tone)).forEach(([name, value]) => {
+    root.style.setProperty(name, value);
+  });
 };
 
 /**
@@ -168,78 +238,5 @@ export const grainUrl = (() => {
     .replace(/>/g, "%3E")
     .replace(/"/g, "'")}")`;
 })();
-
-/* ────────────────────────────────────────────────────────────────────────
-   3. ACCENTS PAR PAGE
-
-   Le fond est le même partout. Seules changent la paire de teintes et la
-   variante de motif, ce qui donne à chaque rubrique sa température sans
-   jamais donner l'impression de changer de site.
-   ──────────────────────────────────────────────────────────────────────── */
-
-const DEFAULT_ACCENT = {
-  accent: "cobalt",
-  second: "fuchsia",
-  motif: "rays",
-  tone: "light",
-};
-
-const pageAccents = {
-  "/": { accent: "cobalt", second: "fuchsia", motif: "rays" },
-  "/a-propos": { accent: "cobalt", second: "fuchsia", motif: "rings" },
-  "/experiences": { accent: "cobalt", second: "gold", motif: "chain" },
-  "/projets": { accent: "fuchsia", second: "turquoise", motif: "bubbles" },
-  "/formation": { accent: "violet", second: "turquoise", motif: "petals" },
-  "/passions": { accent: "fuchsia", second: "gold", motif: "stars", tone: "dark" },
-  "/cv": { accent: "cobalt", second: "violet", motif: "grid" },
-  "/contact": { accent: "turquoise", second: "violet", motif: "rays", tone: "dark" },
-};
-
-/** Première partie du chemin, qui identifie la rubrique. */
-const sectionOf = (pathname) =>
-  pathname === "/" ? "/" : `/${pathname.split("/")[1] ?? ""}`;
-
-/** Accent de la rubrique en cours, replis compris. */
-export const accentFor = (pathname) => ({
-  ...DEFAULT_ACCENT,
-  ...(pageAccents[sectionOf(pathname)] ?? {}),
-});
-
-/**
- * Variables CSS d'une page : la teinte principale, la secondaire, celle du
- * texte, et le motif. Tout le reste du fond s'en déduit, ce qui évite d'avoir
- * à décliner une feuille de style par rubrique.
- */
-export const chromaVars = (pathname, tone) => {
-  const page = accentFor(pathname);
-  const key = tone === "dark" ? "dark" : "light";
-  const accent = hues[page.accent][key];
-  const second = hues[page.second][key];
-  /* Le texte prend la variante contrastée de la même teinte, jamais celle du
-     décor : elle s'effondrerait sur le fond qu'elle a servi à teinter. */
-  const label = hues[page.accent][tone === "dark" ? "pale" : "deep"];
-
-  return {
-    "--chroma-accent": accent,
-    "--chroma-second": second,
-    "--chroma-label": label,
-    "--chroma-motif": motifUrl(page.motif, accent),
-  };
-};
-
-/**
- * Pose ces variables sur la racine du document.
- *
- * Sur la racine et non sur la page : les fiches en surimpression sont rendues
- * dans un portail, donc en dehors de l'arbre de la page. Posées plus bas,
- * les variables ne les atteignaient pas, et leurs filets d'accent retombaient
- * silencieusement sur la couleur du texte.
- */
-export const applyChromaVars = (pathname, tone) => {
-  const root = document.documentElement;
-  Object.entries(chromaVars(pathname, tone)).forEach(([name, value]) => {
-    root.style.setProperty(name, value);
-  });
-};
 
 export default chromaVars;

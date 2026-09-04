@@ -43,7 +43,9 @@ const Sheet = styled(motion.div)`
   width: min(1100px, 92vw);
   display: flex;
   flex-direction: column;
-  background: ${(props) => props.theme.card};
+  /* Opaque, contrairement aux cartes : une fiche se détache de la page, elle
+     ne la laisse pas transparaître derrière son texte. */
+  background: ${(props) => props.theme.sheet};
   /* Couleur de texte posée sur la feuille elle-même : sans elle, tout élément
      qui n'en déclare pas hérite de celle de la page, restée sombre. Le bouton
      de fermeture se retrouvait ainsi en noir sur le fond noir des fiches de

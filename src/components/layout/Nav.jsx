@@ -109,11 +109,39 @@ const DesktopList = styled.nav`
 
 const Item = styled(NavLink)`
   position: relative;
+  /* Boîte de hauteur fixe, partagée par toutes les rubriques : le filet
+     actif et les soulignements de survol tombent ainsi exactement au même
+     niveau, quel que soit l'accent que porte le libellé. Sans cela, la
+     hauteur de ligne d'« À propos » suffisait à faire douter de
+     l'alignement. */
+  display: inline-grid;
+  place-items: center;
+  height: 2.25rem;
+  padding: 0;
   font-size: 0.85rem;
+  line-height: 1;
   letter-spacing: 0.02em;
   color: ${(props) => props.theme.textSoft};
-  padding: 0.35rem 0;
   transition: color 0.25s ease;
+
+  /* La rubrique active passe en graisse 500, ce qui l'élargit d'un demi
+     pixel et décalait toute la barre à chaque changement de page. Un double
+     invisible du libellé, déjà en graisse 500, réserve la place définitive.
+
+     Une grille et non une boîte flexible : les deux occupent la même cellule
+     et la colonne prend la largeur de la plus large. En flexible ils se
+     seraient rangés côte à côte, et l'onglet aurait fait le double. */
+  > span,
+  &::before {
+    grid-area: 1 / 1;
+  }
+
+  &::before {
+    content: attr(data-label);
+    visibility: hidden;
+    font-weight: 500;
+    pointer-events: none;
+  }
 
   &::after {
     content: "";
@@ -141,23 +169,44 @@ const Item = styled(NavLink)`
     font-weight: 500;
   }
 
+  /* La rubrique active porte déjà le filet mobile : son propre soulignement
+     viendrait s'y superposer au pixel près, pour rien. */
+  &[aria-current="page"]::after {
+    display: none;
+  }
 `;
 
 /* Sélecteur de langue : deux libellés séparés d'une barre, sans drapeau ni
    bouton dessiné, pour rester dans le registre typographique du site. */
 const Languages = styled.div`
+  position: relative;
   display: flex;
   align-items: center;
+  height: 2.25rem;
   gap: 0.4rem;
+  margin-left: clamp(0.75rem, 1.5vw, 1.5rem);
+  padding-left: clamp(0.75rem, 1.5vw, 1.5rem);
+
+  /* Un trait court et centré plutôt qu'une bordure sur toute la boîte. La
+     bordure épousait la hauteur du groupe, qui n'a aucune raison d'être
+     celle d'un séparateur : elle donnait un moignon de 18 px flottant à
+     côté d'un texte de 11. Ici la longueur est choisie. */
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    height: 1.1rem;
+    width: 1px;
+    transform: translateY(-50%);
+    background: ${(props) => props.theme.line};
+  }
 
   /* La bascule de peau ferme le groupe, un peu détachée des deux libellés
      de langue avec lesquels elle ne se confond pas. */
   > button:last-child {
-    margin-left: 0.55rem;
+    margin-left: 0.6rem;
   }
-  margin-left: clamp(0.75rem, 1.5vw, 1.5rem);
-  padding-left: clamp(0.75rem, 1.5vw, 1.5rem);
-  border-left: 1px solid ${(props) => props.theme.line};
 
   ${media.lg`
     display: none;
@@ -408,8 +457,12 @@ const Nav = () => {
 
           <DesktopList ref={listRef} aria-label={t.nav.main}>
             {navItems.map((item) => (
-              <Item key={item.path} to={item.path}>
-                {t.nav.items[item.path]}
+              <Item
+                key={item.path}
+                to={item.path}
+                data-label={t.nav.items[item.path]}
+              >
+                <span>{t.nav.items[item.path]}</span>
               </Item>
             ))}
 

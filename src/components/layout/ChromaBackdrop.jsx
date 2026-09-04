@@ -1,37 +1,49 @@
+import { useLocation } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 
-import { grainUrl } from "../../styles/chroma";
+import { designFor, grainUrl } from "../../styles/chroma";
+import { MOTIFS } from "../decor/motifs";
 import { useSkin } from "../../theme/SkinProvider";
 import { media } from "../../styles/theme";
 
 /* ────────────────────────────────────────────────────────────────────────
-   Le fond de CHROMA. Un seul système pour tout le site, en quatre couches,
-   entièrement calculé par le navigateur : aucune image n'est téléchargée.
+   Le fond de CHROMA. Un seul système pour tout le site, entièrement calculé
+   par le navigateur : aucune image n'est téléchargée.
 
-     1. le sol       un aplat ivoire ou encre, selon l'ambiance ;
-     2. l'ambiance   trois masses colorées très douces, qui donnent la
-                     profondeur et la température de la rubrique ;
-     3. le motif     une tuile filaire à opacité très basse, dessinée à la
-                     couleur d'accent de la page ;
-     4. le grain     un bruit fractal, juste assez pour que l'aplat ne
-                     paraisse pas plastique.
+     1. le sol      un aplat ivoire ou encre ;
+     2. les champs  deux masses colorées en diagonale et un coin franc, qui
+                    donnent la température de la rubrique ;
+     3. les signes  trois ou quatre grandes formes filaires, posées à des
+                    places choisies et recadrées par les bords ;
+     4. le grain    un bruit fractal, juste assez pour que l'aplat ne
+                    paraisse pas plastique.
 
    Fixé à la fenêtre plutôt qu'attaché au document : le fond ne défile pas,
    ce qui coûte moins cher au compositeur et donne au contenu l'impression de
    glisser sur une affiche.
 
-   Ce qui change d'une page à l'autre tient dans trois variables CSS, posées
-   par la page sur son propre conteneur : elles descendent d'un côté jusqu'ici
-   et de l'autre jusqu'au contenu, qui accorde ainsi ses filets et ses accents
-   au fond sans rien savoir de lui. Le dessin, lui, ne bouge jamais.
+   La couche des signes remplace la tuile répétée de la première version.
+   Répéter un petit motif produit une trame, et une trame se lit comme un
+   papier peint : uniforme, sans intention, et d'autant plus visible qu'on
+   ne la regarde pas. Quatre grandes formes placées à la main disent
+   l'inverse, pour un coût de rendu comparable.
    ──────────────────────────────────────────────────────────────────────── */
 
-/* Respiration très lente des masses colorées : quelques pour cent de
+/* Respiration très lente des champs colorés : quelques pour cent de
    déplacement sur une minute. À l'échelle d'une seconde, rien ne bouge. */
 const drift = keyframes`
   0%   { transform: translate3d(0, 0, 0) scale(1.06); }
   50%  { transform: translate3d(-2%, 1.5%, 0) scale(1.12); }
   100% { transform: translate3d(0, 0, 0) scale(1.06); }
+`;
+
+/* Les signes dérivent dans l'autre sens, et deux fois plus lentement : le
+   décalage entre les deux couches suffit à créer une profondeur, sans
+   qu'aucun parallaxe soit lié au défilement. */
+const glide = keyframes`
+  0%   { transform: translate3d(0, 0, 0); }
+  50%  { transform: translate3d(1.2%, -0.9%, 0); }
+  100% { transform: translate3d(0, 0, 0); }
 `;
 
 const Root = styled.div`
@@ -43,30 +55,20 @@ const Root = styled.div`
   background: ${(props) => props.theme.body};
 `;
 
-const Ambience = styled.div`
+const Fields = styled.div`
   position: absolute;
-  /* Exactement la fenêtre, pour que les pourcentages de position ci-dessous
-     désignent bien ce qu'on croit. Une première version débordait de 20 % de
-     chaque côté afin d'absorber la dérive : les positions se résolvaient
-     alors contre une boîte de 140 %, et les masses posées à 5 % ou 99 %
-     tombaient hors de l'écran. Seules leurs traînées restaient visibles, d'où
-     un fond gris rosé sans aucune couleur franche.
-
-     C'est la mise à l'échelle de la dérive, jamais inférieure à 1,06, qui
-     tient désormais lieu de marge : 3 % de chaque côté pour un déplacement
-     qui ne dépasse pas 2 %. */
+  /* Exactement la fenêtre, pour que les pourcentages de position désignent
+     bien ce qu'on croit. C'est la mise à l'échelle de la dérive, jamais
+     inférieure à 1,06, qui tient lieu de marge : 3 % de chaque côté pour un
+     déplacement qui ne dépasse pas 2 %. */
   inset: 0;
-  /* Une diagonale, et rien d'autre : la teinte principale accrochée au coin
-     haut gauche, la secondaire au coin bas droit, un rappel plus faible de
-     cette dernière en haut à droite, et une bande oblique très étirée qui
-     relie les deux. Deux couleurs opposées sur la diagonale, du papier nu au
-     milieu : c'est la composition d'une affiche, pas un dégradé de fond.
 
-     La chute est volontairement courte. Étalées plus loin, les masses se
-     rejoignaient en un voile uniforme, joli mais mou, et le contraste du
-     texte en souffrait.
+  /* Deux masses opposées sur la diagonale, un rappel plus faible en haut à
+     droite, et un coin franc en bas à gauche. Ce dernier est le seul bord
+     net du fond : c'est lui qui fait basculer l'ensemble du côté de
+     l'affiche imprimée plutôt que du dégradé décoratif.
 
-     Leur densité maximale est plafonnée à 42 %. C'est la valeur mesurée
+     La densité maximale est plafonnée à 42 %. C'est la valeur mesurée
      au-delà de laquelle un paragraphe posé en plein coeur d'une masse passe
      sous le seuil de 4,5 pour 1, même avec les gris renforcés de CHROMA. */
   background:
@@ -113,30 +115,61 @@ const Ambience = styled.div`
   }
 `;
 
-const Motif = styled.div`
+/* Le coin franc. Un triangle net découpé dans un aplat, posé en bas à
+   gauche, là où aucune page n'ouvre sa colonne de lecture. */
+const Wedge = styled.div`
   position: absolute;
   inset: 0;
-  background-image: var(--chroma-motif);
-  background-repeat: repeat;
-  background-size: 260px 260px;
-  /* Au seuil de la perception, et plus bas encore sur fond sombre où la
-     teinte claire d'un accent ressort beaucoup plus qu'elle ne s'y enfonce.
-     Un cran au-dessus, la tuile cesse d'être une texture et se lit comme un
-     papier peint : c'est exactement ce qu'il faut éviter. */
-  opacity: ${(props) => (props.theme.name === "dark" ? 0.1 : 0.18)};
-
-  /* Le motif s'efface vers le bas de la fenêtre, là où le texte est le plus
-     dense : il reste une ambiance, jamais une trame qu'on suit du regard. */
-  mask-image: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 1) 0%,
-    rgba(0, 0, 0, 0.4) 45%,
-    rgba(0, 0, 0, 0.12) 100%
-  );
+  clip-path: polygon(0 62%, 34% 100%, 0 100%);
+  background: var(--chroma-accent);
+  opacity: ${(props) => (props.theme.name === "dark" ? 0.14 : 0.1)};
 
   ${media.md`
-    background-size: 200px 200px;
-    opacity: 0.1;
+    clip-path: polygon(0 78%, 26% 100%, 0 100%);
+    opacity: 0.08;
+  `}
+`;
+
+const Signs = styled.div`
+  position: absolute;
+  inset: 0;
+  animation: ${glide} 94s ease-in-out infinite;
+  will-change: transform;
+
+  ${media.md`
+    animation: none;
+  `}
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+`;
+
+/* Chaque signe est centré sur sa position, ce qui rend les valeurs du fichier
+   de composition immédiatement lisibles : x et y désignent son milieu, et un
+   signe posé à -8 % sort par la gauche. */
+const Sign = styled.span`
+  position: absolute;
+  display: block;
+  left: ${(props) => props.$x}%;
+  top: ${(props) => props.$y}%;
+  width: ${(props) => props.$size}vmin;
+  height: ${(props) => props.$size}vmin;
+  transform: translate(-50%, -50%) rotate(${(props) => props.$rot}deg);
+  color: ${(props) =>
+    props.$ink === "second" ? "var(--chroma-second)" : "var(--chroma-accent)"};
+  opacity: ${(props) => props.$op};
+
+  svg {
+    width: 100%;
+    height: 100%;
+    stroke-width: ${(props) => props.$w};
+  }
+
+  /* Sous 860 px, la fenêtre est étroite et haute : les signes y occupent
+     proportionnellement bien plus de place. On les rentre et on les calme. */
+  ${media.md`
+    opacity: 0.5;
   `}
 `;
 
@@ -163,13 +196,39 @@ const Grain = styled.div`
  */
 const ChromaBackdrop = () => {
   const { isChroma } = useSkin();
+  const { pathname } = useLocation();
 
   if (!isChroma) return null;
 
+  const { decor } = designFor(pathname);
+
   return (
     <Root aria-hidden="true">
-      <Ambience />
-      <Motif />
+      <Fields />
+      <Wedge />
+
+      <Signs>
+        {decor.map((signe, i) => {
+          const Motif = MOTIFS[signe.m];
+          if (!Motif) return null;
+
+          return (
+            <Sign
+              key={`${signe.m}-${i}`}
+              $x={signe.x}
+              $y={signe.y}
+              $size={signe.size}
+              $rot={signe.rot ?? 0}
+              $ink={signe.ink}
+              $op={signe.op}
+              $w={signe.w ?? 1.25}
+            >
+              <Motif />
+            </Sign>
+          );
+        })}
+      </Signs>
+
       <Grain />
     </Root>
   );
