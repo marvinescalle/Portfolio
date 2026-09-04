@@ -1,120 +1,158 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
+import { AnimatePresence } from "framer-motion";
 
 import { profile } from "../data/profile";
 import { useTranslation } from "../i18n";
+import useBodyScrollLock from "../hooks/useBodyScrollLock";
 import { media } from "../styles/theme";
 import PageShell from "../components/layout/PageShell";
 import SectionHeader from "../components/ui/SectionHeader";
 import Reveal from "../components/ui/Reveal";
-import { ArrowUpRight, Download } from "../components/icons";
+import OverlaySheet from "../components/overlay/OverlaySheet";
+import { ArrowUpRight, Download, Eye } from "../components/icons";
 
 /* ────────────────────────────────────────────────────────────────────────
-   Deux CV de même importance : français à gauche, anglais à droite. Sur
-   petit écran, un sélecteur remplace la juxtaposition et n'affiche qu'une
-   version à la fois, en pleine largeur.
+   Trois variantes ciblées, aucune principale.
+
+   La page est d'abord un choix : trois entrées de poids strictement égal,
+   posées les unes sous les autres comme les rubriques de la page Contact.
+   Les documents ne s'affichent qu'à la demande, dans la même fiche en
+   surimpression que les projets et les passions : six PDF côte à côte ne se
+   lisent pas, ils s'endurent.
    ──────────────────────────────────────────────────────────────────────── */
 
-const Switch = styled.div`
-  display: none;
-  gap: 0;
-  border: 1px solid ${(props) => props.theme.line};
-  margin-bottom: 2rem;
-  width: fit-content;
-
-  ${media.md`
-    display: flex;
-  `}
+const Variants = styled.ul`
+  border-top: 1px solid ${(props) => props.theme.text};
 `;
 
-const SwitchButton = styled.button`
-  padding: 0.7rem 1.5rem;
-  font-family: ${(props) => props.theme.fontMono};
-  font-size: 0.75rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: ${(props) => props.theme.textSoft};
-  background: transparent;
-  transition: background-color 0.3s ease, color 0.3s ease;
-
-  &[aria-pressed="true"] {
-    background: ${(props) => props.theme.text};
-    color: ${(props) => props.theme.body};
-  }
-`;
-
-const Columns = styled.div`
+const Variant = styled.li`
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(1.5rem, 3vw, 3rem);
+  grid-template-columns: 3rem minmax(0, 1fr) minmax(0, 20rem);
+  gap: clamp(1rem, 3vw, 2.5rem);
+  align-items: start;
+  padding: clamp(1.75rem, 4vw, 2.75rem) 0;
+  border-bottom: 1px solid ${(props) => props.theme.line};
 
-  ${media.md`
-    grid-template-columns: 1fr;
-    gap: 0;
-  `}
-`;
-
-/* Une seule version est visible sous 860px : celle sélectionnée. */
-const Column = styled.section`
-  display: flex;
-  flex-direction: column;
-
-  ${media.md`
-    display: none;
-
-    &[data-active="true"] {
-      display: flex;
-    }
-  `}
-`;
-
-const Head = styled.div`
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
-  padding-bottom: 0.9rem;
-  border-bottom: 1px solid ${(props) => props.theme.text};
-
-  h2 {
-    font-size: clamp(1.1rem, 2vw, 1.5rem);
-    font-weight: 800;
-    letter-spacing: -0.01em;
-    text-transform: uppercase;
-  }
-
-  span {
+  .index {
     font-family: ${(props) => props.theme.fontMono};
-    font-size: 0.7rem;
+    font-size: 0.72rem;
     letter-spacing: 0.16em;
     color: ${(props) => props.theme.textFaint};
+    padding-top: 0.5rem;
+  }
+
+  h2 {
+    font-size: clamp(1.5rem, 3.6vw, 2.35rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+    line-height: 1.02;
+    /* Aucun intitulé ne se coupe au milieu d'un mot. */
+    word-break: normal;
+    overflow-wrap: break-word;
+    hyphens: none;
+  }
+
+  .focus {
+    margin-top: 0.6rem;
+    font-family: ${(props) => props.theme.fontMono};
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    line-height: 1.7;
+    color: ${(props) => props.theme.textFaint};
+  }
+
+  ${media.md`
+    grid-template-columns: 2.5rem minmax(0, 1fr);
+    gap: 0.5rem 1rem;
+  `}
+
+  ${media.sm`
+    grid-template-columns: minmax(0, 1fr);
+
+    .index { display: none; }
+  `}
+`;
+
+/* Une ligne par langue, chacune portant ses deux actions. */
+const Editions = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  ${media.md`
+    grid-column: 2;
+    margin-top: 1.25rem;
+  `}
+
+  ${media.sm`
+    grid-column: 1;
+  `}
+`;
+
+const Edition = styled.div`
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.25rem;
+
+  .lang {
+    font-family: ${(props) => props.theme.fontMono};
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: ${(props) => props.theme.textFaint};
+    min-width: 2.5rem;
   }
 `;
 
-const Actions = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  padding: 1rem 0 1.5rem;
-`;
-
-const Action = styled.a`
+const actionVisual = `
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.45rem;
   font-size: 0.85rem;
   padding-bottom: 0.2rem;
-  border-bottom: 1px solid ${(props) => props.theme.line};
+  border-bottom: 1px solid;
   transition: border-color 0.3s ease;
 
   svg {
-    width: 15px;
-    height: 15px;
+    width: 14px;
+    height: 14px;
   }
+`;
 
-  &:hover {
+const Action = styled.button`
+  ${actionVisual};
+  border-color: ${(props) => props.theme.line};
+
+  &:hover,
+  &:focus-visible {
     border-color: ${(props) => props.theme.text};
   }
+`;
+
+const ActionLink = styled.a`
+  ${actionVisual};
+  border-color: ${(props) => props.theme.line};
+
+  &:hover,
+  &:focus-visible {
+    border-color: ${(props) => props.theme.text};
+  }
+`;
+
+/* Une variante dont le fichier n'est pas encore déposé n'affiche aucune
+   action : un bouton qui mène à une page manquante vaut moins qu'une ligne
+   qui dit franchement où l'on en est. */
+const Pending = styled.p`
+  font-family: ${(props) => props.theme.fontMono};
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: ${(props) => props.theme.textFaint};
+  border: 1px dashed ${(props) => props.theme.line};
+  padding: 0.7rem 0.9rem;
 `;
 
 /** Proportions des formats de page courants, hauteur / largeur. */
@@ -127,7 +165,6 @@ const PAGE_RATIOS = {
    alors toute la zone, sans bande vide au-dessous ni marge autour. */
 const Frame = styled.div`
   position: relative;
-  flex: 1;
   border: 1px solid ${(props) => props.theme.line};
   background: ${(props) => props.theme.surface};
   aspect-ratio: ${(props) => props.$ratio};
@@ -139,6 +176,17 @@ const Frame = styled.div`
     height: 100%;
     border: 0;
   }
+`;
+
+/* Les mêmes actions à l'intérieur de l'aperçu. Le document est un
+   sous-document : le piège à focus de la fiche ne peut pas y entrer sans y
+   perdre le visiteur, ces deux liens sont donc le chemin clavier vers le
+   fichier. */
+const PreviewActions = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
 `;
 
 const Fallback = styled.div`
@@ -179,56 +227,12 @@ const FallbackAction = styled.a`
   }
 `;
 
-const CvColumn = ({ texts, file, downloadName, active, canEmbed, ratio }) => (
-  <Column data-active={active} aria-label={texts.label}>
-    <Head>
-      <h2>{texts.label}</h2>
-      <span aria-hidden="true">{texts.short}</span>
-    </Head>
-
-    <Actions>
-      <Action href={file} download={downloadName}>
-        {texts.download}
-        <Download />
-      </Action>
-      <Action href={file} target="_blank" rel="noopener noreferrer">
-        {texts.open}
-        <ArrowUpRight />
-      </Action>
-    </Actions>
-
-    <Frame $ratio={ratio}>
-      {canEmbed ? (
-        /* iframe et non object : Safari n'initialise pas le lecteur PDF d'un
-           object créé dans un sous-arbre encore invisible, et ne réessaie
-           jamais ensuite. Le document n'apparaissait alors qu'après un
-           rechargement complet de la page. */
-        <iframe
-          src={`${file}#view=FitH&toolbar=0`}
-          title={texts.viewerLabel}
-          loading="lazy"
-        />
-      ) : (
-        <Fallback>
-          <p>{texts.fallback}</p>
-          <FallbackAction href={file} target="_blank" rel="noopener noreferrer">
-            {texts.open}
-            <ArrowUpRight />
-          </FallbackAction>
-          <FallbackAction href={file} download={downloadName}>
-            {texts.download}
-            <Download />
-          </FallbackAction>
-        </Fallback>
-      )}
-    </Frame>
-  </Column>
-);
-
 const Cv = () => {
   const t = useTranslation();
-  const [language, setLanguage] = useState("fr");
+  const [preview, setPreview] = useState(null);
   const [canEmbed, setCanEmbed] = useState(true);
+
+  useBodyScrollLock(Boolean(preview));
 
   /* Les navigateurs mobiles n'intègrent pas les PDF. On leur propose
      directement l'ouverture plutôt qu'un rectangle vide. */
@@ -238,16 +242,12 @@ const Cv = () => {
     }
   }, []);
 
-  const versions = [
-    { id: "fr", texts: t.cv.versions.fr, ...profile.cv.fr },
-    { id: "en", texts: t.cv.versions.en, ...profile.cv.en },
-  ];
+  const ratio = PAGE_RATIOS[profile.cv.format] ?? PAGE_RATIOS.a4;
 
   return (
     <PageShell
-      wide
       title="CV"
-      description="Curriculum vitae de Marvin Escalle, ingénieur IT, en français et en anglais : consultation en ligne et téléchargement au format PDF."
+      description={t.cv.seo}
     >
       <SectionHeader
         index="06"
@@ -259,35 +259,120 @@ const Cv = () => {
         }
       />
 
-      <Reveal>
-        <Switch role="group" aria-label={t.cv.switchLabel}>
-          {versions.map((version) => (
-            <SwitchButton
-              key={version.id}
-              type="button"
-              aria-pressed={language === version.id}
-              onClick={() => setLanguage(version.id)}
-            >
-              <span className="visually-hidden">{version.texts.label}</span>
-              <span aria-hidden="true">{version.texts.short}</span>
-            </SwitchButton>
-          ))}
-        </Switch>
-      </Reveal>
+      <Variants>
+        {profile.cv.variants.map((variant, i) => {
+          const texts = t.cv.variants[variant.id];
+          const editions = Object.entries(variant.files).filter(
+            ([, edition]) => edition.ready
+          );
 
-      <Columns>
-          {versions.map((version) => (
-            <CvColumn
-              key={version.id}
-              texts={version.texts}
-              file={version.file}
-              downloadName={version.downloadName}
-              active={language === version.id}
-              canEmbed={canEmbed}
-              ratio={PAGE_RATIOS[profile.cv.format] ?? PAGE_RATIOS.a4}
-            />
-        ))}
-      </Columns>
+          return (
+            <Reveal as="li" key={variant.id} delay={i * 0.07}>
+              <Variant as="div">
+                <span className="index" aria-hidden="true">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+
+                <div>
+                  <h2>{texts.label}</h2>
+                  <p className="focus">{texts.focus}</p>
+                </div>
+
+                {editions.length ? (
+                  <Editions>
+                    {editions.map(([code, edition]) => (
+                      <Edition key={code}>
+                        <span className="lang">{t.cv.languages[code]}</span>
+
+                        <Action
+                          type="button"
+                          onClick={() =>
+                            setPreview({ variant, code, edition, texts })
+                          }
+                        >
+                          {t.cv.preview}
+                          <Eye />
+                        </Action>
+
+                        <ActionLink
+                          href={edition.file}
+                          download={edition.downloadName}
+                        >
+                          {t.cv.download}
+                          <Download />
+                        </ActionLink>
+                      </Edition>
+                    ))}
+                  </Editions>
+                ) : (
+                  <Pending>{t.cv.pending}</Pending>
+                )}
+              </Variant>
+            </Reveal>
+          );
+        })}
+      </Variants>
+
+      <AnimatePresence>
+        {preview ? (
+          <OverlaySheet
+            key={`${preview.variant.id}-${preview.code}`}
+            label={`${preview.texts.label} · ${t.cv.languages[preview.code]}`}
+            meta={`${preview.texts.label} · ${t.cv.languages[preview.code]}`}
+            onClose={() => setPreview(null)}
+          >
+            <PreviewActions>
+              <ActionLink
+                href={preview.edition.file}
+                download={preview.edition.downloadName}
+              >
+                {t.cv.download}
+                <Download />
+              </ActionLink>
+              <ActionLink
+                href={preview.edition.file}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {t.cv.openTab}
+                <ArrowUpRight />
+              </ActionLink>
+            </PreviewActions>
+
+            <Frame $ratio={ratio}>
+              {canEmbed ? (
+                /* iframe et non object : Safari n'initialise pas le lecteur
+                   PDF d'un object créé dans un sous-arbre encore invisible,
+                   et ne réessaie jamais ensuite. */
+                <iframe
+                  src={`${preview.edition.file}#view=FitH&toolbar=0`}
+                  title={`${t.cv.previewLabel} ${preview.texts.label}`}
+                  tabIndex={-1}
+                />
+              ) : (
+                <Fallback>
+                  <p>{t.cv.fallback}</p>
+                  <FallbackAction
+                    href={preview.edition.file}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {t.cv.openTab}
+                    <ArrowUpRight />
+                  </FallbackAction>
+                  <FallbackAction
+                    href={preview.edition.file}
+                    download={preview.edition.downloadName}
+                  >
+                    {t.cv.download}
+                    <Download />
+                  </FallbackAction>
+                </Fallback>
+              )}
+            </Frame>
+          </OverlaySheet>
+        ) : null}
+      </AnimatePresence>
     </PageShell>
   );
 };

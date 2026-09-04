@@ -1,12 +1,21 @@
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
 import { profile } from "../data/profile";
-import { useTranslation } from "../i18n";
+import { pick, useLanguage, useTranslation } from "../i18n";
 import { darkTheme, media } from "../styles/theme";
 import PageShell from "../components/layout/PageShell";
 import Reveal from "../components/ui/Reveal";
-import ContactForm from "../components/ui/ContactForm";
-import { ArrowUpRight, Github, Linkedin, Mail } from "../components/icons";
+import { ArrowUpRight, Check, Copy, Github, Linkedin, Mail } from "../components/icons";
+
+/* ────────────────────────────────────────────────────────────────────────
+   Trois moyens de contact, rien d'autre.
+
+   Le formulaire a été retiré : il dépendait d'un service externe, ne pouvait
+   pas être essayé en local, et une panne silencieuse aurait fait disparaître
+   des messages sans que personne s'en aperçoive. Un lien mailto ne tombe
+   jamais en panne.
+   ──────────────────────────────────────────────────────────────────────── */
 
 const Statement = styled.h1`
   font-size: clamp(1.75rem, 6.2vw, 5rem);
@@ -30,13 +39,10 @@ const Intro = styled.p`
   border-bottom: 1px solid ${(props) => props.theme.line};
 `;
 
-const FormBlock = styled.section`
-  padding: clamp(2.5rem, 6vw, 4rem) 0;
-`;
-
 const Channels = styled.ul`
   display: flex;
   flex-direction: column;
+  margin-top: clamp(2.5rem, 6vw, 4rem);
   border-top: 1px solid ${(props) => props.theme.line};
 `;
 
@@ -95,6 +101,34 @@ const Channel = styled.li`
   `}
 `;
 
+/* Action secondaire, posée sous la ligne e-mail : le même filet fin que
+   partout ailleurs, aucun bouton plein qui viendrait concurrencer le titre. */
+const CopyButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  padding-bottom: 0.2rem;
+  border-bottom: 1px solid ${(props) => props.theme.line};
+  font-family: ${(props) => props.theme.fontMono};
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: ${(props) => props.theme.textFaint};
+  transition: color 0.3s ease, border-color 0.3s ease;
+
+  svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: ${(props) => props.theme.text};
+    border-color: ${(props) => props.theme.text};
+  }
+`;
+
 const Location = styled.p`
   margin-top: clamp(2rem, 5vw, 3rem);
   font-family: ${(props) => props.theme.fontMono};
@@ -106,6 +140,24 @@ const Location = styled.p`
 
 const Contact = () => {
   const t = useTranslation();
+  const { language } = useLanguage();
+  const [copied, setCopied] = useState(false);
+  const timer = useRef(null);
+
+  useEffect(() => () => window.clearTimeout(timer.current), []);
+
+  /* Le presse-papiers n'est pas disponible partout, notamment hors HTTPS :
+     l'échec est silencieux et la ligne e-mail reste cliquable de toute façon. */
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(profile.email);
+      setCopied(true);
+      window.clearTimeout(timer.current);
+      timer.current = window.setTimeout(() => setCopied(false), 2400);
+    } catch {
+      /* rien à signaler : le lien mailto reste le chemin principal */
+    }
+  };
 
   const channels = [
     {
@@ -138,7 +190,7 @@ const Contact = () => {
     <PageShell
       theme={darkTheme}
       title="Contact"
-      description="Contacter Marvin Escalle, ingénieur IT : formulaire, e-mail, LinkedIn et GitHub."
+      description={t.contact.seo}
     >
       <Reveal>
         <Statement>
@@ -151,12 +203,6 @@ const Contact = () => {
       <Reveal delay={0.08}>
         <Intro>{t.contact.intro}</Intro>
       </Reveal>
-
-      <FormBlock aria-label={t.contact.formLabel}>
-        <Reveal delay={0.12}>
-          <ContactForm texts={t.contact} />
-        </Reveal>
-      </FormBlock>
 
       <Channels>
         {channels.map((channel, i) => (
@@ -183,7 +229,16 @@ const Contact = () => {
         ))}
       </Channels>
 
-      {profile.location ? <Location>{profile.location}</Location> : null}
+      <Reveal delay={0.2}>
+        <CopyButton type="button" onClick={copy}>
+          {copied ? t.contact.copied : t.contact.copy}
+          {copied ? <Check /> : <Copy />}
+        </CopyButton>
+      </Reveal>
+
+      {profile.location ? (
+        <Location>{pick(profile.location, language)}</Location>
+      ) : null}
     </PageShell>
   );
 };

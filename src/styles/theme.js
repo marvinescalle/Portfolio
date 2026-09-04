@@ -12,13 +12,18 @@ const shared = {
   fontMono: "'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, monospace",
 };
 
+/* Les trois niveaux de gris tiennent le contraste minimum de 4,5 pour 1 exigé
+   par le WCAG sur du texte courant. Le plus clair était descendu à 0,42 dans
+   le thème clair, soit 2,85 pour 1 : les micro-libellés en capitales, déjà
+   petits et espacés, y étaient à la limite du lisible. Remontés au seuil, ils
+   restent nettement en retrait sans devenir un gris illisible. */
 export const lightTheme = {
   ...shared,
   name: "light",
   body: "#FCF6F4",
   text: "#0A0A0A",
   textSoft: "rgba(10, 10, 10, 0.66)",
-  textFaint: "rgba(10, 10, 10, 0.42)",
+  textFaint: "rgba(10, 10, 10, 0.58)",
   line: "rgba(10, 10, 10, 0.14)",
   lineStrong: "rgba(10, 10, 10, 0.3)",
   surface: "rgba(10, 10, 10, 0.035)",
@@ -32,7 +37,7 @@ export const darkTheme = {
   body: "#0A0A0A",
   text: "#FCF6F4",
   textSoft: "rgba(252, 246, 244, 0.68)",
-  textFaint: "rgba(252, 246, 244, 0.44)",
+  textFaint: "rgba(252, 246, 244, 0.48)",
   line: "rgba(252, 246, 244, 0.16)",
   lineStrong: "rgba(252, 246, 244, 0.34)",
   surface: "rgba(252, 246, 244, 0.05)",

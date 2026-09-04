@@ -120,24 +120,15 @@ Lien d'évitement, repères sémantiques, un seul `h1` par page, focus visible a
 clavier, `alt` sur toutes les images, intitulés explicites sur les liens
 externes, et respect de `prefers-reduced-motion`.
 
-## Formulaire de contact
+## Page Contact
 
-La page Contact utilise **Netlify Forms**, sans backend ni service externe.
+Aucun formulaire, et c'est délibéré : il dépendait de Netlify Forms, ne
+pouvait pas être essayé en local, et une panne silencieuse aurait fait
+disparaître des messages sans que personne s'en aperçoive.
 
-Le formulaire existe en deux exemplaires qui doivent rester synchronisés :
-une copie statique invisible dans `index.html`, qui sert uniquement à la
-détection par Netlify au moment du build, et le formulaire réellement
-affiché dans `src/components/ui/ContactForm.jsx`. Ajouter un champ dans l'un
-sans l'ajouter dans l'autre ferait que sa valeur ne remonterait pas.
-
-L'envoi passe par `fetch` en `POST` url-encodé vers la racine du site, ce qui
-garde le visiteur sur la page au lieu d'afficher la confirmation générique de
-Netlify.
-
-Netlify Forms ne fonctionne pas en local : l'envoi y échoue toujours et la
-page affiche alors son message d'erreur avec l'adresse email en secours. Voir
-[DEPLOIEMENT.md](DEPLOIEMENT.md) pour la configuration et les tests à faire
-une fois le site en ligne.
+La page affiche trois moyens de contact, dont un lien `mailto:` qui ouvre
+directement le client de messagerie du visiteur, plus une action discrète de
+copie de l'adresse. Tout est piloté par `src/data/profile.js`.
 
 ## Déploiement
 

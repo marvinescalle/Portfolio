@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
 import styled from "styled-components";
 import { motion, useReducedMotion } from "framer-motion";
@@ -106,11 +106,17 @@ const Scroller = styled.div`
     clamp(2.5rem, 6vw, 4rem);
 `;
 
+/* Volontairement sans `iframe` : l'aperçu de CV en contient un, et le
+   document PDF qu'il affiche est un sous-document dont les événements
+   clavier ne remontent pas jusqu'ici. Y laisser entrer le focus reviendrait
+   à l'y abandonner, hors de portée du piège comme de la touche Échap. Les
+   actions de téléchargement et d'ouverture, elles, restent dans la fiche. */
 const FOCUSABLE =
-  'a[href], button:not([disabled]), input, textarea, select, [tabindex]:not([tabindex="-1"])';
+  'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 const OverlaySheet = ({ label, meta, onClose, children }) => {
   const t = useTranslation();
+  const titleId = useId();
   const sheetRef = useRef(null);
   const closeRef = useRef(null);
   const returnFocusRef = useRef(null);
@@ -119,6 +125,14 @@ const OverlaySheet = ({ label, meta, onClose, children }) => {
   useEffect(() => {
     returnFocusRef.current = document.activeElement;
     closeRef.current?.focus();
+
+    /* Les éléments réellement atteignables, relevés à chaque frappe : le
+       contenu d'une fiche peut changer pendant qu'elle est ouverte. Un
+       élément masqué ne rend aucun rectangle et se voit donc écarté. */
+    const reachable = () =>
+      Array.from(sheetRef.current?.querySelectorAll(FOCUSABLE) ?? []).filter(
+        (element) => element.getClientRects().length > 0
+      );
 
     const onKeyDown = (event) => {
       if (event.key === "Escape") {
@@ -129,18 +143,25 @@ const OverlaySheet = ({ label, meta, onClose, children }) => {
 
       if (event.key !== "Tab") return;
 
-      const nodes = sheetRef.current?.querySelectorAll(FOCUSABLE);
-      if (!nodes?.length) return;
-      const first = nodes[0];
-      const last = nodes[nodes.length - 1];
+      /* Le déplacement est calculé et appliqué ici, jamais laissé au
+         navigateur. Se contenter de rattraper les deux extrémités ne suffit
+         pas : Safari ne donne pas le focus aux liens par défaut, si bien que
+         le dernier élément de la liste n'était jamais atteint, la condition
+         de bouclage jamais remplie, et la tabulation finissait par sortir du
+         document pour aller dans la barre d'adresse. */
+      event.preventDefault();
 
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
+      const items = reachable();
+      if (!items.length) return;
+
+      const current = items.indexOf(document.activeElement);
+      const step = event.shiftKey ? -1 : 1;
+      const next =
+        current === -1
+          ? (event.shiftKey ? items.length - 1 : 0)
+          : (current + step + items.length) % items.length;
+
+      items[next].focus();
     };
 
     document.addEventListener("keydown", onKeyDown, true);
@@ -171,7 +192,7 @@ const OverlaySheet = ({ label, meta, onClose, children }) => {
         ref={sheetRef}
         role="dialog"
         aria-modal="true"
-        aria-label={label}
+        aria-labelledby={titleId}
         initial={reduce ? false : { opacity: 0, scale: 0.97 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.98 }}
@@ -182,7 +203,11 @@ const OverlaySheet = ({ label, meta, onClose, children }) => {
         }
       >
         <Bar>
-          <span className="meta">{meta}</span>
+          {/* Porte le nom accessible de la fiche : un intitulé visible à
+              l'écran vaut mieux qu'un aria-label dupliqué à côté. */}
+          <span className="meta" id={titleId}>
+            {meta ?? label}
+          </span>
           <CloseButton type="button" onClick={onClose} ref={closeRef}>
             {t.common.close}
             <Close />

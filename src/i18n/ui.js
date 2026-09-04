@@ -57,10 +57,10 @@ export const ui = {
       title: "À propos",
       seo: "Ingénieur IT au profil polyvalent : automatisation, systèmes, données et problématiques métier. Parcours, approche et compétences techniques.",
       paragraphs: [
-        "Diplômé d'une formation DevOps et fort de plusieurs années d'expérience en alternance, j'ai construit un profil IT polyvalent à la croisée de l'automatisation, des systèmes, de la donnée et des problématiques métier.",
-        "Mes expériences professionnelles, notamment chez {thales} et {fiscalyse}, m'ont amené à travailler sur des environnements et des besoins très différents : automatisation de tâches, collecte et traitement de données, développement d'outils, infrastructure, tests, amélioration de processus et accompagnement des utilisateurs.",
-        "Ce que j'apprécie particulièrement est de comprendre un problème dans son ensemble, puis de construire une solution réellement utile plutôt que de me limiter à une technologie particulière.",
-        "Curieux et autonome, je continue également à développer des projets personnels autour du développement, de l'intelligence artificielle, de la 3D et des nouvelles technologies.",
+        "Diplômé d'un Master 2 DevOps et fort de trois années d'alternance, dont deux chez {thales}, j'ai développé un profil hybride entre technique et fonctionnel.",
+        "Mes expériences m'ont amené à automatiser la collecte et le traitement de données, participer à l'intégration et à la validation de systèmes complexes, administrer des environnements IT et traduire des besoins utilisateurs en solutions techniques exploitables.",
+        "Ce qui m'intéresse particulièrement est de comprendre un problème de bout en bout : besoin, contraintes, solution, intégration et validation, plutôt que de me limiter à une technologie particulière.",
+        "En parallèle, je développe régulièrement des projets autour du cloud, du développement, de l'intelligence artificielle, de la 3D et des nouvelles technologies.",
       ],
       skills: "Compétences",
       portrait: "Portrait de",
@@ -80,12 +80,14 @@ export const ui = {
     projects: {
       index: "03",
       title: "Projets",
-      lead: "Une sélection de réalisations, et les archives de mes travaux d'études.",
-      seo: "Projets réalisés par Marvin Escalle : développement web, automatisation et DevOps, ainsi que les archives des travaux étudiants.",
+      lead: "Une sélection de réalisations, mes projets personnels, puis les travaux menés pendant mes études.",
+      seo: "Projets réalisés par Marvin Escalle : chaîne de livraison sur AWS, projets personnels autour du développement et de l'automatisation, et travaux d'études.",
       selection: "Sélection",
-      archives: "Archives : projets étudiants",
-      archivesNote:
+      personal: "Projets personnels",
+      student: "Projets d'études",
+      studentNote:
         "Travaux réalisés pendant mes études, conservés à titre de parcours. Ils ne reflètent pas mon niveau actuel.",
+      seeAllStudent: "Voir tous les projets d'études",
       see: "Voir le projet",
       openSheet: "ouvrir la fiche du projet",
       preview: "Aperçu du projet",
@@ -121,7 +123,6 @@ export const ui = {
       title: "Passions",
       lead: "Ce qui occupe le temps passé loin des serveurs.",
       seo: "Sport, dessin, voyage et expérimentations autour de la tech, de l'IA et de la 3D.",
-      awaiting: "Photo à venir",
       more: "En savoir plus",
       openSheet: "ouvrir la fiche",
       sheet: {
@@ -142,39 +143,10 @@ export const ui = {
     contact: {
       title: ["Travaillons", "ensemble."],
       intro:
-        "Une opportunité, un projet ou simplement envie d'échanger ? N'hésitez pas à m'écrire directement.",
-      formLabel: "Formulaire de contact",
-      fields: {
-        name: "Nom",
-        email: "Email",
-        subject: "Objet",
-        subjectOptional: "Objet (facultatif)",
-        message: "Message",
-      },
-      placeholders: {
-        subject: "Facultatif",
-      },
-      errors: {
-        name: "Merci d'indiquer votre nom.",
-        email: "Merci d'indiquer votre adresse email.",
-        emailInvalid: "Cette adresse email ne semble pas valide.",
-        message: "Merci d'écrire votre message.",
-      },
-      submit: {
-        idle: "Envoyer",
-        loading: "Envoi...",
-      },
-      success: {
-        title: "Message envoyé.",
-        text: "Merci pour votre message. Je vous répondrai dès que possible.",
-        again: "Envoyer un autre message",
-      },
-      failure: {
-        title: "Une erreur est survenue.",
-        text: "Le message n'a pas pu être envoyé. Vous pouvez également me contacter directement par email :",
-        retry: "Réessayer",
-      },
-      honeypot: "Ne remplissez pas ce champ si vous êtes humain",
+        "Disponible pour des opportunités IT en France et à l'international. Une opportunité, un projet ou simplement envie d'échanger ? N'hésitez pas à m'écrire directement.",
+      seo: "Contacter Marvin Escalle, ingénieur IT : e-mail, LinkedIn et GitHub.",
+      copy: "Copier l'adresse",
+      copied: "Adresse copiée",
       channels: {
         email: "Email",
         linkedin: "LinkedIn",
@@ -185,29 +157,31 @@ export const ui = {
 
     cv: {
       title: "Curriculum vitae",
-      lead: "Deux versions, un même parcours.",
+      lead: "Trois versions ciblées, un même parcours.",
+      seo: "Curriculum vitae de Marvin Escalle, ingénieur IT : trois versions ciblées, en français et en anglais, à consulter en ligne ou à télécharger.",
       updatedAt: "Dernière mise à jour",
-      versions: {
-        fr: {
-          label: "Français",
-          short: "FR",
-          download: "Télécharger",
-          open: "Ouvrir dans un nouvel onglet",
-          viewerLabel: "CV de Marvin Escalle, version française",
-          fallback:
-            "Votre navigateur n'affiche pas les PDF directement dans la page.",
+      variants: {
+        "business-analyst": {
+          label: "Business Analyst IT",
+          focus: "Analyse fonctionnelle · Coordination métier/IT",
         },
-        en: {
-          label: "English",
-          short: "EN",
-          download: "Download",
-          open: "Open in new tab",
-          viewerLabel: "Marvin Escalle's résumé, English version",
-          fallback:
-            "Your browser cannot display PDF files inside the page.",
+        "data-automatisation": {
+          label: "Data & Automatisation",
+          focus: "Python · SQL · Data · Reporting",
+        },
+        "devops-ivvq": {
+          label: "DevOps & IVVQ",
+          focus: "Automatisation · Intégration · Tests · Systèmes",
         },
       },
-      switchLabel: "Choisir la version du CV",
+      languages: { fr: "FR", en: "EN" },
+      preview: "Aperçu",
+      download: "Télécharger",
+      openTab: "Ouvrir dans un nouvel onglet",
+      previewLabel: "Aperçu du CV",
+      pending: "Version en préparation",
+      fallback:
+        "Votre navigateur n'affiche pas les PDF directement dans la page.",
     },
 
     sound: {
@@ -265,10 +239,10 @@ export const ui = {
       title: "About",
       seo: "Versatile IT engineer working across automation, systems, data and business needs. Background, approach and technical skills.",
       paragraphs: [
-        "With a DevOps degree and several years of apprenticeship experience, I have built a versatile IT profile at the intersection of automation, systems, data and business needs.",
-        "My professional experience, notably at {thales} and {fiscalyse}, has taken me across very different environments and requirements: task automation, data collection and processing, tooling, infrastructure, testing, process improvement and user support.",
-        "What I enjoy most is understanding a problem as a whole, then building a genuinely useful solution rather than confining myself to one particular technology.",
-        "Curious and self-driven, I also keep building personal projects around development, artificial intelligence, 3D and emerging technologies.",
+        "I hold a Master's degree in DevOps and have spent three years as an apprentice, two of them at {thales}, which is where my profile grew into something hybrid: part technical, part functional.",
+        "That work has had me automating how data is collected and processed, taking part in the integration and validation of complex systems, administering IT environments, and turning what users need into technical solutions that can actually be built.",
+        "What interests me most is following a problem all the way through: the need, the constraints, the solution, then its integration and validation, rather than sticking to one particular technology.",
+        "Alongside that, I regularly build projects around cloud, development, artificial intelligence, 3D and new technologies.",
       ],
       skills: "Skills",
       portrait: "Portrait of",
@@ -288,12 +262,14 @@ export const ui = {
     projects: {
       index: "03",
       title: "Projects",
-      lead: "A selection of work, alongside the archive of my student projects.",
-      seo: "Projects built by Marvin Escalle: web development, automation and DevOps, plus the archive of student work.",
+      lead: "A selection of work, then my personal projects and the ones built during my studies.",
+      seo: "Projects built by Marvin Escalle: a delivery chain on AWS, personal projects around development and automation, and student work.",
       selection: "Selected",
-      archives: "Archive: student projects",
-      archivesNote:
+      personal: "Personal projects",
+      student: "Student projects",
+      studentNote:
         "Work produced during my studies, kept as a record of the journey. It does not reflect my current level.",
+      seeAllStudent: "See every student project",
       see: "View project",
       openSheet: "open the project details",
       preview: "Preview of project",
@@ -329,7 +305,6 @@ export const ui = {
       title: "Interests",
       lead: "What fills the time spent away from servers.",
       seo: "Sport, drawing, travel and hands-on experiments with tech, AI and 3D.",
-      awaiting: "Photo coming soon",
       more: "Find out more",
       openSheet: "open the details",
       sheet: {
@@ -350,39 +325,10 @@ export const ui = {
     contact: {
       title: ["Let's work", "together."],
       intro:
-        "An opportunity, a project, or simply want to connect? Feel free to get in touch.",
-      formLabel: "Contact form",
-      fields: {
-        name: "Name",
-        email: "Email",
-        subject: "Subject",
-        subjectOptional: "Subject (optional)",
-        message: "Message",
-      },
-      placeholders: {
-        subject: "Optional",
-      },
-      errors: {
-        name: "Please enter your name.",
-        email: "Please enter your email address.",
-        emailInvalid: "This email address does not look valid.",
-        message: "Please write your message.",
-      },
-      submit: {
-        idle: "Send",
-        loading: "Sending...",
-      },
-      success: {
-        title: "Message sent.",
-        text: "Thank you for reaching out. I'll get back to you as soon as possible.",
-        again: "Send another message",
-      },
-      failure: {
-        title: "Something went wrong.",
-        text: "The message could not be sent. You can also reach me directly by email:",
-        retry: "Try again",
-      },
-      honeypot: "Do not fill this field if you are human",
+        "Available for IT roles in France and abroad. An opportunity, a project, or simply want to connect? Feel free to get in touch.",
+      seo: "Get in touch with Marvin Escalle, IT engineer: email, LinkedIn and GitHub.",
+      copy: "Copy the address",
+      copied: "Address copied",
       channels: {
         email: "Email",
         linkedin: "LinkedIn",
@@ -393,28 +339,30 @@ export const ui = {
 
     cv: {
       title: "Curriculum vitae",
-      lead: "Two versions, one career.",
+      lead: "Three targeted versions, one career.",
+      seo: "Marvin Escalle's résumé, IT engineer: three targeted versions, in French and English, to read online or download.",
       updatedAt: "Last updated",
-      versions: {
-        fr: {
-          label: "Français",
-          short: "FR",
-          download: "Télécharger",
-          open: "Ouvrir dans un nouvel onglet",
-          viewerLabel: "CV de Marvin Escalle, version française",
-          fallback:
-            "Votre navigateur n'affiche pas les PDF directement dans la page.",
+      variants: {
+        "business-analyst": {
+          label: "IT Business Analyst",
+          focus: "Functional analysis · Business/IT coordination",
         },
-        en: {
-          label: "English",
-          short: "EN",
-          download: "Download",
-          open: "Open in new tab",
-          viewerLabel: "Marvin Escalle's résumé, English version",
-          fallback: "Your browser cannot display PDF files inside the page.",
+        "data-automatisation": {
+          label: "Data & Automation",
+          focus: "Python · SQL · Data · Reporting",
+        },
+        "devops-ivvq": {
+          label: "DevOps & IVVQ",
+          focus: "Automation · Integration · Testing · Systems",
         },
       },
-      switchLabel: "Choose the résumé version",
+      languages: { fr: "FR", en: "EN" },
+      preview: "Preview",
+      download: "Download",
+      openTab: "Open in a new tab",
+      previewLabel: "Résumé preview",
+      pending: "Version in preparation",
+      fallback: "Your browser cannot display PDF files inside the page.",
     },
 
     sound: {

@@ -12,7 +12,10 @@
  *
  * Champs disponibles
  * ------------------
- * title        Titre court. Sert aussi de texte du lien.
+ * title        Titre court. Sert aussi de texte du lien. Une chaîne quand
+ *              c'est un nom propre, un objet { fr, en } quand c'est une
+ *              expression : « Ce portfolio » n'a rien à faire dans la
+ *              version anglaise.
  * year         Année ou période, affichée en petit.
  * description  Deux ou trois phrases maximum.
  * context      Optionnel. Cadre du projet (diplôme, entreprise, perso).
@@ -20,8 +23,13 @@
  * image        URL ou import d'image. `null` affiche un aplat typographique.
  * github       URL du dépôt. `null` si le projet n'a pas de dépôt public.
  * demo         URL de démonstration en ligne. `null` sinon.
- * category     "devops" | "web" | "school" : sert au regroupement.
- * featured     `true` place le projet en grande carte, en haut de page.
+ * category     "personnel" | "etudes" : la section dans laquelle le projet
+ *              est rangé. Indépendante de `featured`.
+ * featured     `true` place le projet dans la Sélection, en grande carte et
+ *              en haut de page. Il n'apparaît alors nulle part ailleurs :
+ *              la Sélection est un choix éditorial, pas une troisième
+ *              catégorie, et un projet n'est jamais affiché deux fois.
+ * aliases      Anciennes adresses du projet, redirigées vers la nouvelle.
  * published    `false` masque le projet du site sans supprimer ses données.
  *
  * Champs de la fiche détaillée, tous facultatifs
@@ -57,7 +65,7 @@
  *     stack: ["Docker", "Kubernetes"],
  *     github: "https://github.com/...",
  *     demo: null,
- *     category: "devops",
+ *     category: "etudes",
  *     featured: true,
  *     published: true,
  *   }
@@ -65,8 +73,9 @@
 
 export const projects = [
   {
-    id: "bloc4",
-    title: "Chaîne de livraison sur AWS",
+    id: "chaine-livraison-aws",
+    aliases: ["bloc4"],
+    title: { fr: "Chaîne de livraison sur AWS", en: "Delivery chain on AWS" },
     year: "2025",
     type: {
       fr: "Infrastructure et chaîne de livraison",
@@ -89,8 +98,8 @@ export const projects = [
       en: "Built end to end: architecture, infrastructure code, pipeline design, choice of security gates, monitoring and operational documentation.",
     },
     longDescription: {
-      fr: "L'application déployée est volontairement minimale, un service Flask exposant une page et une sonde de santé. Ce n'est pas elle le sujet : elle sert de charge utile à la chaîne construite autour, qui est l'objet du projet.\n\nToute l'infrastructure est décrite en Terraform, seize ressources AWS formant une architecture complète. Un registre ECR héberge les images, un groupe d'autoscaling adossé à un modèle de lancement porte les instances, et un répartiteur de charge applicatif les expose avec un groupe cible et sa sonde de santé. Deux groupes de sécurité distincts isolent le répartiteur des instances, seules joignables depuis lui. Un rôle IAM attaché aux instances leur donne la lecture du registre et l'accès à Session Manager, ce qui supprime le besoin d'une paire de clés SSH. La supervision repose sur un tableau de bord CloudWatch et une alarme sur les erreurs 5xx du répartiteur, reliée à un sujet SNS qui notifie par courriel.\n\nLe pipeline GitLab compte treize tâches réparties sur huit étapes. L'analyse de sécurité intervient à trois niveaux distincts : recherche de secrets dans le dépôt, contrôle des mauvaises configurations de l'infrastructure, et analyse de vulnérabilités de l'image construite. Suivent les tests unitaires, la validation puis le plan Terraform, la construction et la publication de l'image sur le registre, l'application du plan, un test de fumée contre le répartiteur, et une tâche de destruction pour rendre l'environnement.\n\nL'exploitation est documentée à part : un protocole décrivant les étapes et les critères de qualité, et un plan de réponse aux alertes précisant les rôles, la détection, le diagnostic et les actions immédiates.",
-      en: "The deployed application is deliberately minimal, a Flask service exposing one page and a health probe. It is not the point: it acts as the payload for the chain built around it, which is what the project is about.\n\nThe whole infrastructure is described in Terraform, sixteen AWS resources forming a complete architecture. An ECR registry holds the images, an autoscaling group backed by a launch template carries the instances, and an application load balancer exposes them through a target group and its health probe. Two separate security groups isolate the balancer from the instances, which are reachable only from it. An IAM role attached to the instances grants them registry read access and Session Manager access, removing the need for an SSH key pair. Monitoring rests on a CloudWatch dashboard and an alarm on the balancer's 5xx errors, wired to an SNS topic that notifies by email.\n\nThe GitLab pipeline has thirteen jobs across eight stages. Security scanning happens at three distinct levels: secret detection in the repository, misconfiguration checks on the infrastructure, and vulnerability scanning of the built image. Then come unit tests, Terraform validation and plan, image build and publication to the registry, applying the plan, a smoke test against the balancer, and a teardown job to return the environment.\n\nOperations are documented separately: a protocol setting out the stages and quality criteria, and an alert response plan covering roles, detection, diagnosis and immediate actions.",
+      fr: "L'application déployée est volontairement minimale, un service Flask exposant une page et une sonde de santé. Ce n'est pas elle le sujet : elle sert de charge utile à la chaîne construite autour, qui est l'objet du projet.\n\nToute l'infrastructure est décrite en Terraform, seize ressources AWS formant une architecture complète. Un registre ECR héberge les images, un groupe d'autoscaling adossé à un modèle de lancement porte les instances, et un répartiteur de charge applicatif les expose avec un groupe cible et sa sonde de santé. Deux groupes de sécurité distincts isolent le répartiteur des instances, seules joignables depuis lui. Un rôle IAM attaché aux instances leur donne la lecture du registre et l'accès à Session Manager, ce qui supprime le besoin d'une paire de clés SSH. La supervision repose sur un tableau de bord CloudWatch et une alarme sur les erreurs 5xx du répartiteur, reliée à un sujet SNS qui notifie par courriel.\n\nLe pipeline GitLab compte treize tâches réparties sur huit étapes. L'analyse de sécurité intervient à trois niveaux distincts : recherche de secrets dans le dépôt, contrôle des mauvaises configurations de l'infrastructure, et analyse de vulnérabilités de l'image construite. Suivent les tests unitaires, la validation puis le plan Terraform, la construction et la publication de l'image sur le registre, l'application du plan, un test de fumée contre le répartiteur, et une tâche de destruction pour rendre l'environnement.\n\nLe déploiement était initialement automatique de bout en bout. La mise en production est désormais soumise à une validation manuelle volontaire, afin de conserver un contrôle explicite sur le déploiement final : le plan relu est exactement celui qui est appliqué.\n\nL'exploitation est documentée à part : un protocole décrivant les étapes et les critères de qualité, et un plan de réponse aux alertes précisant les rôles, la détection, le diagnostic et les actions immédiates.",
+      en: "The deployed application is deliberately minimal, a Flask service exposing one page and a health probe. It is not the point: it acts as the payload for the chain built around it, which is what the project is about.\n\nThe whole infrastructure is described in Terraform, sixteen AWS resources forming a complete architecture. An ECR registry holds the images, an autoscaling group backed by a launch template carries the instances, and an application load balancer exposes them through a target group and its health probe. Two separate security groups isolate the balancer from the instances, which are reachable only from it. An IAM role attached to the instances grants them registry read access and Session Manager access, removing the need for an SSH key pair. Monitoring rests on a CloudWatch dashboard and an alarm on the balancer's 5xx errors, wired to an SNS topic that notifies by email.\n\nThe GitLab pipeline has thirteen jobs across eight stages. Security scanning happens at three distinct levels: secret detection in the repository, misconfiguration checks on the infrastructure, and vulnerability scanning of the built image. Then come unit tests, Terraform validation and plan, image build and publication to the registry, applying the plan, a smoke test against the balancer, and a teardown job to return the environment.\n\nDeployment was automated end to end at first. Releasing to production now goes through a deliberate manual approval, to keep explicit control over the final deployment: the plan that was reviewed is exactly the one that gets applied.\n\nOperations are documented separately: a protocol setting out the stages and quality criteria, and an alert response plan covering roles, detection, diagnosis and immediate actions.",
     },
     challenges: {
       fr: [
@@ -153,13 +162,13 @@ export const projects = [
     image: "/images/projects/bloc4-architecture.svg",
     github: "https://gitlab.com/marvinescalle/bloc4",
     demo: null,
-    category: "devops",
+    category: "etudes",
     featured: true,
     published: true,
   },
   {
     id: "portfolio",
-    title: "Ce portfolio",
+    title: { fr: "Ce portfolio", en: "This portfolio" },
     year: "2026",
     description: {
       fr: "Le site sur lequel vous vous trouvez. Interface sur mesure en React, sans framework de composants ni template : composition typographique, contraste noir et blanc, animations discrètes et contenu entièrement piloté par des fichiers de données.",
@@ -229,9 +238,11 @@ export const projects = [
       "Netlify",
     ],
     image: "/images/projects/Portfolio.png",
-    github: "https://github.com/marvinescalle/Portfolio",
+    /* Le dépôt est encore privé : y renvoyer donnerait une page 404 au
+       visiteur. Remettre l'adresse une fois le dépôt public. */
+    github: null,
     demo: null,
-    category: "web",
+    category: "personnel",
     featured: false,
     published: true,
   },
@@ -239,7 +250,7 @@ export const projects = [
   // ── Projets adossés à un dépôt public ────────────────────────────────
   {
     id: "audit-linux-apache",
-    title: "Audit Linux & Apache",
+    title: { fr: "Audit Linux & Apache", en: "Linux & Apache audit" },
     year: "2025",
     type: { fr: "Outil en ligne de commande", en: "Command line tool" },
     description: {
@@ -299,7 +310,7 @@ export const projects = [
     image: null, // capture à déposer dans public/images/projects/
     github: "https://github.com/marvinescalle/Audit_Config_Linux_Apache",
     demo: null,
-    category: "devops",
+    category: "personnel",
     featured: false,
     published: true,
   },
@@ -374,7 +385,7 @@ export const projects = [
     image: null, // capture à déposer dans public/images/projects/
     github: "https://github.com/marvinescalle/Memoriz",
     demo: null,
-    category: "web",
+    category: "etudes",
     featured: false,
     published: true,
   },
@@ -434,7 +445,7 @@ export const projects = [
     image: null, // capture à déposer dans public/images/projects/
     github: "https://github.com/marvinescalle/WeatherReport",
     demo: null,
-    category: "school",
+    category: "etudes",
     featured: false,
     published: true,
   },
@@ -498,7 +509,7 @@ export const projects = [
     image: null, // capture à déposer dans public/images/projects/
     github: "https://github.com/marvinescalle/IssuesReport",
     demo: null,
-    category: "school",
+    category: "etudes",
     featured: false,
     published: true,
   },
@@ -518,7 +529,7 @@ export const projects = [
       "https://mir-s3-cdn-cf.behance.net/project_modules/max_316/428928168441237.643a7fac2489c.png",
     github: null,
     demo: null,
-    category: "school",
+    category: "etudes",
     featured: false,
     published: true,
   },
@@ -536,7 +547,7 @@ export const projects = [
       "https://mir-s3-cdn-cf.behance.net/project_modules/max_158/bb642d168441237.643a7fac2353e.png",
     github: null,
     demo: null,
-    category: "school",
+    category: "etudes",
     featured: false,
     published: true,
   },
@@ -554,7 +565,7 @@ export const projects = [
       "https://mir-s3-cdn-cf.behance.net/project_modules/max_316/16ab79168441237.643a7fac2402b.png",
     github: null,
     demo: null,
-    category: "school",
+    category: "etudes",
     featured: false,
     published: true,
   },
@@ -572,7 +583,7 @@ export const projects = [
       "https://mir-s3-cdn-cf.behance.net/project_modules/max_632/3211ea168441237.643a7fac25123.png",
     github: null,
     demo: null,
-    category: "school",
+    category: "etudes",
     featured: false,
     published: true,
   },
@@ -590,7 +601,7 @@ export const projects = [
       "https://mir-s3-cdn-cf.behance.net/project_modules/max_632/d8b320168441237.643a7bc41eed4.png",
     github: null,
     demo: null,
-    category: "school",
+    category: "etudes",
     featured: false,
     published: true,
   },
@@ -608,7 +619,7 @@ export const projects = [
       "https://mir-s3-cdn-cf.behance.net/project_modules/max_632/e11136168441237.643a7bc41fd08.png",
     github: null,
     demo: null,
-    category: "school",
+    category: "etudes",
     featured: false,
     published: true,
   },
@@ -626,7 +637,7 @@ export const projects = [
       "https://mir-s3-cdn-cf.behance.net/project_modules/max_632/bfd8c8168441237.643a7bc41e2d4.png",
     github: null,
     demo: null,
-    category: "school",
+    category: "etudes",
     featured: false,
     published: true,
   },
@@ -645,13 +656,13 @@ export const projects = [
     image: null,
     github: null,
     demo: null,
-    category: "school",
+    category: "etudes",
     featured: false,
     published: true,
   },
   {
     id: "tableau-clients",
-    title: "Tableau clients",
+    title: { fr: "Tableau clients", en: "Client dashboard" },
     year: "2022",
     description: {
       fr: "Interface de consultation regroupant les clients et le détail de leurs achats.",
@@ -663,7 +674,7 @@ export const projects = [
       "https://mir-s3-cdn-cf.behance.net/project_modules/max_632/1532db168441237.643a7bc41cb3b.png",
     github: null,
     demo: null,
-    category: "school",
+    category: "etudes",
     featured: false,
     published: true,
   },
@@ -690,14 +701,33 @@ export const publishedProjects = projects
   .filter((p) => p.published)
   .sort(byYearDesc);
 
-/** Grandes cartes, en tête de page. */
+/**
+ * Sélection : le choix éditorial, en grandes cartes et en tête de page. Son
+ * contenu est indépendant de l'origine des projets, un travail d'études
+ * pouvant parfaitement y figurer.
+ */
 export const featuredProjects = publishedProjects.filter((p) => p.featured);
 
-/** Archives : tout ce qui n'est pas mis en avant. */
-export const archivedProjects = publishedProjects.filter((p) => !p.featured);
+/**
+ * Les deux autres sections. Un projet de la Sélection en est retiré : il est
+ * déjà affiché au-dessus, et le répéter juste en dessous n'apprendrait rien.
+ */
+const rest = publishedProjects.filter((p) => !p.featured);
 
-/** Retrouve un projet depuis son adresse, pour la fiche détaillée. */
+export const personalProjects = rest.filter((p) => p.category === "personnel");
+export const studentProjects = rest.filter((p) => p.category === "etudes");
+
+/**
+ * Retrouve un projet depuis son adresse.
+ *
+ * Les anciennes adresses restent reconnues et sont déclarées dans `aliases` :
+ * un lien déjà partagé continue de fonctionner, et la page se charge de
+ * rediriger vers l'adresse actuelle plutôt que de servir deux URL pour un
+ * même contenu.
+ */
 export const findProject = (slug) =>
-  publishedProjects.find((project) => project.id === slug) ?? null;
+  publishedProjects.find(
+    (project) => project.id === slug || project.aliases?.includes(slug)
+  ) ?? null;
 
 export default projects;

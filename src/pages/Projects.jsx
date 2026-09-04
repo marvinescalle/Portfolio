@@ -1,11 +1,13 @@
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import styled, { css } from "styled-components";
 import { AnimatePresence } from "framer-motion";
 
 import {
-  archivedProjects,
   featuredProjects,
   findProject,
+  personalProjects,
+  studentProjects,
 } from "../data/projects";
 import ProjectOverlay from "../components/projects/ProjectOverlay";
 import { pick, useLanguage, useTranslation } from "../i18n";
@@ -15,7 +17,7 @@ import PageShell from "../components/layout/PageShell";
 import SectionHeader from "../components/ui/SectionHeader";
 import Reveal from "../components/ui/Reveal";
 import TagList from "../components/ui/Tag";
-import { ArrowUpRight, Github } from "../components/icons";
+import { ArrowDown, ArrowUpRight, Github } from "../components/icons";
 
 /* Toutes les cartes ouvrent désormais une fiche : elles sont toutes
    cliquables, et le survol doit le dire clairement. */
@@ -65,7 +67,16 @@ const Cover = styled.div`
   background: ${(props) => props.theme.surface};
   aspect-ratio: 16 / 9;
   display: grid;
+  /* Colonne bornée : une colonne implicite en largeur automatique prend la
+     largeur minimale de son contenu, et un mot insécable de 441 px faisait
+     gonfler la grille bien au-delà du cadre. La plaque déborde alors quoi
+     qu'on lui demande, sa largeur maximale se mesurant à cette colonne
+     devenue trop large. */
+  grid-template-columns: minmax(0, 1fr);
   place-items: center;
+  /* Sert de référence à la plaque typographique ci-dessous, qui doit se
+     mesurer à la largeur du cadre et non à celle de la fenêtre. */
+  container-type: inline-size;
 
   img {
     width: 100%;
@@ -92,15 +103,34 @@ const Cover = styled.div`
   .placeholder {
     font-family: ${(props) => props.theme.fontDisplay};
     font-weight: 800;
-    font-size: clamp(1rem, 2.2vw, 1.75rem);
-    line-height: 1.1;
+    line-height: 1.15;
     letter-spacing: -0.02em;
     text-transform: uppercase;
     color: ${(props) => props.theme.textFaint};
     padding: 1.25rem;
     text-align: center;
     max-width: 100%;
-    overflow-wrap: anywhere;
+
+    /* Un mot ne se coupe jamais en son milieu : « ISSUESREPORT » se lisait
+       ISSUESREPO / RT, ce qui donne l'impression d'un défaut d'affichage.
+       Le mot est donc conservé entier et c'est le corps qui cède.
+
+       La variable porte la longueur du mot le plus long du titre. Le corps
+       est le plus petit des deux : la valeur de confort, et celle qui fait
+       tout juste tenir ce mot dans la largeur du cadre. Le coefficient est
+       la chasse moyenne d'une capitale de Syne en graisse 800, mesurée à
+       1,21 cadratin. La valeur retenue est franchement au-dessus : à 1,25 le
+       mot tombait au pixel près sur la largeur disponible, et le moindre
+       arrondi le renvoyait à la ligne.
+
+       Une première déclaration en unités de fenêtre reste posée pour les
+       navigateurs sans requête de conteneur : le titre y est simplement
+       plus petit, jamais coupé. */
+    font-size: clamp(0.9rem, 2.2vw, 1.75rem);
+    font-size: min(1.75rem, calc((100cqw - 2.5rem) / var(--longest, 12) / 1.32));
+    word-break: normal;
+    overflow-wrap: break-word;
+    hyphens: none;
   }
 `;
 
@@ -148,6 +178,11 @@ const Title = styled.h2`
   letter-spacing: -0.035em;
   text-transform: uppercase;
   line-height: 1;
+  /* Un titre passe à la ligne sur ses espaces, et ne se coupe qu'en dernier
+     recours, si un mot seul dépasse vraiment la colonne. */
+  word-break: normal;
+  overflow-wrap: break-word;
+  hyphens: none;
 `;
 
 const Description = styled.p`
@@ -254,14 +289,56 @@ const Note = styled.p`
   margin-bottom: 2rem;
 `;
 
+/* Douze travaux d'études occupaient plus de place que tout le reste de la
+   page réuni. Les plus récents restent visibles, la suite se déplie. Le
+   bouton reprend le dessin des filets de section, sans rien introduire de
+   nouveau dans le vocabulaire graphique. */
+const MoreButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1.75rem;
+  padding: 0.85rem 1.4rem;
+  border: 1px solid ${(props) => props.theme.line};
+  font-family: ${(props) => props.theme.fontMono};
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: ${(props) => props.theme.textSoft};
+  transition: border-color 0.3s ease, color 0.3s ease;
+
+  svg {
+    width: 14px;
+    height: 14px;
+    transition: transform 0.35s ease;
+  }
+
+  &:hover,
+  &:focus-visible {
+    border-color: ${(props) => props.theme.text};
+    color: ${(props) => props.theme.text};
+  }
+
+  &:hover svg {
+    transform: translateY(2px);
+  }
+`;
+
+/** Nombre de travaux d'études affichés avant dépliage. */
+const STUDENT_PREVIEW = 6;
+
 /** La carte ouvre la fiche du projet, à l'intérieur du portfolio. */
-const cardLink = (project, t) => ({
+const cardLink = (project, t, title) => ({
   as: Link,
   to: `/projets/${project.id}`,
-  "aria-label": `${project.title} : ${t.projects.openSheet}`,
+  "aria-label": `${title} : ${t.projects.openSheet}`,
 });
 
-const ProjectCover = ({ project, alt }) => (
+/** Longueur du mot le plus long, qui décide du corps de la plaque. */
+const longestWord = (title) =>
+  title.split(/\s+/).reduce((max, word) => Math.max(max, word.length), 1);
+
+const ProjectCover = ({ project, title, alt }) => (
   <Cover className="cover">
     {project.image ? (
       <img
@@ -270,8 +347,12 @@ const ProjectCover = ({ project, alt }) => (
         loading="lazy"
       />
     ) : (
-      <span className="placeholder" aria-hidden="true">
-        {project.title}
+      <span
+        className="placeholder"
+        style={{ "--longest": longestWord(title) }}
+        aria-hidden="true"
+      >
+        {title}
       </span>
     )}
   </Cover>
@@ -284,14 +365,61 @@ const ProjectCta = ({ label }) => (
   </Cta>
 );
 
+/** Grille de petites cartes, commune aux projets personnels et d'études. */
+const ProjectGrid = ({ items, t, language, offset = 0 }) => (
+  <Grid>
+    {items.map((project, i) => {
+      const title = pick(project.title, language);
+      return (
+      <Reveal key={project.id} delay={Math.min((offset + i) * 0.04, 0.3)}>
+        <SmallCard {...cardLink(project, t, title)}>
+          {project.github ? (
+            <RepoBadge aria-hidden="true">
+              <Github />
+            </RepoBadge>
+          ) : null}
+
+          <ProjectCover
+            project={project}
+            title={title}
+            alt={`${t.projects.preview} ${title}`}
+          />
+
+          <Body>
+            <Meta>{project.year}</Meta>
+            <Title>{title}</Title>
+            <Description>{pick(project.description, language)}</Description>
+            <TagList
+              items={project.stack}
+              label={`${t.projects.sheet.stackOf} ${title}`}
+            />
+            <ProjectCta label={t.projects.see} />
+          </Body>
+        </SmallCard>
+      </Reveal>
+      );
+    })}
+  </Grid>
+);
+
 const Projects = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const t = useTranslation();
   const { language } = useLanguage();
   const project = slug ? findProject(slug) : null;
+  const [allStudents, setAllStudents] = useState(false);
 
   useBodyScrollLock(Boolean(project));
+
+  /* Le projet a été atteint par une de ses anciennes adresses : la fiche
+     s'ouvre normalement, et la barre d'adresse est corrigée sans ajouter
+     d'entrée dans l'historique. Un lien déjà partagé continue de marcher. */
+  useEffect(() => {
+    if (slug && project && project.id !== slug) {
+      navigate(`/projets/${project.id}`, { replace: true });
+    }
+  }, [slug, project, navigate]);
 
   const close = () => {
     // Revenir en arrière garde l'historique cohérent, sauf si la fiche est
@@ -299,6 +427,11 @@ const Projects = () => {
     if (window.history.state?.idx > 0) navigate(-1);
     else navigate("/projets", { replace: true });
   };
+
+  const students = allStudents
+    ? studentProjects
+    : studentProjects.slice(0, STUDENT_PREVIEW);
+  const hiddenStudents = studentProjects.length - students.length;
 
   return (
   <PageShell
@@ -317,10 +450,12 @@ const Projects = () => {
           <BlockTitle id="selection">{t.projects.selection}</BlockTitle>
         </Reveal>
 
-        {featuredProjects.map((project, i) => (
+        {featuredProjects.map((project, i) => {
+          const title = pick(project.title, language);
+          return (
           <Reveal key={project.id} delay={i * 0.08}>
             <FeaturedCard
-              {...cardLink(project, t)}
+              {...cardLink(project, t, title)}
               style={{ marginBottom: "1.5rem" }}
             >
               {project.github ? (
@@ -331,7 +466,8 @@ const Projects = () => {
 
               <ProjectCover
                 project={project}
-                alt={`${t.projects.preview} ${project.title}`}
+                title={title}
+                alt={`${t.projects.preview} ${title}`}
               />
 
               <Body>
@@ -340,58 +476,54 @@ const Projects = () => {
                     .filter(Boolean)
                     .join(" · ")}
                 </Meta>
-                <Title>{project.title}</Title>
+                <Title>{title}</Title>
                 <Description>{pick(project.description, language)}</Description>
                 <TagList
                   items={project.stack}
-                  label={`${t.projects.sheet.stackOf} ${project.title}`}
+                  label={`${t.projects.sheet.stackOf} ${title}`}
                 />
                 <ProjectCta label={t.projects.see} />
               </Body>
             </FeaturedCard>
           </Reveal>
-        ))}
+          );
+        })}
       </Block>
     ) : null}
 
-    {archivedProjects.length ? (
-      <Block aria-labelledby="archives">
+    {personalProjects.length ? (
+      <Block aria-labelledby="personnels">
         <Reveal>
-          <BlockTitle id="archives">{t.projects.archives}</BlockTitle>
-        </Reveal>
-        <Reveal>
-          <Note>{t.projects.archivesNote}</Note>
+          <BlockTitle id="personnels">{t.projects.personal}</BlockTitle>
         </Reveal>
 
-        <Grid>
-          {archivedProjects.map((project, i) => (
-            <Reveal key={project.id} delay={Math.min(i * 0.04, 0.3)}>
-                <SmallCard {...cardLink(project, t)}>
-                {project.github ? (
-                  <RepoBadge aria-hidden="true">
-                    <Github />
-                  </RepoBadge>
-                ) : null}
+        <ProjectGrid items={personalProjects} t={t} language={language} />
+      </Block>
+    ) : null}
 
-                <ProjectCover
-                  project={project}
-                  alt={`${t.projects.preview} ${project.title}`}
-                />
+    {studentProjects.length ? (
+      <Block aria-labelledby="etudes">
+        <Reveal>
+          <BlockTitle id="etudes">{t.projects.student}</BlockTitle>
+        </Reveal>
+        <Reveal>
+          <Note>{t.projects.studentNote}</Note>
+        </Reveal>
 
-                <Body>
-                  <Meta>{project.year}</Meta>
-                  <Title>{project.title}</Title>
-                  <Description>{pick(project.description, language)}</Description>
-                  <TagList
-                    items={project.stack}
-                    label={`${t.projects.sheet.stackOf} ${project.title}`}
-                  />
-                  <ProjectCta label={t.projects.see} />
-                </Body>
-              </SmallCard>
-              </Reveal>
-          ))}
-        </Grid>
+        <ProjectGrid items={students} t={t} language={language} />
+
+        {hiddenStudents > 0 ? (
+          <Reveal>
+            <MoreButton
+              type="button"
+              aria-expanded={false}
+              onClick={() => setAllStudents(true)}
+            >
+              {t.projects.seeAllStudent}
+              <ArrowDown />
+            </MoreButton>
+          </Reveal>
+        ) : null}
       </Block>
     ) : null}
 

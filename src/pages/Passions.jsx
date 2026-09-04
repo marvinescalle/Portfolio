@@ -165,21 +165,6 @@ const Caption = styled.div`
   }
 `;
 
-/* Repère discret indiquant qu'une photo reste à déposer. Il n'apparaît que
-   tant que le champ `image` du fichier de données vaut null. */
-const Awaiting = styled.span`
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-  font-family: ${(props) => props.theme.fontMono};
-  font-size: 0.62rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: ${(props) => props.theme.textFaint};
-  border: 1px dashed ${(props) => props.theme.line};
-  padding: 0.3rem 0.5rem;
-`;
-
 const Passions = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -220,11 +205,12 @@ const Passions = () => {
             $hasImage={Boolean(item.image)}
             $position={item.imagePosition}
           >
+            {/* Sans photo, la case reste une plaque typographique pleine et
+                nette. Un repère « photo à venir » n'apprend rien au visiteur
+                et signale surtout que le site n'est pas terminé. */}
             {item.image ? (
               <img src={item.image} alt={pick(item.alt, language)} loading="lazy" />
-            ) : (
-              <Awaiting aria-hidden="true">{t.passions.awaiting}</Awaiting>
-            )}
+            ) : null}
 
             <Caption>
               <h2>{pick(item.label, language)}</h2>

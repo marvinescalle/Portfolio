@@ -1,5 +1,7 @@
 import styled from "styled-components";
 
+import { pick, useLanguage } from "../../i18n";
+
 const List = styled.ul`
   display: flex;
   flex-wrap: wrap;
@@ -14,17 +16,30 @@ const Item = styled.li`
   padding: 0.45rem 0.6rem;
   border: 1px solid ${(props) => props.theme.line};
   color: ${(props) => props.theme.textSoft};
-  white-space: nowrap;
+  /* Un intitulé ne se coupe jamais au milieu. Les plus longs, du type
+     « Terraform / Infrastructure as Code », passent à la ligne sur les
+     espaces plutôt que de déborder de la colonne. */
+  white-space: normal;
+  overflow-wrap: break-word;
 `;
 
-/** Liste de technologies. Rien n'est rendu si le tableau est vide. */
+/**
+ * Liste de technologies. Rien n'est rendu si le tableau est vide.
+ *
+ * Un élément est soit une chaîne, identique dans les deux langues, soit un
+ * objet { fr, en } lorsqu'il se traduit : « Sécurité » n'a rien à faire dans
+ * la version anglaise.
+ */
 const TagList = ({ items, label }) => {
+  const { language } = useLanguage();
   if (!items?.length) return null;
+
   return (
     <List aria-label={label}>
-      {items.map((item) => (
-        <Item key={item}>{item}</Item>
-      ))}
+      {items.map((item) => {
+        const text = pick(item, language);
+        return <Item key={text}>{text}</Item>;
+      })}
     </List>
   );
 };

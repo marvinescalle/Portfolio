@@ -20,82 +20,12 @@ vérifié en local uniquement.
 
 ---
 
-## Netlify Forms
+## Contact
 
-### Pourquoi cela ne peut pas être testé en local
-
-Netlify Forms n'existe pas en local. Le traitement des soumissions est assuré
-par l'infrastructure Netlify, qui repère les formulaires en analysant le HTML
-livré **au moment du déploiement**.
-
-En local, l'envoi du formulaire échoue donc toujours : la page affiche
-proprement le message d'erreur avec l'adresse email en secours, ce qui est le
-comportement attendu. Ce n'est pas un bug.
-
-Ce qui **a** été vérifié en local :
-
-- la requête part bien en `POST` vers `/`, encodée en
-  `application/x-www-form-urlencoded` ;
-- le corps de la requête contient `form-name=contact`, `bot-field`, `name`,
-  `email`, `subject` et `message` ;
-- le formulaire statique de détection est présent dans le `index.html`
-  généré par le build ;
-- les quatre états du bouton, la validation, le piège à robots et les
-  messages d'erreur fonctionnent.
-
-### 1. Activer la détection des formulaires
-
-Dans le tableau de bord du site :
-
-**Site configuration → Forms → Form detection → Enable form detection**
-
-Puis **relancer un déploiement**. La détection s'appuie sur l'analyse du HTML
-au build : activer l'option ne suffit pas, il faut un nouveau déploiement
-pour que Netlify voie le formulaire.
-
-Une fois détecté, un formulaire nommé `contact` apparaît dans l'onglet
-**Forms** du site.
-
-### 2. Voir les messages reçus
-
-**Onglet Forms** du site, puis le formulaire `contact`. Chaque soumission y
-est listée avec ses champs. Les messages considérés comme indésirables
-arrivent dans l'onglet **Spam** du même écran : penser à y jeter un œil les
-premiers jours.
-
-Le plan gratuit inclut 100 soumissions par mois.
-
-### 3. Recevoir un email à chaque message
-
-**Site configuration → Forms → Form notifications → Add notification →
-Email notification**
-
-Renseigner l'adresse de réception (`marvinescalle.pro@gmail.com`) et
-sélectionner le formulaire `contact`.
-
-### 4. Tester après déploiement
-
-1. Ouvrir la page `/contact` du site en ligne.
-2. Remplir le formulaire avec une vraie adresse et envoyer.
-3. Le site doit afficher **« Message envoyé. »** sans changer de page ni
-   recharger. Si une page de confirmation Netlify grise apparaît, c'est que
-   l'envoi en arrière-plan n'a pas fonctionné.
-4. Vérifier la soumission dans l'onglet Forms.
-5. Vérifier la réception de l'email de notification.
-6. Refaire l'essai depuis un téléphone.
-
-### Point de vigilance
-
-Le formulaire existe en deux exemplaires :
-
-| Où | Rôle |
-| --- | --- |
-| `index.html` | Copie statique, invisible, servant uniquement à la détection Netlify |
-| `src/components/ui/ContactForm.jsx` | Le formulaire réellement affiché |
-
-**Les deux doivent rester synchronisés.** Ajouter un champ dans le composant
-sans l'ajouter dans `index.html` ferait que la valeur de ce champ ne
-remonterait pas dans Netlify.
+Rien à configurer. La page Contact n'a plus de formulaire : elle affiche un
+lien `mailto:` et les profils LinkedIn et GitHub, tous définis dans
+`src/data/profile.js`. Netlify Forms n'est plus utilisé, et la déclaration
+statique correspondante a été retirée de `index.html`.
 
 ---
 

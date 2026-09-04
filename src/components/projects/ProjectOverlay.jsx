@@ -34,6 +34,10 @@ const Cover = styled(motion.div)`
   background: ${(props) => props.theme.surface};
   aspect-ratio: 16 / 9;
   display: grid;
+  /* Colonne bornée : une colonne automatique prendrait la largeur minimale
+     de son contenu et un mot insécable ferait gonfler la grille au-delà du
+     cadre. */
+  grid-template-columns: minmax(0, 1fr);
   place-items: center;
   overflow: hidden;
 
@@ -61,7 +65,12 @@ const Cover = styled(motion.div)`
     color: ${(props) => props.theme.textFaint};
     padding: 1.5rem;
     text-align: center;
-    overflow-wrap: anywhere;
+    /* Comme sur les cartes : un titre ne se coupe jamais au milieu d'un mot.
+       Le cadre de la fiche est large, le corps n'a donc pas besoin d'être
+       recalculé ici. */
+    word-break: normal;
+    overflow-wrap: break-word;
+    hyphens: none;
   }
 `;
 
@@ -203,6 +212,7 @@ const ProjectOverlay = ({ project, onClose }) => {
   const t = useTranslation();
   const { language } = useLanguage();
   const s = t.projects.sheet;
+  const title = pick(project.title, language);
 
   const meta = [
     pick(project.type, language),
@@ -223,11 +233,11 @@ const ProjectOverlay = ({ project, onClose }) => {
 
   return (
     <OverlaySheet
-      label={project.title}
+      label={title}
       meta={meta}
       onClose={onClose}
     >
-      <Title>{project.title}</Title>
+      <Title>{title}</Title>
       {project.description ? (
         <Lead>{pick(project.description, language)}</Lead>
       ) : null}
@@ -236,12 +246,12 @@ const ProjectOverlay = ({ project, onClose }) => {
         {project.image ? (
           <img
             src={project.image}
-            alt={`${t.projects.preview} ${project.title}`}
+            alt={`${t.projects.preview} ${title}`}
             loading="lazy"
           />
         ) : (
           <span className="placeholder" aria-hidden="true">
-            {project.title}
+            {title}
           </span>
         )}
       </Cover>
@@ -261,7 +271,7 @@ const ProjectOverlay = ({ project, onClose }) => {
         <Block title={s.stack}>
           <TagList
             items={project.stack}
-            label={`${s.stackOf} ${project.title}`}
+            label={`${s.stackOf} ${title}`}
           />
         </Block>
       ) : null}

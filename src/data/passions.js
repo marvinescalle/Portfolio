@@ -50,8 +50,8 @@ export const passions = [
     id: "sport",
     label: { fr: "Sport", en: "Sport" },
     text: {
-      fr: "Je suis un passionné de sport, c'est l'une des choses les plus importantes de ma vie. J'ai été Vice champion départemental en duo mixte et vice champion régional en sprint 100m.",
-      en: "Athletics and sprinting, then Muay Thai and MMA. Training is still how I switch off from the screen.",
+      fr: "De l'athlétisme à la boxe, en passant par l'escalade et l'alpinisme. Vice-champion départemental en duo mixte et vice-champion régional en sprint 100 m.",
+      en: "From athletics to boxing, by way of climbing and mountaineering. Runner-up in the departmental mixed doubles and in the regional 100 m sprint.",
     },
     image: "/images/passions/sport/boxe.jpg",
     alt: {
@@ -64,7 +64,7 @@ export const passions = [
     highlights: [],
     gallery: [],
     story: {
-      intro: { fr: "texte", en: "texte" },
+      intro: null,
       columns: 2,
       ratio: "3 / 4",
       groups: [
@@ -148,7 +148,7 @@ export const passions = [
     highlights: [],
     gallery: [],
     story: {
-      intro: { fr: "texte", en: "texte" },
+      intro: null,
       columns: 2,
       /* Rien n'est rogné : un recadrage amputerait le trait. Les planches sont
          donc inscrites dans leur vignette. Le cadrage est en revanche propre à
@@ -242,14 +242,14 @@ export const passions = [
     highlights: [],
     gallery: [],
     story: {
-      intro: { fr: "texte", en: "texte" },
+      intro: null,
       columns: 3,
       ratio: "4 / 5",
       groups: [
       {
         id: "thailande",
         title: { fr: "Thaïlande", en: "Thailand" },
-        text: { fr: "texte", en: "texte" },
+        text: null,
         photos: [
           {
             src: "/images/passions/voyage/thailande1.jpg",
@@ -277,7 +277,7 @@ export const passions = [
       {
         id: "vietnam",
         title: { fr: "Vietnam", en: "Vietnam" },
-        text: { fr: "texte", en: "texte" },
+        text: null,
         photos: [
           {
             src: "/images/passions/voyage/vietnam1.jpg",
@@ -305,7 +305,7 @@ export const passions = [
       {
         id: "chine",
         title: { fr: "Chine", en: "China" },
-        text: { fr: "texte", en: "texte" },
+        text: null,
         photos: [
           {
             src: "/images/passions/voyage/chine1.jpg",
@@ -354,7 +354,7 @@ export const passions = [
       {
         id: "ouzbekistan",
         title: { fr: "Ouzbékistan", en: "Uzbekistan" },
-        text: { fr: "texte", en: "texte" },
+        text: null,
         photos: [
           {
             src: "/images/passions/voyage/ouzbekistan1.jpg",
@@ -376,7 +376,7 @@ export const passions = [
       {
         id: "nepal",
         title: { fr: "Népal", en: "Nepal" },
-        text: { fr: "texte", en: "texte" },
+        text: null,
         photos: [
           {
             src: "/images/passions/voyage/nepal1.jpg",
@@ -404,7 +404,7 @@ export const passions = [
       {
         id: "japon",
         title: { fr: "Japon", en: "Japan" },
-        text: { fr: "texte", en: "texte" },
+        text: null,
         photos: [
           {
             src: "/images/passions/voyage/japon1.jpg",
@@ -432,7 +432,7 @@ export const passions = [
       {
         id: "coree",
         title: { fr: "Corée du Sud", en: "South Korea" },
-        text: { fr: "texte", en: "texte" },
+        text: null,
         photos: [
           {
             src: "/images/passions/voyage/koree1.jpg",
@@ -464,8 +464,8 @@ export const passions = [
     id: "tech",
     label: { fr: "Tech & IA", en: "Tech & AI" },
     text: {
-      fr: "J'expérimente régulièrement avec les nouvelles technologies, l'IA, la 3D et les outils de création numérique.",
-      en: "I regularly experiment with new technologies, AI, 3D and digital creation tools.",
+      fr: "Je suis de près les avancées de l'IA, du hardware et des outils de création numérique, que j'aime tester et intégrer à mes projets.",
+      en: "I follow what happens in AI, in hardware and in the digital creation tools closely, and I like testing them and bringing them into my own projects.",
     },
     image: null, // → /images/passions/tech.jpg
     alt: {
@@ -476,7 +476,10 @@ export const passions = [
     /* Décalée vers le bas, voir le commentaire de Cell dans la page
        Passions : la colonne étroite se lit alors en escalier. */
     offset: true,
-    longText: null,
+    longText: {
+      fr: "Je suis de près les évolutions de l'IA et du hardware, des nouveaux modèles aux dernières générations de composants. J'aime tester les nouveaux outils, comprendre ce qu'ils permettent réellement et les intégrer à mes projets de développement, de 3D ou de création numérique.",
+      en: "I follow how AI and hardware evolve, from new models to the latest generations of components. I like trying the new tools out, working out what they actually make possible, and bringing them into my own projects, whether they involve development, 3D or digital creation.",
+    },
     highlights: [],
     gallery: [],
   },
@@ -499,7 +502,7 @@ export const passions = [
     highlights: [],
     gallery: [],
     story: {
-      intro: { fr: "texte", en: "texte" },
+      intro: null,
       columns: 3,
       ratio: "4 / 5",
       /* Jaquettes verticales et logotypes larges se côtoient, de 0,65 à 2,24

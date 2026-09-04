@@ -38,6 +38,11 @@
       content="Portfolio de Marvin Escalle, ingénieur IT spécialisé en automatisation, DevOps, systèmes et données."
     />
 
+    <!-- Le portfolio existe dans les deux langues sous la même adresse, le
+         choix étant fait côté client : la balise annonce donc les deux, sans
+         quoi la version anglaise reste invisible des moteurs. -->
+    <meta property="og:locale:alternate" content="en_GB" />
+
     <!-- Favicon vectoriel, reconnu par tous les navigateurs actuels.
          TODO : ajouter un apple-touch-icon.png de 180x180 pour l'ajout à
          l'écran d'accueil sur iOS, qui n'accepte pas le SVG. -->
@@ -58,32 +63,6 @@
       contacter directement à marvinescalle.pro@gmail.com.
     </noscript>
     <div id="root"></div>
-
-    <!--
-      Formulaire de détection Netlify Forms.
-
-      Netlify analyse le HTML livré au déploiement pour repérer les
-      formulaires. Une application React ne produit qu'un index.html vide :
-      sans cette copie statique, le formulaire de la page Contact ne serait
-      jamais détecté et les messages n'arriveraient nulle part.
-
-      Ce formulaire n'est jamais affiché ni soumis. Il sert uniquement de
-      déclaration. Le nom et les champs doivent rester identiques à ceux de
-      src/components/ui/ContactForm.jsx.
-    -->
-    <form
-      name="contact"
-      data-netlify="true"
-      data-netlify-honeypot="bot-field"
-      hidden
-    >
-      <input type="hidden" name="form-name" value="contact" />
-      <input type="text" name="bot-field" />
-      <input type="text" name="name" />
-      <input type="email" name="email" />
-      <input type="text" name="subject" />
-      <textarea name="message"></textarea>
-    </form>
 
     <script type="module" src="/src/index.jsx"></script>
   </body>

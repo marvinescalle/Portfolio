@@ -141,6 +141,29 @@ const Wordmark = styled.span`
   color: ${(props) => (props.$onDark ? props.theme.body : props.theme.text)};
   transition: color
     ${(props) => (props.$onDark ? motionSpec.tint : motionSpec.tintBack)};
+
+  /* L'intitulé n'est là que sur l'écran d'entrée : une fois la présentation
+     ouverte, elle le porte elle-même, en bien plus lisible. Il s'efface donc
+     en même temps que le panneau se déploie.
+
+     Il reste dans le flux même effacé : le retirer ferait sauter la ligne à
+     chaque ouverture, et le repère du haut doit rester parfaitement fixe. */
+  .role {
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    opacity: ${(props) => (props.$onDark ? 0 : 0.5)};
+    transition: opacity
+      ${(props) => (props.$onDark ? motionSpec.tint : motionSpec.tintBack)};
+  }
+
+  /* Sous 640 px, la ligne complète entrerait en collision avec le choix de
+     la langue posé dans le coin opposé : l'intitulé passe dessous. */
+  ${media.sm`
+    align-items: flex-start;
+
+    .identity { display: flex; flex-direction: column; gap: 0.2rem; }
+    .separator { display: none; }
+  `}
 `;
 
 const linkVisual = `
@@ -506,6 +529,9 @@ const NameBlock = styled.div`
   }
 `;
 
+/* Trois niveaux de lecture, du plus fort au plus discret : l'intitulé, ce
+   qu'il recouvre, puis les domaines. La hiérarchie est portée par le corps,
+   la graisse et la couleur, jamais par un séparateur posé entre eux. */
 const Role = styled.div`
   padding-top: 0.35rem;
 
@@ -518,12 +544,19 @@ const Role = styled.div`
     font-weight: 500;
   }
 
+  .focus {
+    font-size: clamp(0.85rem, 1.15vw, 0.95rem);
+    line-height: 1.45;
+    color: ${(props) => props.theme.textSoft};
+    margin-top: 0.15rem;
+  }
+
   .disciplines {
     font-family: ${(props) => props.theme.fontMono};
     font-size: 0.72rem;
     letter-spacing: 0.09em;
-    color: ${(props) => props.theme.textSoft};
-    margin-top: 0.3rem;
+    color: ${(props) => props.theme.textFaint};
+    margin-top: 0.45rem;
   }
 `;
 
@@ -726,7 +759,8 @@ const Home = () => {
     <ThemeProvider theme={lightTheme}>
       <Screen>
         <h1 className="visually-hidden">
-          {profile.fullName}, {pick(profile.role, language)} :{" "}
+          {profile.fullName}, {pick(profile.role, language)}.{" "}
+          {pick(profile.focus, language)}.{" "}
           {pick(profile.disciplines, language).join(", ")}
         </h1>
 
@@ -735,7 +769,15 @@ const Home = () => {
         </DarkGroup>
 
         <Wordmark $onDark={open}>
-          {profile.fullName}
+          <span className="identity">
+            {profile.fullName}
+            <span className="role">
+              <span className="separator" aria-hidden="true">
+                {" \u00b7 "}
+              </span>
+              {pick(profile.role, language)}
+            </span>
+          </span>
           <SoundToggle onDark={open} />
         </Wordmark>
 
@@ -864,6 +906,7 @@ const Home = () => {
 
                 <Role>
                   <span className="title">{pick(profile.role, language)}</span>
+                  <span className="focus">{pick(profile.focus, language)}</span>
                   <span className="disciplines">
                     {pick(profile.disciplines, language).join(" · ")}
                   </span>

@@ -137,7 +137,7 @@ const Detail = styled.div`
     margin: 1.5rem 0 1.75rem;
     display: flex;
     flex-direction: column;
-    gap: 0.8rem;
+    gap: 1.05rem;
   }
 
   .highlights li {
@@ -156,6 +156,19 @@ const Detail = styled.div`
     width: 0.75rem;
     height: 1px;
     background: ${(props) => props.theme.lineStrong};
+  }
+
+  /* Le domaine d'activité nomme le point, la phrase le détaille. Six blocs
+     titrés se survolent d'un coup d'oeil là où six paragraphes nus
+     obligeraient à tout lire pour trouver ce qu'on cherche. */
+  .highlights .domain {
+    display: block;
+    font-family: ${(props) => props.theme.fontMono};
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: ${(props) => props.theme.text};
+    margin-bottom: 0.3rem;
   }
 `;
 
@@ -271,9 +284,16 @@ const Experience = () => {
               <p className="summary">{pick(job.summary, language)}</p>
 
               <ul className="highlights">
-                {pick(job.highlights, language).map((point) => (
-                  <li key={point}>{point}</li>
-                ))}
+                {pick(job.highlights, language).map((point) =>
+                  typeof point === "string" ? (
+                    <li key={point}>{point}</li>
+                  ) : (
+                    <li key={point.label}>
+                      <span className="domain">{point.label}</span>
+                      {point.text}
+                    </li>
+                  )
+                )}
               </ul>
 
               <TagList

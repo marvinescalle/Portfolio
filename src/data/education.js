@@ -2,7 +2,9 @@
  * Parcours de formation, affiché en timeline du plus récent au plus ancien.
  *
  * Les champs traduisibles prennent la forme { fr, en }. Les champs simples
- * (année, note) sont identiques dans les deux langues.
+ * (année, note) sont identiques dans les deux langues. Les descriptions sont
+ * volontairement courtes, deux à trois lignes : cette page raconte un
+ * parcours, elle ne double pas le CV.
  *
  * POUR AJOUTER UNE FORMATION : copier un objet et le placer dans le tableau,
  * l'ordre du tableau étant l'ordre d'affichage. Un champ vide masque
@@ -18,21 +20,21 @@ export const education = [
     grade: "17,20/20",
     gradeLabel: null,
     description: {
-      fr: "Formation spécialisée dans l'automatisation, le cloud, l'administration des systèmes, la conteneurisation, le CI/CD et le pilotage des infrastructures modernes. Elle s'est conclue par la réalisation d'un projet DevOps complet mobilisant plusieurs compétences techniques et organisationnelles.",
-      en: "A programme focused on automation, cloud, systems administration, containerisation, CI/CD and the management of modern infrastructures. It concluded with a full DevOps project drawing on a broad set of technical and organisational skills.",
+      fr: "Formation spécialisée dans l'automatisation et l'exploitation d'infrastructures : Linux, conteneurisation, CI/CD, Infrastructure as Code, cloud, supervision et sécurité. Mise en pratique à travers plusieurs projets, dont la conception d'une chaîne de livraison complète sur AWS.",
+      en: "A programme built around infrastructure automation and operations: Linux, containerisation, CI/CD, infrastructure as code, cloud, monitoring and security. Put into practice through several projects, including a complete delivery chain on AWS.",
     },
     skills: [
       "Docker",
       "Kubernetes",
       "CI/CD",
-      "Cloud",
+      { fr: "AWS / Cloud", en: "AWS / Cloud" },
       "Linux",
       "Python",
       "Ansible",
-      "Infrastructure as Code",
-      "Supervision",
-      "Sécurité",
-      "Gestion de projet",
+      { fr: "Terraform / Infrastructure as Code", en: "Terraform / Infrastructure as code" },
+      { fr: "Supervision", en: "Monitoring" },
+      { fr: "Sécurité", en: "Security" },
+      { fr: "Gestion de projet", en: "Project management" },
     ],
   },
   {
@@ -49,16 +51,23 @@ export const education = [
     grade: "14,00/20",
     gradeLabel: null,
     description: {
-      fr: "Approfondissement du développement web full-stack, des bases de données et de la conception d'applications, avec des projets techniques menés en équipe sur plusieurs frameworks.",
-      en: "A deeper dive into full-stack web development, databases and application design, through team projects built on several web frameworks.",
+      fr: "Conception d'applications web full-stack : architectures front / back, API, bases de données relationnelles et développement d'interfaces modernes. Réalisation de projets individuels et collectifs avec plusieurs frameworks et environnements back-end.",
+      en: "Designing full-stack web applications: front and back architectures, APIs, relational databases and modern interface development. Individual and team projects built on several frameworks and back-end environments.",
     },
-    skills: [],
+    skills: [
+      "Vue",
+      "JavaScript / TypeScript",
+      "PHP / Symfony",
+      "Node.js",
+      "SQL / MySQL",
+      "Git",
+    ],
   },
   {
     id: "bts-sio",
     degree: {
-      fr: "BTS SIO",
-      en: "BTS SIO",
+      fr: "BTS SIO, option SISR",
+      en: "BTS SIO, SISR option",
     },
     school: {
       fr: "Lycée Charles Péguy, Marseille",
@@ -68,15 +77,16 @@ export const education = [
     grade: "13,40/20",
     gradeLabel: null,
     description: {
-      fr: "Services informatiques aux organisations. Formation apportant les fondamentaux du développement, des bases de données, des systèmes d'information et de la gestion de projet.",
-      en: "IT services for organisations. A course covering the fundamentals of development, databases, information systems and project management.",
+      fr: "Acquisition des fondamentaux des systèmes d'information : systèmes et réseaux, développement, bases de données, support utilisateurs et gestion de projets IT.",
+      en: "The fundamentals of information systems: systems and networks, development, databases, user support and IT project management.",
     },
     skills: [
+      { fr: "Systèmes & réseaux", en: "Systems & networks" },
+      "Linux",
+      "Windows",
       "SQL",
-      "JavaScript",
-      "Web",
-      "Bases de données",
-      "Développement applicatif",
+      { fr: "Support utilisateurs", en: "User support" },
+      { fr: "Développement", en: "Development" },
     ],
   },
   {
@@ -91,9 +101,11 @@ export const education = [
     },
     period: "2020",
     grade: "17,72/20",
+    /* Il s'agit bien de la moyenne générale du baccalauréat, et non d'une
+       note d'épreuve : le libellé précédent était faux. */
     gradeLabel: {
-      fr: "Épreuve anticipée de français",
-      en: "French language exam",
+      fr: "Moyenne générale",
+      en: "Overall average",
     },
     description: {
       fr: "Filière orientée gestion, économie et systèmes d'information, à l'origine de mon passage vers l'informatique.",
