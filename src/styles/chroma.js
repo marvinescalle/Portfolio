@@ -51,126 +51,78 @@ export const ground = {
 /* ────────────────────────────────────────────────────────────────────────
    2. COMPOSITION PAR RUBRIQUE
 
-   Chaque page reçoit une paire de teintes et une poignée de signes. Un signe
-   se décrit par sa forme, sa place et sa taille, toutes exprimées en unités
-   de fenêtre : la composition tient donc à toutes les tailles d'écran sans
-   qu'aucune valeur soit à reprendre.
+   Chaque page reçoit une paire de teintes et un seul signe.
+
+   Une version précédente en posait quatre par page, avec l'idée qu'une
+   composition riche vaudrait mieux qu'une trame. C'était une erreur du même
+   ordre : quatre formes qui se disputent l'écran ne composent pas, elles
+   habillent. Un signe unique, choisi pour la rubrique et posé à sa place, se
+   remarque et se retient. Le reste du caractère vient de la couleur, qui
+   n'occupe aucune surface de lecture.
 
      m     Nom du signe, dans la bibliothèque de motifs.
-     x, y  Centre du signe, en pourcentage de la fenêtre. Volontairement
-           au-delà de 0 et 100 pour la plupart : un signe recadré par le bord
-           se lit comme une composition, un signe entier posé au milieu se lit
-           comme un logo.
+     x, y  Centre du signe, en pourcentage de la fenêtre.
      size  Diamètre, en vmin.
      rot   Rotation, en degrés.
      ink   "accent" ou "second".
-     op    Opacité. Un tracé filaire couvre très peu de pixels : il peut
-           monter bien plus haut qu'un aplat sans jamais gêner la lecture.
+     op    Opacité. Un tracé filaire couvre très peu de pixels.
      w     Épaisseur du trait, en pixels réels, indépendante de la taille.
    ──────────────────────────────────────────────────────────────────────── */
 
 const pageDesign = {
-  /* Un portail : un grand anneau derrière le symbole, deux trajectoires qui
-     le traversent, une étoile en écho. */
+  /* L'accueil est presque vide : une seule étoile, entière, suffit à le
+     signer. Elle se tient à l'écart du symbole central, qu'elle n'a pas à
+     concurrencer. */
   "/": {
     accent: "cobalt",
     second: "fuchsia",
-    decor: [
-      /* Assez large pour sortir par le haut et par le bas : il n'en reste
-         que deux arcs de part et d'autre du symbole. Un cercle entier posé
-         au milieu se serait lu comme une cible, et aurait pris le pas sur la
-         marque qu'il est censé entourer. */
-      { m: "bubble", x: 50, y: 54, size: 138, rot: 0, ink: "accent", op: 0.15, w: 1.1 },
-      { m: "strings", x: 4, y: 90, size: 66, rot: -8, ink: "accent", op: 0.28, w: 1.2 },
-      { m: "star", x: 95, y: 17, size: 30, rot: 14, ink: "second", op: 0.26, w: 1.3 },
-      { m: "marker", x: 88, y: 90, size: 12, rot: 0, ink: "accent", op: 0.26, w: 1.1 },
-    ],
+    sign: { m: "star", x: 86, y: 27, size: 26, rot: 12, ink: "second", op: 0.22, w: 1.3 },
   },
 
-  /* Le fer à cheval en héros, sorti par la droite, et une orbite à gauche. */
   "/a-propos": {
     accent: "cobalt",
     second: "violet",
-    decor: [
-      { m: "horseshoe", x: 96, y: 34, size: 72, rot: 12, ink: "accent", op: 0.26, w: 1.4 },
-      { m: "bubble", x: -14, y: 62, size: 66, rot: 0, ink: "second", op: 0.22, w: 1.2 },
-      { m: "star", x: 72, y: 84, size: 22, rot: -8, ink: "second", op: 0.32, w: 1.3 },
-      { m: "star", x: 14, y: 12, size: 13, rot: 18, ink: "accent", op: 0.3, w: 1.2 },
-    ],
+    sign: { m: "horseshoe", x: 95, y: 30, size: 46, rot: 10, ink: "accent", op: 0.18, w: 1.4 },
   },
 
-  /* Une chaîne : deux maillons accrochés, sortis par la droite. */
   "/experiences": {
     accent: "cobalt",
     second: "gold",
-    decor: [
-      { m: "link", x: 90, y: 22, size: 56, rot: 34, ink: "accent", op: 0.28, w: 1.4 },
-      { m: "link", x: 104, y: 44, size: 56, rot: 34, ink: "accent", op: 0.22, w: 1.4 },
-      { m: "marker", x: 8, y: 78, size: 16, rot: 0, ink: "second", op: 0.34, w: 1.2 },
-      { m: "burst", x: 26, y: 8, size: 24, rot: 0, ink: "second", op: 0.24, w: 1.1 },
-    ],
+    sign: { m: "link", x: 93, y: 26, size: 40, rot: 32, ink: "accent", op: 0.2, w: 1.4 },
   },
 
-  /* Des bulles qui se recouvrent, de tailles franchement différentes. */
   "/projets": {
     accent: "fuchsia",
     second: "turquoise",
-    decor: [
-      { m: "bubble", x: -10, y: 20, size: 76, rot: 0, ink: "accent", op: 0.26, w: 1.3 },
-      { m: "bubble", x: 22, y: 46, size: 40, rot: 0, ink: "second", op: 0.24, w: 1.2 },
-      { m: "bubble", x: 98, y: 76, size: 92, rot: 0, ink: "second", op: 0.2, w: 1.3 },
-      { m: "burst", x: 84, y: 14, size: 26, rot: 0, ink: "accent", op: 0.3, w: 1.1 },
-    ],
+    /* Descendue sous le titre : posée plus haut, elle traversait le seul
+       endroit où l'oeil se pose en premier. */
+    sign: { m: "bubble", x: -6, y: 52, size: 52, rot: 0, ink: "accent", op: 0.18, w: 1.3 },
   },
 
-  /* Deux pétales opposés, l'un montant, l'autre retombant. */
   "/formation": {
     accent: "violet",
     second: "gold",
-    decor: [
-      { m: "petal", x: -6, y: 30, size: 78, rot: -26, ink: "accent", op: 0.26, w: 1.4 },
-      { m: "petal", x: 98, y: 82, size: 62, rot: 152, ink: "second", op: 0.24, w: 1.3 },
-      { m: "bubble", x: 74, y: 16, size: 28, rot: 0, ink: "accent", op: 0.24, w: 1.2 },
-      { m: "star", x: 40, y: 94, size: 15, rot: 0, ink: "second", op: 0.3, w: 1.2 },
-    ],
+    sign: { m: "petal", x: 94, y: 34, size: 48, rot: 22, ink: "accent", op: 0.18, w: 1.4 },
   },
 
-  /* La page la plus libre : une étoile pleine en masse, un éclat, un écho. */
   "/passions": {
     accent: "fuchsia",
     second: "lime",
     tone: "dark",
-    decor: [
-      { m: "starSolid", x: 94, y: 26, size: 66, rot: 12, ink: "accent", op: 0.16 },
-      { m: "burst", x: 6, y: 70, size: 62, rot: 0, ink: "second", op: 0.26, w: 1.2 },
-      { m: "star", x: 62, y: 90, size: 26, rot: -14, ink: "second", op: 0.3, w: 1.3 },
-      { m: "star", x: 28, y: 12, size: 16, rot: 8, ink: "accent", op: 0.34, w: 1.2 },
-    ],
+    sign: { m: "star", x: 91, y: 24, size: 34, rot: 10, ink: "accent", op: 0.24, w: 1.3 },
   },
 
-  /* La plus construite : des filaments et des repères de calage. */
   "/cv": {
     accent: "turquoise",
     second: "cobalt",
-    decor: [
-      { m: "strings", x: 94, y: 44, size: 96, rot: 6, ink: "accent", op: 0.3, w: 1.2 },
-      { m: "marker", x: 5, y: 40, size: 14, rot: 0, ink: "second", op: 0.34, w: 1.1 },
-      { m: "marker", x: 5, y: 78, size: 14, rot: 0, ink: "second", op: 0.26, w: 1.1 },
-      { m: "link", x: 40, y: 104, size: 40, rot: 90, ink: "accent", op: 0.22, w: 1.3 },
-    ],
+    sign: { m: "strings", x: 94, y: 40, size: 54, rot: 6, ink: "accent", op: 0.22, w: 1.2 },
   },
 
-  /* Une source de lumière hors champ, et le fer à cheval en contre-jour. */
   "/contact": {
     accent: "turquoise",
     second: "fuchsia",
     tone: "dark",
-    decor: [
-      { m: "burst", x: 94, y: 30, size: 108, rot: 0, ink: "accent", op: 0.2, w: 1.2 },
-      { m: "horseshoe", x: -8, y: 76, size: 72, rot: -16, ink: "second", op: 0.24, w: 1.4 },
-      { m: "star", x: 54, y: 12, size: 20, rot: 10, ink: "second", op: 0.3, w: 1.3 },
-      { m: "marker", x: 78, y: 90, size: 13, rot: 0, ink: "accent", op: 0.3, w: 1.1 },
-    ],
+    sign: { m: "bubble", x: 92, y: 30, size: 50, rot: 0, ink: "accent", op: 0.22, w: 1.3 },
   },
 };
 

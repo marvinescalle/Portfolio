@@ -13,8 +13,8 @@ import { media } from "../../styles/theme";
      1. le sol      un aplat ivoire ou encre ;
      2. les champs  deux masses colorées en diagonale et un coin franc, qui
                     donnent la température de la rubrique ;
-     3. les signes  trois ou quatre grandes formes filaires, posées à des
-                    places choisies et recadrées par les bords ;
+     3. le signe    une seule forme filaire, choisie pour la rubrique et
+                    posée à sa place ;
      4. le grain    un bruit fractal, juste assez pour que l'aplat ne
                     paraisse pas plastique.
 
@@ -22,11 +22,14 @@ import { media } from "../../styles/theme";
    ce qui coûte moins cher au compositeur et donne au contenu l'impression de
    glisser sur une affiche.
 
-   La couche des signes remplace la tuile répétée de la première version.
-   Répéter un petit motif produit une trame, et une trame se lit comme un
-   papier peint : uniforme, sans intention, et d'autant plus visible qu'on
-   ne la regarde pas. Quatre grandes formes placées à la main disent
-   l'inverse, pour un coût de rendu comparable.
+   Deux directions ont été essayées avant celle-ci, et écartées. Une tuile
+   répétée d'abord : c'était un papier peint, uniforme et sans intention. Une
+   composition de quatre grandes formes ensuite : plus intentionnelle, mais
+   les formes se disputaient l'écran et l'ensemble retombait en habillage.
+
+   Reste ce qui marche : un signe, un seul, et de la couleur. Le caractère
+   d'une page tient à sa teinte, qui n'occupe aucune surface de lecture, et à
+   une forme qu'on remarque parce qu'elle est seule.
    ──────────────────────────────────────────────────────────────────────── */
 
 /* Respiration très lente des champs colorés : quelques pour cent de
@@ -35,15 +38,6 @@ const drift = keyframes`
   0%   { transform: translate3d(0, 0, 0) scale(1.06); }
   50%  { transform: translate3d(-2%, 1.5%, 0) scale(1.12); }
   100% { transform: translate3d(0, 0, 0) scale(1.06); }
-`;
-
-/* Les signes dérivent dans l'autre sens, et deux fois plus lentement : le
-   décalage entre les deux couches suffit à créer une profondeur, sans
-   qu'aucun parallaxe soit lié au défilement. */
-const glide = keyframes`
-  0%   { transform: translate3d(0, 0, 0); }
-  50%  { transform: translate3d(1.2%, -0.9%, 0); }
-  100% { transform: translate3d(0, 0, 0); }
 `;
 
 const Root = styled.div`
@@ -130,24 +124,13 @@ const Wedge = styled.div`
   `}
 `;
 
-const Signs = styled.div`
-  position: absolute;
-  inset: 0;
-  animation: ${glide} 94s ease-in-out infinite;
-  will-change: transform;
+/* Le signe est centré sur sa position, ce qui rend les valeurs du fichier de
+   composition immédiatement lisibles : x et y désignent son milieu, et un
+   signe posé à -4 % sort par la gauche.
 
-  ${media.md`
-    animation: none;
-  `}
-
-  @media (prefers-reduced-motion: reduce) {
-    animation: none;
-  }
-`;
-
-/* Chaque signe est centré sur sa position, ce qui rend les valeurs du fichier
-   de composition immédiatement lisibles : x et y désignent son milieu, et un
-   signe posé à -8 % sort par la gauche. */
+   Immobile, contrairement aux champs colorés. Une forme unique qui dérive
+   attire l'oeil sur elle : c'est exactement ce qu'un signe de fond ne doit
+   pas faire. */
 const Sign = styled.span`
   position: absolute;
   display: block;
@@ -166,8 +149,8 @@ const Sign = styled.span`
     stroke-width: ${(props) => props.$w};
   }
 
-  /* Sous 860 px, la fenêtre est étroite et haute : les signes y occupent
-     proportionnellement bien plus de place. On les rentre et on les calme. */
+  /* Sous 860 px, la fenêtre est étroite et haute : le signe y occupe
+     proportionnellement bien plus de place. On le calme. */
   ${media.md`
     opacity: 0.5;
   `}
@@ -200,34 +183,27 @@ const ChromaBackdrop = () => {
 
   if (!isChroma) return null;
 
-  const { decor } = designFor(pathname);
+  const { sign } = designFor(pathname);
+  const Motif = sign ? MOTIFS[sign.m] : null;
 
   return (
     <Root aria-hidden="true">
       <Fields />
       <Wedge />
 
-      <Signs>
-        {decor.map((signe, i) => {
-          const Motif = MOTIFS[signe.m];
-          if (!Motif) return null;
-
-          return (
-            <Sign
-              key={`${signe.m}-${i}`}
-              $x={signe.x}
-              $y={signe.y}
-              $size={signe.size}
-              $rot={signe.rot ?? 0}
-              $ink={signe.ink}
-              $op={signe.op}
-              $w={signe.w ?? 1.25}
-            >
-              <Motif />
-            </Sign>
-          );
-        })}
-      </Signs>
+      {Motif ? (
+        <Sign
+          $x={sign.x}
+          $y={sign.y}
+          $size={sign.size}
+          $rot={sign.rot ?? 0}
+          $ink={sign.ink}
+          $op={sign.op}
+          $w={sign.w ?? 1.25}
+        >
+          <Motif />
+        </Sign>
+      ) : null}
 
       <Grain />
     </Root>

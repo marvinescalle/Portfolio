@@ -143,34 +143,35 @@ la moindre condition : en MONO ils sont transparents, donc absents.
 
 Un seul système pour tout le site, dans `components/layout/ChromaBackdrop.jsx`,
 en quatre couches et sans une seule image : un aplat, deux champs colorés
-posés en diagonale plus un coin franc, une composition de signes, un grain
-fractal. Tout est calculé par le navigateur.
+posés en diagonale plus un coin franc, un signe, un grain fractal. Tout est
+calculé par le navigateur.
 
-### Les signes
+### Le signe
 
-La bibliothèque vit dans `components/decor/motifs.jsx` : huit formes dessinées
+La bibliothèque vit dans `components/decor/motifs.jsx` : six formes dessinées
 à la main, dans le même repère de 100 sur 100, au même trait. Étoile, fer à
-cheval, maillon, bulle, pétale, filaments, rayons, repère de calage.
+cheval, maillon, bulle, pétale, filaments.
 
 Deux règles tiennent leur cohérence. Le trait ne grossit pas avec la forme,
-grâce à `non-scaling-stroke` : un signe de 600 px garde la finesse d'un dessin
+grâce à `non-scaling-stroke` : un signe de 400 px garde la finesse d'un dessin
 technique. Et la couleur vient de `currentColor`, donc un motif se recolore
 depuis le CSS sans être redessiné.
 
-Ils ne sont jamais répétés en tuile. Chaque rubrique en reçoit trois ou quatre,
-posés grand, souvent recadrés par les bords, parfois superposés. Les positions
-sont déclarées dans `pageDesign` de `styles/chroma.js`, en pourcentages de
-fenêtre et en vmin, ce qui les rend valables à toutes les tailles d'écran.
+**Une page n'en montre qu'un.** Sa position est déclarée dans `pageDesign` de
+`styles/chroma.js`, en pourcentages de fenêtre et en vmin, ce qui la rend
+valable à toutes les tailles d'écran.
 
-Répéter un petit motif produit une trame, et une trame se lit comme un papier
-peint : uniforme, sans intention, et d'autant plus visible qu'on ne la regarde
-pas. Quatre grandes formes placées à la main disent l'inverse, pour un coût de
-rendu comparable.
+Deux directions ont été essayées avant celle-ci. Une tuile répétée d'abord :
+c'était un papier peint, uniforme et sans intention. Une composition de quatre
+grandes formes ensuite : plus intentionnelle, mais elles se disputaient l'écran
+et l'ensemble retombait en habillage. Reste ce qui marche : un signe, et de la
+couleur. Le caractère d'une page tient à sa teinte, qui n'occupe aucune surface
+de lecture, et à une forme qu'on remarque parce qu'elle est seule.
 
 ### Ajouter une rubrique à CHROMA
 
 Ajouter une entrée à `pageDesign` dans `src/styles/chroma.js` : deux teintes
-prises dans `hues`, une composition de signes pris dans `motifs.jsx`, et
+prises dans `hues`, un signe pris dans `motifs.jsx` avec sa position, et
 `tone: "dark"` si la page est sombre. Rien d'autre.
 
 ## Accessibilité

@@ -1,16 +1,19 @@
 /* ────────────────────────────────────────────────────────────────────────
    Bibliothèque de motifs CHROMA.
 
-   Huit signes, dessinés ici et nulle part ailleurs. Aucun n'illustre quoi
-   que ce soit : ce sont des formes, tracées au même trait, dans le même
-   repère de 100 sur 100, et pensées pour être posées grand, recadrées par
-   les bords, parfois superposées.
+   Six signes, dessinés ici et nulle part ailleurs. Aucun n'illustre quoi que
+   ce soit : ce sont des formes, tracées au même trait, dans le même repère
+   de 100 sur 100.
 
-   Deux règles tiennent toute la cohérence de l'ensemble :
+   Une page n'en montre qu'un seul. Ce n'est pas une contrainte de
+   performance mais de composition : un signe unique et bien posé se
+   remarque, cinq se neutralisent et retombent en décor.
+
+   Deux règles tiennent la cohérence de l'ensemble :
 
      - le trait ne grossit pas avec la forme. `non-scaling-stroke` fige son
        épaisseur en pixels quelle que soit la taille d'affichage, si bien
-       qu'un signe de 600 px garde la finesse d'un dessin technique au lieu
+       qu'un signe de 400 px garde la finesse d'un dessin technique au lieu
        de devenir un gros contour ;
      - la couleur vient de `currentColor`. Un motif se recolore depuis le
        CSS, sans être redessiné ni dupliqué.
@@ -34,13 +37,6 @@ export const Star = (props) => (
   </svg>
 );
 
-/** La même, pleine : sert de masse et non de contour. */
-export const StarSolid = (props) => (
-  <svg {...base} {...props} fill="currentColor" stroke="none">
-    <path d="M50 1C54.5 29.5 70.5 45.5 99 50C70.5 54.5 54.5 70.5 50 99C45.5 70.5 29.5 54.5 1 50C29.5 45.5 45.5 29.5 50 1Z" />
-  </svg>
-);
-
 /** Fer à cheval, réduit à deux arcs ouverts vers le haut. */
 export const Horseshoe = (props) => (
   <svg {...base} {...props}>
@@ -49,7 +45,7 @@ export const Horseshoe = (props) => (
   </svg>
 );
 
-/** Maillon de chaîne. Posé par deux, il en fait une. */
+/** Maillon de chaîne. */
 export const Link = (props) => (
   <svg {...base} {...props}>
     <rect x="24" y="6" width="52" height="88" rx="26" />
@@ -82,47 +78,13 @@ export const Strings = (props) => (
   </svg>
 );
 
-/** Rayons, de longueurs alternées pour éviter la rosace mécanique. */
-export const Burst = (props) => {
-  const rayons = Array.from({ length: 16 }, (_, i) => {
-    const angle = (i * Math.PI * 2) / 16;
-    const debut = 16;
-    const fin = i % 2 === 0 ? 49 : 34;
-    return (
-      <path
-        key={i}
-        d={`M${(50 + Math.cos(angle) * debut).toFixed(2)} ${(50 + Math.sin(angle) * debut).toFixed(2)}L${(50 + Math.cos(angle) * fin).toFixed(2)} ${(50 + Math.sin(angle) * fin).toFixed(2)}`}
-      />
-    );
-  });
-  return (
-    <svg {...base} {...props}>
-      {rayons}
-    </svg>
-  );
-};
-
-/** Repère de calage : une croix et quatre équerres, comme sur une planche. */
-export const Marker = (props) => (
-  <svg {...base} {...props}>
-    <path d="M50 14V86M14 50H86" />
-    <path d="M4 22V4H22" />
-    <path d="M78 4H96V22" />
-    <path d="M96 78V96H78" />
-    <path d="M22 96H4V78" />
-  </svg>
-);
-
 export const MOTIFS = {
   star: Star,
-  starSolid: StarSolid,
   horseshoe: Horseshoe,
   link: Link,
   bubble: Bubble,
   petal: Petal,
   strings: Strings,
-  burst: Burst,
-  marker: Marker,
 };
 
 export default MOTIFS;
