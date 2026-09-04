@@ -1,15 +1,24 @@
 import { useLayoutEffect } from "react";
+import { useLocation } from "react-router-dom";
 import styled, { ThemeProvider } from "styled-components";
 import { motion, useReducedMotion } from "framer-motion";
 
-import { layout, lightTheme } from "../../styles/theme";
+import { layout } from "../../styles/theme";
+import { applyChromaVars } from "../../styles/chroma";
+import { useTone } from "../../theme/SkinProvider";
 import useDocumentMeta from "../../hooks/useDocumentMeta";
 import { useTranslation } from "../../i18n";
+import ChromaBackdrop from "./ChromaBackdrop";
 import Footer from "./Footer";
 import Nav from "./Nav";
 
+/* En MONO la page peint son propre fond. En CHROMA elle ne peint rien : le
+   fond en couches se trouve derrière elle, en position fixe, et la page se
+   contente de flotter dessus. C'est le seul jeton qui sépare les deux peaux
+   à cet endroit. */
 const Page = styled(motion.div)`
-  background: ${(props) => props.theme.body};
+  position: relative;
+  background: ${(props) => props.theme.canvas};
   color: ${(props) => props.theme.text};
   min-height: 100vh;
   display: flex;
@@ -37,6 +46,11 @@ const Sweep = styled(motion.span)`
 `;
 
 const Main = styled(motion.main)`
+  /* Au-dessus du fond décoratif, qui est en position fixe au ras de la
+     pile. Sans cela le fond, étant positionné, passerait par-dessus le
+     contenu qui ne l'est pas. */
+  position: relative;
+  z-index: 1;
   flex: 1;
   /* La page CV a besoin de plus de largeur que les pages de texte : deux
      colonnes de PDF côte à côte doivent rester lisibles. */
@@ -54,7 +68,7 @@ const Main = styled(motion.main)`
  * plein écran, sans barre de navigation.
  */
 const PageShell = ({
-  theme = lightTheme,
+  tone = "light",
   title,
   description,
   wide = false,
@@ -62,6 +76,8 @@ const PageShell = ({
 }) => {
   const reduce = useReducedMotion();
   const t = useTranslation();
+  const theme = useTone(tone);
+  const { pathname } = useLocation();
   useDocumentMeta(title, description);
 
   // La couleur de fond du document suit le thème de la page, sinon le
@@ -71,6 +87,12 @@ const PageShell = ({
   useLayoutEffect(() => {
     document.body.style.backgroundColor = theme.body;
   }, [theme.body]);
+
+  // Accents de la rubrique, posés sur la racine du document afin que les
+  // fiches en surimpression, rendues dans un portail, en héritent aussi.
+  useLayoutEffect(() => {
+    applyChromaVars(pathname, tone);
+  }, [pathname, tone]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -95,6 +117,8 @@ const PageShell = ({
             transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1] }}
           />
         )}
+
+        <ChromaBackdrop />
 
         <a className="skip-link" href="#contenu">
           {t.common.skipToContent}

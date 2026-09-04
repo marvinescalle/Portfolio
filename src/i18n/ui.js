@@ -184,6 +184,13 @@ export const ui = {
       switchLabel: "Choisir la version du CV",
     },
 
+    skin: {
+      mono: "Version mono",
+      chroma: "Version chroma",
+      toChroma: "Passer à la version couleur",
+      toMono: "Revenir à la version mono",
+    },
+
     sound: {
       on: "Activer l'ambiance sonore",
       off: "Couper l'ambiance sonore",
@@ -363,6 +370,13 @@ export const ui = {
         },
       },
       switchLabel: "Choose the résumé version",
+    },
+
+    skin: {
+      mono: "Mono version",
+      chroma: "Chroma version",
+      toChroma: "Switch to the colour version",
+      toMono: "Back to the mono version",
     },
 
     sound: {

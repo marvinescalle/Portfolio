@@ -26,7 +26,7 @@ const clickable = css`
 
   &:hover,
   &:focus-visible {
-    border-color: ${(props) => props.theme.text};
+    border-color: ${(props) => props.theme.accent};
   }
 
   &:hover .cover img,
@@ -49,7 +49,7 @@ const cardBase = css`
   display: block;
   position: relative;
   border: 1px solid ${(props) => props.theme.line};
-  background: ${(props) => props.theme.body};
+  background: ${(props) => props.theme.card};
   transition: border-color 0.35s ease;
 
   /* Le visuel retrouve ses couleurs au survol de la carte entière, qu'elle
@@ -223,8 +223,8 @@ const RepoBadge = styled.span`
   width: 2.1rem;
   height: 2.1rem;
   border: 1px solid ${(props) => props.theme.line};
-  background: ${(props) => props.theme.body};
-  color: ${(props) => props.theme.textSoft};
+  background: ${(props) => props.theme.card};
+  color: ${(props) => props.theme.accentLabel};
 
   svg {
     width: 17px;
@@ -276,10 +276,10 @@ const BlockTitle = styled.h2`
   font-weight: 400;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: ${(props) => props.theme.textFaint};
+  color: ${(props) => props.theme.accentLabel};
   padding-bottom: 1.25rem;
   margin-bottom: 2rem;
-  border-bottom: 1px solid ${(props) => props.theme.text};
+  border-bottom: 1px solid ${(props) => props.theme.rule};
 `;
 
 const Note = styled.p`
@@ -315,7 +315,7 @@ const MoreButton = styled.button`
 
   &:hover,
   &:focus-visible {
-    border-color: ${(props) => props.theme.text};
+    border-color: ${(props) => props.theme.accent};
     color: ${(props) => props.theme.text};
   }
 

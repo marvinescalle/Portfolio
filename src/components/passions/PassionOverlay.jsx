@@ -29,7 +29,7 @@ const Section = styled.section`
     font-weight: 400;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: ${(props) => props.theme.textFaint};
+    color: ${(props) => props.theme.accentLabel};
     padding-bottom: 0.85rem;
     border-bottom: 1px solid ${(props) => props.theme.line};
     margin-bottom: 1.25rem;

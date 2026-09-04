@@ -27,7 +27,7 @@ const Root = styled(motion.div)`
 const Backdrop = styled.div`
   position: absolute;
   inset: 0;
-  background: rgba(10, 10, 10, 0.55);
+  background: ${(props) => props.theme.scrim};
 `;
 
 /* Centrage par marges automatiques : Framer Motion pilote la propriété
@@ -43,13 +43,13 @@ const Sheet = styled(motion.div)`
   width: min(1100px, 92vw);
   display: flex;
   flex-direction: column;
-  background: ${(props) => props.theme.body};
+  background: ${(props) => props.theme.card};
   /* Couleur de texte posée sur la feuille elle-même : sans elle, tout élément
      qui n'en déclare pas hérite de celle de la page, restée sombre. Le bouton
      de fermeture se retrouvait ainsi en noir sur le fond noir des fiches de
      passion, donc invisible. */
   color: ${(props) => props.theme.text};
-  border: 1px solid ${(props) => props.theme.text};
+  border: 1px solid ${(props) => props.theme.rule};
   overflow: hidden;
 
   ${media.md`
@@ -74,7 +74,7 @@ const Bar = styled.div`
     font-size: 0.7rem;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: ${(props) => props.theme.textFaint};
+    color: ${(props) => props.theme.accentLabel};
   }
 `;
 

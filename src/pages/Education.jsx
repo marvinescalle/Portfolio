@@ -40,7 +40,7 @@ const Entry = styled.li`
     width: 9px;
     height: 9px;
     transform: translateX(-4px);
-    background: ${(props) => props.theme.text};
+    background: ${(props) => props.theme.accent};
   }
 `;
 

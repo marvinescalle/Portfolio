@@ -14,6 +14,7 @@ import navItems from "../../data/navigation";
 import { profile } from "../../data/profile";
 import { layout, media } from "../../styles/theme";
 import { Close, Menu } from "../icons";
+import SkinToggle from "../ui/SkinToggle";
 import SoundToggle from "../ui/SoundToggle";
 import { LANGUAGES, useLanguage, useTranslation } from "../../i18n";
 
@@ -21,7 +22,17 @@ const Bar = styled.header`
   position: sticky;
   top: 0;
   z-index: 50;
-  background: ${(props) => props.theme.body};
+  /* Un voile plutôt qu'un aplat : en CHROMA le fond coloré continue de
+     transparaître sous la barre, qui cesse d'être une bande rapportée. En
+     MONO le jeton vaut la couleur de page, et rien ne change. */
+  background: ${(props) => props.theme.veil};
+  backdrop-filter: blur(14px) saturate(1.2);
+
+  /* Sans flou disponible, le voile doit redevenir opaque, sinon le contenu
+     défilerait visiblement sous la barre. */
+  @supports not (backdrop-filter: blur(1px)) {
+    background: ${(props) => props.theme.body};
+  }
   border-bottom: 1px solid
     ${(props) => (props.$scrolled ? props.theme.line : "transparent")};
   transition: border-color 0.3s ease;
@@ -67,7 +78,7 @@ const Wordmark = styled(NavLink)`
     height: 5px;
     margin-left: 0.5rem;
     vertical-align: 0.15em;
-    background: ${(props) => props.theme.text};
+    background: ${(props) => props.theme.accent};
     transition: transform 0.3s ease;
   }
 
@@ -111,7 +122,7 @@ const Item = styled(NavLink)`
     bottom: 0;
     height: 1px;
     width: 100%;
-    background: ${(props) => props.theme.text};
+    background: ${(props) => props.theme.accent};
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -138,6 +149,12 @@ const Languages = styled.div`
   display: flex;
   align-items: center;
   gap: 0.4rem;
+
+  /* La bascule de peau ferme le groupe, un peu détachée des deux libellés
+     de langue avec lesquels elle ne se confond pas. */
+  > button:last-child {
+    margin-left: 0.55rem;
+  }
   margin-left: clamp(0.75rem, 1.5vw, 1.5rem);
   padding-left: clamp(0.75rem, 1.5vw, 1.5rem);
   border-left: 1px solid ${(props) => props.theme.line};
@@ -146,7 +163,7 @@ const Languages = styled.div`
     display: none;
   `}
 
-  span {
+  > span {
     font-family: ${(props) => props.theme.fontMono};
     font-size: 0.68rem;
     color: ${(props) => props.theme.textFaint};
@@ -174,7 +191,7 @@ const Indicator = styled(motion.span)`
   bottom: 0;
   left: 0;
   height: 1px;
-  background: ${(props) => props.theme.text};
+  background: ${(props) => props.theme.accent};
   pointer-events: none;
 `;
 
@@ -274,22 +291,26 @@ const OverlayLanguages = styled.div`
   align-items: center;
   gap: 0.5rem;
 
-  span {
+  /* Enfants directs seulement : la bascule de peau porte son propre span. */
+  > span {
     font-family: ${(props) => props.theme.fontMono};
     font-size: 0.75rem;
     opacity: 0.5;
   }
 
-  button {
+  > button {
     font-family: ${(props) => props.theme.fontMono};
     font-size: 0.8rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    opacity: ${(props) => (props.$dummy ? 1 : 1)};
   }
 
-  button[aria-pressed="false"] {
+  > button[aria-pressed="false"]:not(:last-child) {
     opacity: 0.45;
+  }
+
+  > button:last-child {
+    margin-left: 0.4rem;
   }
 
   :focus-visible {
@@ -420,6 +441,7 @@ const Nav = () => {
                 </LanguageButton>
               </Fragment>
             ))}
+            <SkinToggle />
           </Languages>
 
           <Burger
@@ -487,6 +509,7 @@ const Nav = () => {
                     </button>
                   </Fragment>
                 ))}
+                <SkinToggle onDark />
               </OverlayLanguages>
             </OverlayBottom>
           </Overlay>

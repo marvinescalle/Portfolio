@@ -91,9 +91,9 @@ const SkillsTitle = styled.h2`
   font-weight: 400;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: ${(props) => props.theme.textFaint};
+  color: ${(props) => props.theme.accentLabel};
   padding-bottom: 1.5rem;
-  border-bottom: 1px solid ${(props) => props.theme.text};
+  border-bottom: 1px solid ${(props) => props.theme.rule};
 `;
 
 const Groups = styled.div`
@@ -129,7 +129,7 @@ const Group = styled.div`
     font-weight: 500;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: ${(props) => props.theme.textFaint};
+    color: ${(props) => props.theme.accentLabel};
     margin-bottom: 1rem;
   }
 
@@ -146,7 +146,7 @@ const Group = styled.div`
     height: 4px;
     margin-right: 0.7rem;
     vertical-align: 0.22em;
-    background: ${(props) => props.theme.text};
+    background: ${(props) => props.theme.accent};
   }
 `;
 

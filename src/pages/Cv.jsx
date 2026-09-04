@@ -74,7 +74,7 @@ const Head = styled.div`
   justify-content: space-between;
   gap: 1rem;
   padding-bottom: 0.9rem;
-  border-bottom: 1px solid ${(props) => props.theme.text};
+  border-bottom: 1px solid ${(props) => props.theme.rule};
 
   h2 {
     font-size: clamp(1.1rem, 2vw, 1.5rem);
@@ -87,7 +87,7 @@ const Head = styled.div`
     font-family: ${(props) => props.theme.fontMono};
     font-size: 0.7rem;
     letter-spacing: 0.16em;
-    color: ${(props) => props.theme.textFaint};
+    color: ${(props) => props.theme.accentLabel};
   }
 `;
 

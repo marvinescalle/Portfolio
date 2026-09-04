@@ -16,12 +16,12 @@ const MainList = styled.div`
 `;
 
 const Card = styled.article`
-  border: 1px solid ${(props) => props.theme.text};
+  border: 1px solid ${(props) => props.theme.rule};
   padding: clamp(1.5rem, 3.5vw, 3rem);
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
   gap: clamp(1.5rem, 4vw, 3.5rem);
-  background: ${(props) => props.theme.body};
+  background: ${(props) => props.theme.card};
   transition: background-color 0.4s ease, color 0.4s ease;
 
   ${media.md`
@@ -167,7 +167,7 @@ const Detail = styled.div`
     font-size: 0.7rem;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: ${(props) => props.theme.text};
+    color: ${(props) => props.theme.accentLabel};
     margin-bottom: 0.3rem;
   }
 `;
@@ -182,9 +182,9 @@ const SecondaryTitle = styled.h2`
   font-weight: 400;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: ${(props) => props.theme.textFaint};
+  color: ${(props) => props.theme.accentLabel};
   padding-bottom: 1.25rem;
-  border-bottom: 1px solid ${(props) => props.theme.text};
+  border-bottom: 1px solid ${(props) => props.theme.rule};
 `;
 
 const Row = styled.article`
