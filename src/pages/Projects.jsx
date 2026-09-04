@@ -366,8 +366,8 @@ const ProjectCta = ({ label }) => (
 );
 
 /** Grille de petites cartes, commune aux projets personnels et d'études. */
-const ProjectGrid = ({ items, t, language, offset = 0 }) => (
-  <Grid>
+const ProjectGrid = ({ items, t, language, offset = 0, id }) => (
+  <Grid id={id}>
     {items.map((project, i) => {
       const title = pick(project.title, language);
       return (
@@ -431,7 +431,6 @@ const Projects = () => {
   const students = allStudents
     ? studentProjects
     : studentProjects.slice(0, STUDENT_PREVIEW);
-  const hiddenStudents = studentProjects.length - students.length;
 
   return (
   <PageShell
@@ -510,17 +509,26 @@ const Projects = () => {
           <Note>{t.projects.studentNote}</Note>
         </Reveal>
 
-        <ProjectGrid items={students} t={t} language={language} />
+        <ProjectGrid
+          id="grille-etudes"
+          items={students}
+          t={t}
+          language={language}
+        />
 
-        {hiddenStudents > 0 ? (
+        {/* Vrai bouton de dépliage, réversible et annoncé comme tel : il
+            reste en place une fois ouvert plutôt que de disparaître sous le
+            doigt de celui qui vient de l'actionner. */}
+        {studentProjects.length > STUDENT_PREVIEW ? (
           <Reveal>
             <MoreButton
               type="button"
-              aria-expanded={false}
-              onClick={() => setAllStudents(true)}
+              aria-expanded={allStudents}
+              aria-controls="grille-etudes"
+              onClick={() => setAllStudents((ouvert) => !ouvert)}
             >
-              {t.projects.seeAllStudent}
-              <ArrowDown />
+              {allStudents ? t.projects.seeFewerStudent : t.projects.seeAllStudent}
+              <ArrowDown style={allStudents ? { transform: "rotate(180deg)" } : undefined} />
             </MoreButton>
           </Reveal>
         ) : null}

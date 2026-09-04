@@ -88,6 +88,7 @@ export const ui = {
       studentNote:
         "Travaux réalisés pendant mes études, conservés à titre de parcours. Ils ne reflètent pas mon niveau actuel.",
       seeAllStudent: "Voir tous les projets d'études",
+      seeFewerStudent: "Réduire la liste",
       see: "Voir le projet",
       openSheet: "ouvrir la fiche du projet",
       preview: "Aperçu du projet",
@@ -270,6 +271,7 @@ export const ui = {
       studentNote:
         "Work produced during my studies, kept as a record of the journey. It does not reflect my current level.",
       seeAllStudent: "See every student project",
+      seeFewerStudent: "Show fewer",
       see: "View project",
       openSheet: "open the project details",
       preview: "Preview of project",
