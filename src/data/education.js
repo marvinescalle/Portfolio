@@ -59,6 +59,8 @@ export const education = [
       "JavaScript / TypeScript",
       "PHP / Symfony",
       "Node.js",
+      { fr: "POO", en: "OOP" },
+      "API REST",
       "SQL / MySQL",
       "Git",
     ],
@@ -66,8 +68,8 @@ export const education = [
   {
     id: "bts-sio",
     degree: {
-      fr: "BTS SIO, option SISR",
-      en: "BTS SIO, SISR option",
+      fr: "BTS SIO, option SLAM",
+      en: "BTS SIO, SLAM option",
     },
     school: {
       fr: "Lycée Charles Péguy, Marseille",
@@ -80,13 +82,18 @@ export const education = [
       fr: "Acquisition des fondamentaux des systèmes d'information : systèmes et réseaux, développement, bases de données, support utilisateurs et gestion de projets IT.",
       en: "The fundamentals of information systems: systems and networks, development, databases, user support and IT project management.",
     },
+    /* Option SLAM, donc le développement en tête. Les systèmes et les réseaux
+       restent dans la liste : ils relèvent du tronc commun du BTS SIO, quelle
+       que soit l'option choisie ensuite. */
     skills: [
+      "PHP",
+      "JavaScript",
+      { fr: "POO", en: "OOP" },
+      "SQL",
       { fr: "Systèmes & réseaux", en: "Systems & networks" },
       "Linux",
       "Windows",
-      "SQL",
       { fr: "Support utilisateurs", en: "User support" },
-      { fr: "Développement", en: "Development" },
     ],
   },
   {

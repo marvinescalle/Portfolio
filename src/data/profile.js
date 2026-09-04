@@ -51,75 +51,29 @@ export const profile = {
   },
 
   /**
-   * CURRICULUM VITAE
-   * ----------------
-   * Trois variantes ciblées, chacune en français et en anglais. Elles
-   * racontent le même parcours et n'ont aucune hiérarchie entre elles :
-   * l'affichage leur donne exactement le même poids.
-   *
-   * POUR AJOUTER UN FICHIER : le déposer dans public/cv/ sous le nom indiqué
-   * par `file`, puis passer le `ready` de la langue concernée à `true`. Tant
-   * qu'il vaut `false`, aucun lien n'est affiché : mieux vaut une action
-   * absente qu'un lien mort.
+   * CV affichés et téléchargés depuis la page /cv : le même parcours, une
+   * version par langue. Déposer les fichiers dans public/cv/ en gardant ces
+   * noms, rien d'autre n'est à modifier. Le chemin part de la racine du site,
+   * pas de src.
    */
   cv: {
+    fr: {
+      file: "/cv/Marvin_Escalle_CV_FR.pdf",
+      downloadName: "Marvin_Escalle_CV_FR.pdf",
+    },
+    en: {
+      file: "/cv/Marvin_Escalle_CV_EN.pdf",
+      downloadName: "Marvin_Escalle_CV_EN.pdf",
+    },
     /**
-     * Format des pages, utilisé pour donner au cadre d'aperçu les mêmes
-     * proportions que le document : sans cela une bande vide apparaît sous le
-     * PDF. Les fichiers actuels sont au format US Letter (612 x 792 points).
+     * Format des pages, utilisé pour donner au cadre d'affichage les mêmes
+     * proportions que le document : sans cela une bande vide apparaît sous
+     * le PDF. Les CV actuels sont au format US Letter (612 x 792 points).
      * Basculer sur "a4" si les futurs fichiers sont au format A4.
      */
     format: "letter",
     // TODO à compléter : date de dernière mise à jour, ex. "Septembre 2026".
     updatedAt: null,
-
-    variants: [
-      {
-        id: "business-analyst",
-        files: {
-          fr: {
-            file: "/cv/Marvin_Escalle_CV_Business_Analyst_FR.pdf",
-            downloadName: "Marvin_Escalle_CV_Business_Analyst_FR.pdf",
-            ready: true,
-          },
-          en: {
-            file: "/cv/Marvin_Escalle_CV_Business_Analyst_EN.pdf",
-            downloadName: "Marvin_Escalle_CV_Business_Analyst_EN.pdf",
-            ready: true,
-          },
-        },
-      },
-      {
-        id: "data-automatisation",
-        files: {
-          fr: {
-            file: "/cv/Marvin_Escalle_CV_Data_Automatisation_FR.pdf",
-            downloadName: "Marvin_Escalle_CV_Data_Automatisation_FR.pdf",
-            ready: false,
-          },
-          en: {
-            file: "/cv/Marvin_Escalle_CV_Data_Automatisation_EN.pdf",
-            downloadName: "Marvin_Escalle_CV_Data_Automatisation_EN.pdf",
-            ready: false,
-          },
-        },
-      },
-      {
-        id: "devops-ivvq",
-        files: {
-          fr: {
-            file: "/cv/Marvin_Escalle_CV_DevOps_IVVQ_FR.pdf",
-            downloadName: "Marvin_Escalle_CV_DevOps_IVVQ_FR.pdf",
-            ready: false,
-          },
-          en: {
-            file: "/cv/Marvin_Escalle_CV_DevOps_IVVQ_EN.pdf",
-            downloadName: "Marvin_Escalle_CV_DevOps_IVVQ_EN.pdf",
-            ready: false,
-          },
-        },
-      },
-    ],
   },
 };
 

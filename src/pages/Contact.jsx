@@ -30,13 +30,13 @@ const Statement = styled.h1`
   }
 `;
 
+/* Sans filet sous le paragraphe : la liste des moyens de contact ouvre déjà
+   sur le sien, et les deux traits si proches se lisaient comme une erreur. */
 const Intro = styled.p`
   max-width: 46ch;
   font-size: clamp(1.05rem, 1.8vw, 1.25rem);
   line-height: 1.6;
   color: ${(props) => props.theme.textSoft};
-  padding-bottom: clamp(2.5rem, 6vw, 4rem);
-  border-bottom: 1px solid ${(props) => props.theme.line};
 `;
 
 const Channels = styled.ul`

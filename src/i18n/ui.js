@@ -158,31 +158,30 @@ export const ui = {
 
     cv: {
       title: "Curriculum vitae",
-      lead: "Trois versions ciblées, un même parcours.",
-      seo: "Curriculum vitae de Marvin Escalle, ingénieur IT : trois versions ciblées, en français et en anglais, à consulter en ligne ou à télécharger.",
+      lead: "Deux versions, un même parcours.",
+      seo: "Curriculum vitae de Marvin Escalle, ingénieur IT, en français et en anglais : consultation en ligne et téléchargement au format PDF.",
       updatedAt: "Dernière mise à jour",
-      variants: {
-        "business-analyst": {
-          label: "Business Analyst IT",
-          focus: "Analyse fonctionnelle · Coordination métier/IT",
+      versions: {
+        fr: {
+          label: "Français",
+          short: "FR",
+          download: "Télécharger",
+          open: "Ouvrir dans un nouvel onglet",
+          viewerLabel: "CV de Marvin Escalle, version française",
+          fallback:
+            "Votre navigateur n'affiche pas les PDF directement dans la page.",
         },
-        "data-automatisation": {
-          label: "Data & Automatisation",
-          focus: "Python · SQL · Data · Reporting",
-        },
-        "devops-ivvq": {
-          label: "DevOps & IVVQ",
-          focus: "Automatisation · Intégration · Tests · Systèmes",
+        en: {
+          label: "English",
+          short: "EN",
+          download: "Download",
+          open: "Open in new tab",
+          viewerLabel: "Marvin Escalle's résumé, English version",
+          fallback:
+            "Your browser cannot display PDF files inside the page.",
         },
       },
-      languages: { fr: "FR", en: "EN" },
-      preview: "Aperçu",
-      download: "Télécharger",
-      openTab: "Ouvrir dans un nouvel onglet",
-      previewLabel: "Aperçu du CV",
-      pending: "Version en préparation",
-      fallback:
-        "Votre navigateur n'affiche pas les PDF directement dans la page.",
+      switchLabel: "Choisir la version du CV",
     },
 
     sound: {
@@ -341,30 +340,29 @@ export const ui = {
 
     cv: {
       title: "Curriculum vitae",
-      lead: "Three targeted versions, one career.",
-      seo: "Marvin Escalle's résumé, IT engineer: three targeted versions, in French and English, to read online or download.",
+      lead: "Two versions, one career.",
+      seo: "Marvin Escalle's résumé, IT engineer, in French and English: read it online or download the PDF.",
       updatedAt: "Last updated",
-      variants: {
-        "business-analyst": {
-          label: "IT Business Analyst",
-          focus: "Functional analysis · Business/IT coordination",
+      versions: {
+        fr: {
+          label: "Français",
+          short: "FR",
+          download: "Télécharger",
+          open: "Ouvrir dans un nouvel onglet",
+          viewerLabel: "CV de Marvin Escalle, version française",
+          fallback:
+            "Votre navigateur n'affiche pas les PDF directement dans la page.",
         },
-        "data-automatisation": {
-          label: "Data & Automation",
-          focus: "Python · SQL · Data · Reporting",
-        },
-        "devops-ivvq": {
-          label: "DevOps & IVVQ",
-          focus: "Automation · Integration · Testing · Systems",
+        en: {
+          label: "English",
+          short: "EN",
+          download: "Download",
+          open: "Open in new tab",
+          viewerLabel: "Marvin Escalle's résumé, English version",
+          fallback: "Your browser cannot display PDF files inside the page.",
         },
       },
-      languages: { fr: "FR", en: "EN" },
-      preview: "Preview",
-      download: "Download",
-      openTab: "Open in a new tab",
-      previewLabel: "Résumé preview",
-      pending: "Version in preparation",
-      fallback: "Your browser cannot display PDF files inside the page.",
+      switchLabel: "Choose the résumé version",
     },
 
     sound: {
