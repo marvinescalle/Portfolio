@@ -931,8 +931,8 @@ const Home = () => {
                 <img
                   src={portrait}
                   alt={`${t.about.portrait} ${profile.fullName}`}
-                  width="900"
-                  height="980"
+                  width="800"
+                  height="1000"
                 />
               </PhotoSide>
           </Panel>

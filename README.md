@@ -114,6 +114,28 @@ src/
 └── index.jsx          Point d'entrée
 ```
 
+## Où vivent les images
+
+Trois dossiers portent les mêmes sous-dossiers, ce qui prête à confusion.
+Un seul se modifie :
+
+| Dossier | Rôle | Suivi par git |
+| --- | --- | --- |
+| `photos-source/` | Les originaux pleine résolution | non, ignoré |
+| `public/images/` | **Les versions web, celles du site** | oui |
+| `dist/images/` | Copie produite par le build | non, ignoré |
+
+Le portrait fait exception : il n'est dans aucun des trois. Il vit dans
+`src/assets/optimized/portrait.jpg`, parce qu'il est importé par le code et
+non chargé par une adresse. Vite lui donne alors un nom porteur d'empreinte,
+ce qui permet de le mettre en cache indéfiniment. Les deux pages qui
+l'affichent, l'accueil et À propos, partagent ce même fichier.
+
+Le portrait est détouré sur fond blanc et affiché en mode `multiply`, qui
+fait disparaître ce fond sur le papier cassé du site. Un fichier au fond
+transparent convient aussi : l'aplatir en JPEG le pose sur du blanc, ce
+qu'attend ce mode.
+
 ## Voyages et planisphère
 
 La fiche Passions « Voyages » lit `src/data/travel.js`, seule source de

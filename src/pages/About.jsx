@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-import portrait from "../assets/optimized/portrait-about.jpg";
+import portrait from "../assets/optimized/portrait.jpg";
 import { profile } from "../data/profile";
 import { skillGroups } from "../data/skills";
 import { pick, useLanguage, useTranslation } from "../i18n";
@@ -63,6 +63,11 @@ const Portrait = styled.figure`
 
   img {
     width: 100%;
+    /* Hauteur libre, sans quoi l'attribut height du balisage devient la
+       hauteur utilisée : l'image était alors étirée à 1020 px pour 123 px de
+       large, soit sept fois trop haute. C'est ce que fait déjà le portrait de
+       l'accueil, qui échappait au défaut pour cette seule raison. */
+    height: auto;
     mix-blend-mode: multiply;
   }
 
@@ -185,8 +190,8 @@ const About = () => {
               src={portrait}
               alt={`${t.about.portrait} ${profile.fullName}`}
               loading="lazy"
-              width="900"
-              height="1020"
+              width="800"
+              height="1000"
             />
           </div>
           <figcaption>
