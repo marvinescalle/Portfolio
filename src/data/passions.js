@@ -5,7 +5,10 @@
  *
  *   "tall"  colonne étroite, image verticale
  *   "wide"  bloc large, image horizontale
- *   "large" grande vignette d'ouverture
+ *
+ * Deux gabarits seulement : les trois cartes larges partagent le même
+ * rapport, sans quoi leurs hauteurs différentes se lisent comme un défaut de
+ * réglage plutôt que comme une composition.
  *
  * ─────────────────────────────────────────────────────────────────────────
  * OÙ DÉPOSER LES PHOTOS
