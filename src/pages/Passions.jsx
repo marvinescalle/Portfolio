@@ -122,12 +122,54 @@ const Caption = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  /* Sert de référence au calage du titre ci-dessous, qui doit se mesurer à
+     la largeur de la case et non à celle de la fenêtre. */
+  container-type: inline-size;
 
   h2 {
-    font-size: clamp(1.1rem, 2.4vw, 1.75rem);
     font-weight: 800;
     letter-spacing: -0.02em;
     text-transform: uppercase;
+    line-height: 1.05;
+
+    /* Un mot ne se coupe jamais en son milieu. La mosaïque a une colonne
+       étroite, et « EXPÉRIMENTATION » y débordait largement : le titre se
+       lisait EXPÉRIMENTA / TION. Le mot reste donc entier et c'est le corps
+       qui cède.
+
+       La variable porte la longueur du mot le plus long. Le corps est le plus
+       petit des deux : la valeur de confort, et celle qui fait tout juste
+       tenir ce mot dans la case. Le coefficient est la chasse moyenne d'une
+       capitale de Syne en graisse 800, mesurée à 1,21 cadratin et arrondie
+       au-dessus pour garder une marge.
+
+       L'unité de conteneur se mesure déjà sur la boîte de contenu, donc hors
+       rembourrage : le retrancher une seconde fois ramenait le titre à 12 px
+       au lieu de 16.
+
+       Une première déclaration en unités de fenêtre reste posée pour les
+       navigateurs sans requête de conteneur : le titre y est simplement plus
+       petit, jamais coupé. */
+    font-size: clamp(1rem, 2.4vw, 1.75rem);
+    font-size: min(
+      clamp(1.1rem, 2.4vw, 1.75rem),
+      calc(100cqw / var(--longest, 8) / 1.3)
+    );
+    word-break: normal;
+    overflow-wrap: break-word;
+    hyphens: none;
+  }
+
+  /* Sous-titre facultatif : les domaines que recouvre la passion, en chasse
+     fixe, entre le titre et la phrase. Il ne s'affiche que si l'entrée le
+     renseigne. */
+  .tagline {
+    margin-top: -0.15rem;
+    font-family: ${(props) => props.theme.fontMono};
+    font-size: clamp(0.62rem, 0.8vw, 0.7rem);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: ${(props) => props.theme.textFaint};
   }
 
   p {
@@ -165,6 +207,10 @@ const Caption = styled.div`
   }
 `;
 
+/** Longueur du mot le plus long, qui décide du corps du titre. */
+const longestWord = (label) =>
+  label.split(/\s+/).reduce((max, word) => Math.max(max, word.length), 1);
+
 const Passions = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -192,7 +238,12 @@ const Passions = () => {
     />
 
     <Mosaic>
-      {passions.map((item, i) => (
+      {passions.map((item, i) => {
+        /* La vignette peut porter un intitulé plus court que la fiche : voir
+           le commentaire de `cardLabel` dans le fichier de données. */
+        const titre = pick(item.cardLabel ?? item.label, language);
+
+        return (
         <Cell
           key={item.id}
           $span={item.span}
@@ -213,7 +264,10 @@ const Passions = () => {
             ) : null}
 
             <Caption>
-              <h2>{pick(item.label, language)}</h2>
+              <h2 style={{ "--longest": longestWord(titre) }}>{titre}</h2>
+              {item.tagline ? (
+                <span className="tagline">{pick(item.tagline, language)}</span>
+              ) : null}
               <p>{pick(item.text, language)}</p>
               <span className="more">
                 {t.passions.more}
@@ -222,7 +276,8 @@ const Passions = () => {
             </Caption>
           </Tile>
         </Cell>
-      ))}
+        );
+      })}
     </Mosaic>
 
     <AnimatePresence>

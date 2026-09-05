@@ -101,6 +101,17 @@ const StoryIntro = styled.p`
 const StoryGroup = styled.section`
   margin-top: clamp(2.25rem, 5vw, 3.5rem);
 
+  /* Numéro d'ordre, dans le registre des en-têtes de page : chasse fixe,
+     petit, en retrait. Il n'apparaît que sur les fiches qui le demandent. */
+  .num {
+    display: block;
+    font-family: ${(props) => props.theme.fontMono};
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    color: ${(props) => props.theme.textFaint};
+    margin-bottom: 0.55rem;
+  }
+
   h3 {
     /* Couleur posée explicitement : sans elle le titre hérite du noir de la
        page qui porte l'overlay, et disparaît sur le fond sombre de la fiche. */
@@ -114,11 +125,38 @@ const StoryGroup = styled.section`
     border-bottom: 1px solid ${(props) => props.theme.line};
   }
 
-  h3 + p {
+  p {
     margin-top: 1rem;
     max-width: 62ch;
     line-height: 1.7;
     color: ${(props) => props.theme.textSoft};
+  }
+
+  /* Même puce que les listes des cartes d'expérience : un tiret court plutôt
+     qu'un point, pour rester dans le vocabulaire typographique du site. */
+  .points {
+    margin-top: 1.1rem;
+    max-width: 62ch;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  .points li {
+    position: relative;
+    padding-left: 1.5rem;
+    line-height: 1.6;
+    color: ${(props) => props.theme.textSoft};
+  }
+
+  .points li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.7em;
+    width: 0.75rem;
+    height: 1px;
+    background: ${(props) => props.theme.lineStrong};
   }
 `;
 
@@ -234,6 +272,14 @@ const External = styled.a`
   }
 `;
 
+/** Un bloc de texte, découpé en paragraphes sur les lignes vides. */
+const Paragraphs = ({ text }) =>
+  text
+    ? String(text)
+        .split("\n\n")
+        .map((paragraph) => <p key={paragraph.slice(0, 24)}>{paragraph}</p>)
+    : null;
+
 /** Fiche détaillée d'une passion. Aucune rubrique vide n'est affichée. */
 const PassionOverlay = ({ passion, onClose }) => {
   const t = useTranslation();
@@ -284,33 +330,52 @@ const PassionOverlay = ({ passion, onClose }) => {
           <StoryIntro>{pick(passion.story.intro, language)}</StoryIntro>
         ) : null}
 
-        {passion.story.groups.map((group) => (
+        {passion.story.groups.map((group, i) => (
           <StoryGroup key={group.id}>
-            {group.title ? <h3>{pick(group.title, language)}</h3> : null}
-            {pick(group.text, language) ? (
-              <p>{pick(group.text, language)}</p>
+            {passion.story.numbered ? (
+              <span className="num" aria-hidden="true">
+                {String(i + 1).padStart(2, "0")}
+              </span>
             ) : null}
 
-            <Shots
-              $columns={group.columns ?? passion.story.columns}
-              $ratio={group.ratio ?? passion.story.ratio}
-              $fit={group.fit ?? passion.story.fit ?? "cover"}
-            >
-              {group.photos.map((shot) => (
-                <figure key={shot.src} data-span={shot.span ?? 1}>
-                  {shot.caption ? (
-                    <figcaption>{pick(shot.caption, language)}</figcaption>
-                  ) : null}
-                  <img
-                    src={shot.src}
-                    alt={pick(shot.alt, language) ?? ""}
-                    width={shot.width}
-                    height={shot.height}
-                    loading="lazy"
-                  />
-                </figure>
-              ))}
-            </Shots>
+            {group.title ? <h3>{pick(group.title, language)}</h3> : null}
+
+            <Paragraphs text={pick(group.text, language)} />
+
+            {pick(group.points, language)?.length ? (
+              <ul className="points">
+                {pick(group.points, language).map((point) => (
+                  <li key={point}>{point}</li>
+                ))}
+              </ul>
+            ) : null}
+
+            <Paragraphs text={pick(group.after, language)} />
+
+            {/* Aucune grille tant qu'aucune photo n'est déposée : une section
+                purement écrite ne doit pas laisser un blanc à sa suite. */}
+            {group.photos?.length ? (
+              <Shots
+                $columns={group.columns ?? passion.story.columns}
+                $ratio={group.ratio ?? passion.story.ratio}
+                $fit={group.fit ?? passion.story.fit ?? "cover"}
+              >
+                {group.photos.map((shot) => (
+                  <figure key={shot.src} data-span={shot.span ?? 1}>
+                    {shot.caption ? (
+                      <figcaption>{pick(shot.caption, language)}</figcaption>
+                    ) : null}
+                    <img
+                      src={shot.src}
+                      alt={pick(shot.alt, language) ?? ""}
+                      width={shot.width}
+                      height={shot.height}
+                      loading="lazy"
+                    />
+                  </figure>
+                ))}
+              </Shots>
+            ) : null}
           </StoryGroup>
         ))}
       </>

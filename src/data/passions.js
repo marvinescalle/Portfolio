@@ -18,6 +18,11 @@
  * Formats conseillés : JPG ou WebP, ~1600px de large, moins de 400 Ko.
  * ─────────────────────────────────────────────────────────────────────────
  *
+ * SUR LA VIGNETTE
+ *   cardLabel  Intitulé court, utilisé par la mosaïque quand `label` est trop
+ *              long pour sa colonne. La fiche garde `label`.
+ *   tagline    Sous-titre en chasse fixe, entre le titre et la phrase.
+ *
  * FICHE DÉTAILLÉE
  * Chaque vignette ouvre une fiche à l'adresse /passions/<id>. Les champs
  * suivants sont facultatifs et n'apparaissent que s'ils sont renseignés :
@@ -36,12 +41,19 @@
  *   ratio    Cadrage commun des vignettes, par exemple "4 / 5". Les photos
  *            sont recadrées dessus, ce qui aligne les lignes malgré des
  *            originaux tantôt verticaux tantôt horizontaux.
+ *   numbered Numérote les sections, 01, 02, 03, dans le registre des
+ *            en-têtes de page. Réservé aux fiches longues.
  *   groups   Sections successives, chacune avec :
  *              title   Titre de la section, ou `null` s'il n'y en a pas.
- *              text    Paragraphe sous le titre, ou `null`.
+ *              text    Paragraphe sous le titre, ou `null`. Plusieurs
+ *                      paragraphes se séparent par une ligne vide.
+ *              points  Liste à puces, sous le texte. Facultative.
+ *              after   Paragraphes de reprise, après la liste. Facultatif.
  *              photos  { src, alt, caption } ; `caption` est un libellé posé
  *                      au-dessus de la photo, utile quand chaque image a son
- *                      propre nom.
+ *                      propre nom. Un groupe sans photo n'affiche aucune
+ *                      grille : la section reste purement écrite tant
+ *                      qu'aucun fichier n'est déposé.
  * ─────────────────────────────────────────────────────────────────────────
  */
 
@@ -462,10 +474,17 @@ export const passions = [
   },
   {
     id: "tech",
-    label: { fr: "Tech & IA", en: "Tech & AI" },
+    label: { fr: "Tech & expérimentation", en: "Tech & experimentation" },
+    /* La colonne étroite de la mosaïque fait 357 px, et « EXPÉRIMENTATION »
+       n'y tient pas au-delà de 16 px, contre 28 pour les autres vignettes.
+       Plutôt qu'un titre deux fois plus petit que ses voisins, la case porte
+       le mot court et la fiche l'intitulé complet. Le sous-titre juste en
+       dessous dit déjà l'étendue. */
+    cardLabel: { fr: "Tech", en: "Tech" },
+    tagline: "IA · Code · 3D · Hardware",
     text: {
-      fr: "Je suis de près les avancées de l'IA, du hardware et des outils de création numérique, que j'aime tester et intégrer à mes projets.",
-      en: "I follow what happens in AI, in hardware and in the digital creation tools closely, and I like testing them and bringing them into my own projects.",
+      fr: "Je suis de près les évolutions de l'IA, du hardware et des outils de création numérique. J'aime surtout les tester, comprendre leurs limites et les intégrer à mes propres projets.",
+      en: "I keep a close eye on how AI, hardware and digital creation tools evolve. What I like most is trying them out, working out where they stop, and bringing them into my own projects.",
     },
     image: null, // → /images/passions/tech.jpg
     alt: {
@@ -476,12 +495,136 @@ export const passions = [
     /* Décalée vers le bas, voir le commentaire de Cell dans la page
        Passions : la colonne étroite se lit alors en escalier. */
     offset: true,
-    longText: {
-      fr: "Je suis de près les évolutions de l'IA et du hardware, des nouveaux modèles aux dernières générations de composants. J'aime tester les nouveaux outils, comprendre ce qu'ils permettent réellement et les intégrer à mes projets de développement, de 3D ou de création numérique.",
-      en: "I follow how AI and hardware evolve, from new models to the latest generations of components. I like trying the new tools out, working out what they actually make possible, and bringing them into my own projects, whether they involve development, 3D or digital creation.",
-    },
+    /* Le récit tient lieu de texte développé : renseigner les deux ferait
+       deux introductions à la suite. */
+    longText: null,
     highlights: [],
     gallery: [],
+    story: {
+      intro: null,
+      numbered: true,
+      /* Cadrage prévu pour de futures captures. Aucune grille n'est rendue
+         tant qu'un groupe n'a pas de photo : déposer les fichiers dans
+         public/images/passions/tech/ et remplir le tableau `photos` du
+         groupe concerné suffit à les faire apparaître. */
+      columns: 2,
+      ratio: "16 / 10",
+      fit: "cover",
+      groups: [
+        {
+          id: "ia",
+          title: { fr: "IA & développement", en: "AI & development" },
+          text: {
+            fr: "J'utilise beaucoup les outils d'intelligence artificielle dans mes projets personnels, comme assistants de développement et de réflexion. Concrètement, ils me servent à :",
+            en: "I lean on AI tools a lot in my personal projects, as development and thinking assistants. In practice they help me:",
+          },
+          points: {
+            fr: [
+              "réfléchir à une architecture",
+              "débloquer un problème",
+              "améliorer du code existant",
+              "automatiser des tâches",
+              "prototyper rapidement",
+              "faire avancer ce portfolio",
+              "développer mes projets de jeux",
+            ],
+            en: [
+              "think through an architecture",
+              "get unstuck on a problem",
+              "improve code that already exists",
+              "automate tasks",
+              "prototype quickly",
+              "move this portfolio forward",
+              "build my game projects",
+            ],
+          },
+          after: {
+            fr: "J'utilise notamment Claude Code. Ce qui m'intéresse est autant l'outil que la manière de le cadrer : donner du contexte, écrire des instructions précises, vérifier ce qui est produit, et recommencer jusqu'à obtenir quelque chose de réellement exploitable.\n\nJe suis aussi l'évolution des modèles de près, en particulier leurs capacités de raisonnement, de génération de code et d'utilisation d'outils.",
+            en: "Claude Code is the one I use most. What interests me is as much the tool as the way you frame it: giving it context, writing precise instructions, checking what comes back, and going round again until the result is genuinely usable.\n\nI also follow how the models themselves progress, especially at reasoning, generating code and using tools.",
+          },
+          photos: [],
+        },
+        {
+          id: "3d",
+          title: { fr: "Génération 3D & création", en: "3D generation & creation" },
+          text: {
+            fr: "La génération 3D assistée par IA m'intéresse beaucoup, en particulier les enchaînements qui partent d'une image pour arriver à un modèle. Je m'en sers pour mes projets de jeux, surtout sur Roblox, où le passage se fait à peu près toujours dans cet ordre :",
+            en: "AI-assisted 3D generation interests me a great deal, and image-to-3D pipelines in particular. I use them on my game projects, mostly on Roblox, where the sequence is nearly always the same:",
+          },
+          points: {
+            fr: [
+              "une référence visuelle",
+              "la génération du modèle",
+              "son adaptation aux contraintes techniques",
+              "le contrôle du nombre de polygones",
+              "l'import dans Roblox Studio",
+              "l'intégration dans le jeu",
+            ],
+            en: [
+              "a visual reference",
+              "generating the model",
+              "adapting it to the technical constraints",
+              "keeping the polygon count in check",
+              "importing it into Roblox Studio",
+              "fitting it into the game",
+            ],
+          },
+          after: {
+            fr: "J'ai aussi expérimenté la création de packs d'assets réutilisables.\n\nCe qui me retient là-dedans est le trajet complet plutôt que le résultat d'une génération isolée : ce que les générateurs savent faire et où ils s'arrêtent, ce que le moteur accepte, et le compromis à trouver entre la qualité visuelle, les contraintes techniques et le temps passé.",
+            en: "I have also experimented with putting together reusable asset packs.\n\nWhat holds my attention is the whole route rather than any single generation: what the generators can do and where they stop, what the engine will take, and the trade-off between how good it looks, what the technical limits allow and how long it takes.",
+          },
+          photos: [],
+        },
+        {
+          id: "hardware",
+          title: { fr: "Hardware", en: "Hardware" },
+          text: {
+            fr: "Le hardware me passionne depuis longtemps. Je monte et fais évoluer mes propres machines, et j'aide régulièrement des amis à concevoir les leurs, ce qui veut dire s'occuper de :",
+            en: "Hardware has been a long-standing interest. I build and upgrade my own machines, and I regularly help friends put theirs together, which means dealing with:",
+          },
+          points: {
+            fr: [
+              "le choix du processeur et de la carte graphique",
+              "la compatibilité des composants",
+              "la carte mère",
+              "la mémoire",
+              "le stockage",
+              "l'alimentation",
+              "le refroidissement",
+              "les performances attendues",
+              "le budget",
+              "la marge d'évolution",
+            ],
+            en: [
+              "picking the CPU and the graphics card",
+              "component compatibility",
+              "the motherboard",
+              "memory",
+              "storage",
+              "the power supply",
+              "cooling",
+              "the performance to aim for",
+              "the budget",
+              "room to upgrade later",
+            ],
+          },
+          after: {
+            fr: "La partie que je préfère est la comparaison : chercher l'équilibre entre les performances, le prix, l'usage réel de la machine et le temps qu'elle va tenir. Une bonne configuration n'est pas la plus chère, c'est celle qui correspond à ce qu'on en fait.\n\nJe suis aussi les nouvelles générations de processeurs et de cartes graphiques, et les changements d'architecture qui les accompagnent.",
+            en: "The part I enjoy most is the comparing: finding the balance between performance, price, what the machine will actually be used for, and how long it will hold up. A good build is not the most expensive one, it is the one that matches what you do with it.\n\nI follow the new generations of processors and graphics cards too, and the architecture shifts that come with them.",
+          },
+          photos: [],
+        },
+        {
+          id: "experimentation",
+          title: { fr: "Expérimentation", en: "Experimentation" },
+          text: {
+            fr: "Quand un outil ou une technologie sort, j'ai en général envie de construire quelque chose avec plutôt que de regarder une démonstration. C'est ce qui relie des choses assez différentes : le développement web, l'automatisation, l'IA générative, la génération d'images et de 3D, les moteurs de jeu, l'infrastructure et le hardware.\n\nCe qui me plaît le plus est de comprendre suffisamment un nouvel outil pour pouvoir réellement en faire quelque chose.",
+            en: "When a new tool or technology turns up, I usually want to build something with it rather than watch a demo. That is what ties together things as different as web development, automation, generative AI, image and 3D generation, game engines, infrastructure and hardware.\n\nWhat I enjoy most is understanding a new tool well enough to actually make something with it.",
+          },
+          photos: [],
+        },
+      ],
+    },
   },
   {
     id: "jeux",
