@@ -29,19 +29,27 @@ const Mosaic = styled.div`
   `}
 `;
 
-/* Le rapport donne à la case sa hauteur naturelle, qui sert à mesurer la
-   rangée. Mais un élément de grille porteur d'un rapport n'est pas étiré par
-   défaut : dans la rangée où la colonne étroite est la plus haute, la case
-   large restait plus courte que sa rangée et laissait un vide sous elle.
-   L'écart entre deux cartes passait ainsi de 20 à 83 px selon la rangée.
+/* Deux gabarits seulement, et c'est voulu.
 
-   L'étirement ne vise que les cases larges. La colonne étroite, elle, garde
-   son gabarit : c'est lui qui règle le décalage en escalier plus bas, et
-   l'étirer désalignerait les deux cases entre elles. */
+   Les trois cartes larges partagent exactement le même rapport : trois
+   hauteurs différentes dans une même colonne se lisaient comme un défaut de
+   réglage, pas comme une composition.
+
+   Le rapport de 3 pour 2 n'est pas choisi au hasard. Il donne à la carte
+   large une hauteur toujours un peu supérieure à celle de la colonne étroite,
+   quelle que soit la largeur de la fenêtre : c'est donc elle qui fixe la
+   hauteur de chaque rangée, les trois rangées se valent, et les gouttières
+   sont égales sans qu'on ait rien à étirer.
+
+   Un étirement explicite avait d'abord été posé pour rattraper l'écart. Il
+   réglait bien les gouttières, mais un élément de grille porteur d'un rapport
+   et étiré en hauteur voit Safari lui recalculer sa largeur depuis ce
+   rapport : la carte débordait alors de sa colonne, par-dessus sa voisine.
+   Faire coïncider les hauteurs supprime le besoin d'étirer, donc le
+   problème. */
 const spans = {
-  large: "grid-column: span 4; aspect-ratio: 4 / 3; align-self: stretch;",
   tall: "grid-column: span 2; aspect-ratio: 3 / 4;",
-  wide: "grid-column: span 4; aspect-ratio: 16 / 9; align-self: stretch;",
+  wide: "grid-column: span 4; aspect-ratio: 3 / 2;",
 };
 
 /* La cellule porte la géométrie ; le wrapper d'animation ne doit pas
@@ -57,12 +65,12 @@ const Cell = styled(Reveal)`
      Posé sur la tuile et non sur la case : celle-ci est animée par Framer
      Motion, qui pilote sa propriété transform et écraserait la nôtre. La
      valeur est un pourcentage de la hauteur de la tuile, donc identique pour
-     les deux cases puisqu'elles partagent le même gabarit. Elle est passée de
-     53 à 60 % le jour où les cases larges se sont mises à s'étirer : la carte
-     du milieu ayant grandi, son centre s'est déplacé de 47 px. */
+     les deux cases puisqu'elles partagent le même gabarit. Elle suit la hauteur
+     des rangées : 55 % depuis que les trois cartes larges ont le même
+     rapport. */
   ${(props) =>
     props.$offset
-      ? "> a { transform: translateY(60%); }"
+      ? "> a { transform: translateY(55%); }"
       : ""}
 
   /* Sous 860 px il ne reste qu'une colonne de cartes : l'escalier n'a plus

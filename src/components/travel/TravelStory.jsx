@@ -59,64 +59,40 @@ const BlockHead = styled.header`
   }
 `;
 
-/* Carte à gauche, liste des pays à droite. Sous 860 px la liste passe
-   dessous : la carte a besoin de toute la largeur pour rester lisible. */
-const Atlas = styled.div`
-  margin-top: 1.5rem;
+/* La liste des pays passe sous la carte plutôt qu'à côté.
+
+   Dix-neuf pays dans une colonne de 14 rem donnaient une bande verticale
+   deux fois plus haute que la carte, qui écrasait la composition. En dessous,
+   sur toute la largeur, un continent par colonne, elle se lit d'un coup
+   d'oeil et se contentera d'ajouter des lignes à mesure que la liste
+   grandira. */
+const Regions = styled.div`
+  margin-top: clamp(1.5rem, 3vw, 2.25rem);
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 14rem);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
   gap: clamp(1.25rem, 3vw, 2.5rem);
   align-items: start;
 
-  ${media.md`
-    grid-template-columns: minmax(0, 1fr);
-    gap: 1.5rem;
-  `}
-`;
-
-const CountryList = styled.div`
   h4 {
     font-family: ${(props) => props.theme.fontMono};
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     font-weight: 400;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
     color: ${(props) => props.theme.textFaint};
     padding-bottom: 0.7rem;
     border-bottom: 1px solid ${(props) => props.theme.line};
   }
 
-  /* Intertitre de continent, qui n'apparaît que lorsque plusieurs sont
-     représentés. Tant qu'un seul l'est, il n'apprendrait rien. */
-  .region {
-    margin-top: 1.1rem;
-    font-family: ${(props) => props.theme.fontMono};
-    font-size: 0.66rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: ${(props) => props.theme.textFaint};
-  }
-
   li {
-    padding: 0.5rem 0;
-    font-size: 0.95rem;
+    padding: 0.45rem 0;
+    font-size: 0.92rem;
     color: ${(props) => props.theme.textSoft};
-    border-bottom: 1px solid ${(props) => props.theme.line};
   }
 
-  /* En deux colonnes sous 860 px : la liste devient large et courte plutôt
-     que longue et étroite. */
-  @media (max-width: ${breakpoints.md}px) {
-    ul {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      column-gap: 1.5rem;
-    }
+  li + li {
+    border-top: 1px solid ${(props) => props.theme.line};
   }
-
-  ${media.xs`
-    ul { grid-template-columns: minmax(0, 1fr); }
-  `}
 `;
 
 /* Une étape du grand voyage. Le pays domine, la période le suit sur la même
@@ -269,40 +245,38 @@ const TravelStory = () => {
           </span>
         </BlockHead>
 
-        <Atlas>
-          <WorldMap
-            visited={pays}
-            markers={microStates}
-            label={textes.mapLabel}
-            summary={textes.count.replace("{n}", pays.length)}
-          />
+        <WorldMap
+          visited={pays}
+          markers={microStates}
+          label={textes.mapLabel}
+          summary={textes.count.replace("{n}", pays.length)}
+        />
 
-          <CountryList>
-            <h4>{textes.countries}</h4>
-            {grouper
-              ? regions.map((region) => (
-                  <div key={region}>
-                    <p className="region">
-                      {pick(regionNames[region], language) ?? region}
-                    </p>
-                    <ul>
-                      {pays
-                        .filter((p) => p.region === region)
-                        .map((p) => (
-                          <li key={p.code}>{p.name}</li>
-                        ))}
-                    </ul>
-                  </div>
-                ))
-              : (
+        {/* Un continent par colonne quand plusieurs sont représentés, une
+            liste simple sinon : un intertitre unique n'apprendrait rien. Et
+            pas de titre au-dessus, le bloc en porte déjà un. */}
+        <Regions>
+          {grouper ? (
+            regions.map((region) => (
+              <div key={region}>
+                <h4>{pick(regionNames[region], language) ?? region}</h4>
                 <ul>
-                  {pays.map((p) => (
-                    <li key={p.code}>{p.name}</li>
-                  ))}
+                  {pays
+                    .filter((p) => p.region === region)
+                    .map((p) => (
+                      <li key={p.code}>{p.name}</li>
+                    ))}
                 </ul>
-              )}
-          </CountryList>
-        </Atlas>
+              </div>
+            ))
+          ) : (
+            <ul>
+              {pays.map((p) => (
+                <li key={p.code}>{p.name}</li>
+              ))}
+            </ul>
+          )}
+        </Regions>
       </Block>
 
       {/* Sans intitulé au-dessus : les étapes portent déjà leur pays et leur

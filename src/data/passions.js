@@ -72,7 +72,7 @@ export const passions = [
       fr: "Photographie prise lors d'un voyage en Asie",
       en: "A photograph taken while travelling in Asia",
     },
-    span: "large",
+    span: "wide",
     longText: null,
     highlights: [],
     gallery: [],

@@ -9,8 +9,10 @@ const Wrap = styled.header`
   grid-template-columns: auto 1fr;
   align-items: start;
   gap: clamp(1rem, 3vw, 2.5rem);
+  /* Sans filet sous le chapô : l'espace suffit à séparer l'en-tête du
+     contenu, et le trait doublait celui que la première section pose déjà
+     quelques dizaines de pixels plus bas. */
   padding-bottom: clamp(1.5rem, 3.5vw, 2.5rem);
-  border-bottom: 1px solid ${(props) => props.theme.line};
   margin-bottom: clamp(2rem, 5vw, 3.5rem);
 
   ${media.sm`
