@@ -17,6 +17,17 @@
 
 export const MAP_VIEWBOX = "0 0 1000 389";
 
+/**
+ * La même projection, exposée pour placer un point à des coordonnées
+ * données. Natural Earth ignore les micro-États à cette échelle : Monaco,
+ * Saint-Marin ou Andorre n'ont aucun tracé. Un repère ponctuel reste le seul
+ * moyen honnête de les montrer.
+ */
+export const projectPoint = (lon, lat) => [
+  (lon + 180) * 2.7777777777777777,
+  (84 - lat) * 2.7777777777777777,
+];
+
 export const countryPaths = [
   {"code":"AE","name":"United Arab Emirates","d":"M643.3 166.0L643.9 166.6L650.0 166.3L655.8 161.0L656.3 161.9L656.7 164.1L655.2 164.1L655.5 166.3L654.2 166.9L652.8 170.8L644.4 169.4L643.3 166.0Z"},
   {"code":"AF","name":"Afghanistan","d":"M684.8 129.5L689.3 130.5L691.3 129.6L692.2 130.1L693.1 128.9L694.8 128.9L696.7 126.4L698.2 127.1L698.5 130.4L699.6 131.3L703.5 129.2L708.3 129.4L708.8 130.2L699.6 131.9L698.0 133.1L698.9 135.7L697.5 136.9L696.9 138.9L694.3 138.8L695.3 140.7L693.6 141.4L692.4 143.1L692.5 144.7L691.5 145.5L688.3 145.6L688.0 146.4L685.9 146.4L684.4 147.9L684.3 150.3L680.7 151.5L673.7 151.9L669.1 150.5L671.6 148.0L671.4 146.2L669.3 145.7L668.2 141.7L669.3 140.2L668.1 139.8L670.0 134.3L672.9 135.4L675.0 135.0L675.5 133.7L679.3 132.5L679.9 130.2L682.2 129.7L682.6 128.7L684.8 129.5Z"},

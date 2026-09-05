@@ -177,6 +177,17 @@ const main = async () => {
 
 export const MAP_VIEWBOX = "0 0 ${WIDTH} ${HEIGHT}";
 
+/**
+ * La même projection, exposée pour placer un point à des coordonnées
+ * données. Natural Earth ignore les micro-États à cette échelle : Monaco,
+ * Saint-Marin ou Andorre n'ont aucun tracé. Un repère ponctuel reste le seul
+ * moyen honnête de les montrer.
+ */
+export const projectPoint = (lon, lat) => [
+  (lon + 180) * ${SCALE},
+  (${LAT_MAX} - lat) * ${SCALE},
+];
+
 export const countryPaths = ${JSON.stringify(pays, null, 0)
     .replace(/\},\{/g, "},\n  {")
     .replace(/^\[/, "[\n  ")

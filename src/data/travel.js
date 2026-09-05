@@ -37,6 +37,19 @@ export const countryNames = {
   NP: { fr: "Népal", en: "Nepal" },
   JP: { fr: "Japon", en: "Japan" },
   KR: { fr: "Corée du Sud", en: "South Korea" },
+
+  AT: { fr: "Autriche", en: "Austria" },
+  BE: { fr: "Belgique", en: "Belgium" },
+  ES: { fr: "Espagne", en: "Spain" },
+  US: { fr: "États-Unis", en: "United States" },
+  FR: { fr: "France", en: "France" },
+  GB: { fr: "Royaume-Uni", en: "United Kingdom" },
+  HU: { fr: "Hongrie", en: "Hungary" },
+  IT: { fr: "Italie", en: "Italy" },
+  MC: { fr: "Monaco", en: "Monaco" },
+  NL: { fr: "Pays-Bas", en: "Netherlands" },
+  NO: { fr: "Norvège", en: "Norway" },
+  PT: { fr: "Portugal", en: "Portugal" },
 };
 
 /**
@@ -47,6 +60,12 @@ export const countryNames = {
 export const countryRegions = {
   TH: "asie", VN: "asie", CN: "asie", UZ: "asie",
   NP: "asie", JP: "asie", KR: "asie",
+
+  AT: "europe", BE: "europe", ES: "europe", FR: "europe",
+  GB: "europe", HU: "europe", IT: "europe", MC: "europe",
+  NL: "europe", NO: "europe", PT: "europe",
+
+  US: "ameriques",
 };
 
 export const regionNames = {
@@ -310,13 +329,41 @@ export const mainJourney = {
  */
 export const otherJourneys = [];
 
+/**
+ * Pays visités en dehors des voyages détaillés ci-dessus : ils apparaissent
+ * sur la carte et dans la liste, sans section ni photo. Y ajouter un code
+ * suffit, à condition de renseigner aussi son nom et son continent plus haut.
+ *
+ * Le jour où l'un d'eux mérite ses photos et son texte, il quitte cette
+ * liste pour devenir une entrée d'`otherJourneys` : la carte ne changera pas,
+ * puisqu'elle lit les deux.
+ */
+/**
+ * Coordonnées des pays trop petits pour figurer sur un fond de carte au
+ * 1:110m : Natural Earth ne leur donne aucun tracé. Un repère ponctuel les
+ * rend visibles là où ils sont, plutôt que de les laisser absents d'une carte
+ * où la liste les annonce pourtant.
+ */
+export const microStates = {
+  MC: [7.42, 43.73],
+};
+
+export const otherVisitedCountries = [
+  "AT", "BE", "ES", "FR", "GB", "HU",
+  "IT", "MC", "NL", "NO", "PT", "US",
+];
+
 /* ────────────────────────────────────────────────────────────────────────
    Lecture des données. Tout ce qui suit se déduit de ce qui précède.
    ──────────────────────────────────────────────────────────────────────── */
 
-/** Étapes du grand voyage, de la première à la dernière. */
+/**
+ * Étapes illustrées, de la plus récente à la plus ancienne. C'est l'ordre
+ * d'un journal, pas celui d'un itinéraire : ce qui vient d'être vécu se lit
+ * en premier, et les photos les plus fraîches sont les premières vues.
+ */
 export const journeyStops = [...mainJourney.destinations].sort((a, b) =>
-  a.startDate.localeCompare(b.startDate)
+  b.startDate.localeCompare(a.startDate)
 );
 
 /** Voyages indépendants, du plus récent au plus ancien. */
@@ -332,17 +379,18 @@ export const visitedCountries = (() => {
   const vus = new Map();
 
   const ajouter = (code, date) => {
-    if (!code) return;
-    const connu = vus.get(code);
-    if (!connu || date < connu.firstVisit) {
-      vus.set(code, { code, firstVisit: date, region: countryRegions[code] ?? null });
-    }
+    if (!code || vus.has(code)) return;
+    vus.set(code, { code, firstVisit: date, region: countryRegions[code] ?? null });
   };
 
   journeyStops.forEach((etape) => ajouter(etape.code, etape.startDate));
   sortedOtherJourneys.forEach((voyage) => ajouter(voyage.code, voyage.startDate));
+  /* Sans date : ces pays n'ont pas de voyage documenté, seulement une
+     présence sur la carte. Le tri de la liste étant alphabétique, cela ne
+     leur manque pas. */
+  otherVisitedCountries.forEach((code) => ajouter(code, null));
 
-  return [...vus.values()].sort((a, b) => a.firstVisit.localeCompare(b.firstVisit));
+  return [...vus.values()];
 })();
 
 /** Les seuls codes, pour le planisphère. */

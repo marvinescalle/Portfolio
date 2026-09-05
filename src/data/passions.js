@@ -61,84 +61,24 @@
 
 export const passions = [
   {
-    id: "sport",
-    label: { fr: "Sport", en: "Sport" },
+    id: "voyage",
+    label: { fr: "Voyages", en: "Travel" },
     text: {
-      fr: "De l'athlétisme à la boxe, en passant par l'escalade et l'alpinisme. Vice-champion départemental en duo mixte et vice-champion régional en sprint 100 m.",
-      en: "From athletics to boxing, by way of climbing and mountaineering. Runner-up in the departmental mixed doubles and in the regional 100 m sprint.",
+      fr: "Après mes études, j'ai consacré une longue période à voyager et découvrir différents pays d'Asie.",
+      en: "After my studies, I spent a long stretch travelling across several countries in Asia.",
     },
-    image: "/images/passions/sport/boxe.jpg",
+    image: "/images/passions/voyage/top.jpg",
     alt: {
-      fr: "Marvin Escalle pendant une séance de sport",
-      en: "Marvin Escalle during a training session",
+      fr: "Photographie prise lors d'un voyage en Asie",
+      en: "A photograph taken while travelling in Asia",
     },
     span: "large",
-    // TODO à compléter : texte développé et points marquants.
     longText: null,
     highlights: [],
     gallery: [],
-    story: {
-      intro: null,
-      columns: 2,
-      ratio: "3 / 4",
-      groups: [
-        {
-          id: "disciplines",
-          title: null,
-          text: null,
-          photos: [
-          {
-            src: "/images/passions/sport/alpinisme.jpg",
-            caption: { fr: "Alpinisme", en: "Mountaineering" },
-            alt: {
-              fr: "Marvin Escalle, alpinisme",
-              en: "Marvin Escalle, mountaineering",
-            },
-          },
-          {
-            src: "/images/passions/sport/escalade.jpg",
-            caption: { fr: "Escalade", en: "Climbing" },
-            alt: {
-              fr: "Marvin Escalle, escalade",
-              en: "Marvin Escalle, climbing",
-            },
-          },
-          {
-            src: "/images/passions/sport/boxe.jpg",
-            caption: { fr: "Boxe", en: "Boxing" },
-            alt: {
-              fr: "Marvin Escalle, boxe",
-              en: "Marvin Escalle, boxing",
-            },
-          },
-          {
-            src: "/images/passions/sport/course.jpg",
-            caption: { fr: "Course", en: "Running" },
-            alt: {
-              fr: "Marvin Escalle, course",
-              en: "Marvin Escalle, running",
-            },
-          },
-          {
-            src: "/images/passions/sport/badminton.jpg",
-            caption: { fr: "Badminton", en: "Badminton" },
-            alt: {
-              fr: "Marvin Escalle, badminton",
-              en: "Marvin Escalle, badminton",
-            },
-          },
-          {
-            src: "/images/passions/sport/tennis.jpg",
-            caption: { fr: "Tennis", en: "Tennis" },
-            alt: {
-              fr: "Marvin Escalle, tennis",
-              en: "Marvin Escalle, tennis",
-            },
-          },
-          ],
-        },
-      ],
-    },
+    /* Le contenu de la fiche vit dans src/data/travel.js et se rend par un
+       composant dédié : voir le commentaire dans PassionOverlay. */
+    travel: true,
   },
   {
     id: "dessin",
@@ -239,25 +179,84 @@ export const passions = [
     },
   },
   {
-    id: "voyage",
-    label: { fr: "Voyages", en: "Travel" },
+    id: "sport",
+    label: { fr: "Sport", en: "Sport" },
     text: {
-      fr: "Après mes études, j'ai consacré une longue période à voyager et découvrir différents pays d'Asie.",
-      en: "After my studies, I spent a long stretch travelling across several countries in Asia.",
+      fr: "De l'athlétisme à la boxe, en passant par l'escalade et l'alpinisme. Vice-champion départemental en duo mixte et vice-champion régional en sprint 100 m.",
+      en: "From athletics to boxing, by way of climbing and mountaineering. Runner-up in the departmental mixed doubles and in the regional 100 m sprint.",
     },
-    // Déjà en 16/9, soit exactement le format de la case : aucun recadrage.
-    image: "/images/passions/voyage/top.jpg",
+    image: "/images/passions/sport/boxe.jpg",
     alt: {
-      fr: "Photographie prise lors d'un voyage en Asie",
-      en: "A photograph taken while travelling in Asia",
+      fr: "Marvin Escalle pendant une séance de sport",
+      en: "Marvin Escalle during a training session",
     },
     span: "wide",
+    // TODO à compléter : texte développé et points marquants.
     longText: null,
     highlights: [],
     gallery: [],
-    /* Le contenu de la fiche vit dans src/data/travel.js et se rend par un
-       composant dédié : voir le commentaire dans PassionOverlay. */
-    travel: true,
+    story: {
+      intro: null,
+      columns: 2,
+      ratio: "3 / 4",
+      groups: [
+        {
+          id: "disciplines",
+          title: null,
+          text: null,
+          photos: [
+          {
+            src: "/images/passions/sport/alpinisme.jpg",
+            caption: { fr: "Alpinisme", en: "Mountaineering" },
+            alt: {
+              fr: "Marvin Escalle, alpinisme",
+              en: "Marvin Escalle, mountaineering",
+            },
+          },
+          {
+            src: "/images/passions/sport/escalade.jpg",
+            caption: { fr: "Escalade", en: "Climbing" },
+            alt: {
+              fr: "Marvin Escalle, escalade",
+              en: "Marvin Escalle, climbing",
+            },
+          },
+          {
+            src: "/images/passions/sport/boxe.jpg",
+            caption: { fr: "Boxe", en: "Boxing" },
+            alt: {
+              fr: "Marvin Escalle, boxe",
+              en: "Marvin Escalle, boxing",
+            },
+          },
+          {
+            src: "/images/passions/sport/course.jpg",
+            caption: { fr: "Course", en: "Running" },
+            alt: {
+              fr: "Marvin Escalle, course",
+              en: "Marvin Escalle, running",
+            },
+          },
+          {
+            src: "/images/passions/sport/badminton.jpg",
+            caption: { fr: "Badminton", en: "Badminton" },
+            alt: {
+              fr: "Marvin Escalle, badminton",
+              en: "Marvin Escalle, badminton",
+            },
+          },
+          {
+            src: "/images/passions/sport/tennis.jpg",
+            caption: { fr: "Tennis", en: "Tennis" },
+            alt: {
+              fr: "Marvin Escalle, tennis",
+              en: "Marvin Escalle, tennis",
+            },
+          },
+          ],
+        },
+      ],
+    },
   },
   {
     id: "tech",
@@ -273,10 +272,10 @@ export const passions = [
       fr: "Je suis de près les évolutions de l'IA, du hardware et des outils de création numérique. J'aime surtout les tester, comprendre leurs limites et les intégrer à mes propres projets.",
       en: "I keep a close eye on how AI, hardware and digital creation tools evolve. What I like most is trying them out, working out where they stop, and bringing them into my own projects.",
     },
-    image: null, // → /images/passions/tech.jpg
+    image: "/images/passions/tech/tech.jpg",
     alt: {
-      fr: "Visuel d'un projet personnel autour de l'IA et de la 3D",
-      en: "Visual from a personal project around AI and 3D",
+      fr: "Composants d'un ordinateur en cours de montage",
+      en: "Computer components during a build",
     },
     span: "tall",
     /* Décalée vers le bas, voir le commentaire de Cell dans la page

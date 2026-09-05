@@ -45,6 +45,12 @@ const Frame = styled.div`
     cursor: default;
   }
 
+  /* Les micro-États n'ont pas de tracé à cette échelle : ils sont marqués
+     d'un point, assez grand pour être visé à la souris. */
+  circle.visited {
+    stroke-width: 2.5;
+  }
+
   /* Au survol, les autres pays visités reculent d'un cran plutôt que le
      survolé n'avance : rien ne clignote, et le contraste reste celui du
      thème. */
@@ -87,7 +93,7 @@ const Caption = styled.p`
  * @param label    Intitulé accessible de la carte.
  * @param summary  Légende au repos, par exemple « 7 pays visités ».
  */
-const WorldMap = ({ visited, label, summary }) => {
+const WorldMap = ({ visited, markers = {}, label, summary }) => {
   const [map, setMap] = useState(null);
   const [hovered, setHovered] = useState(null);
 
@@ -145,6 +151,27 @@ const WorldMap = ({ visited, label, summary }) => {
                   <title>{noms.get(pays.code)}</title>
                 </path>
               ))}
+
+            {/* Les pays sans tracé, marqués d'un point à leurs coordonnées. */}
+            {Object.entries(markers)
+              .filter(([code]) => noms.has(code))
+              .map(([code, [lon, lat]]) => {
+                const [x, y] = map.projectPoint(lon, lat);
+                return (
+                  <circle
+                    key={code}
+                    className="visited"
+                    data-active={hovered === code}
+                    cx={x}
+                    cy={y}
+                    r="3"
+                    onMouseEnter={() => setHovered(code)}
+                    onMouseLeave={() => setHovered(null)}
+                  >
+                    <title>{noms.get(code)}</title>
+                  </circle>
+                );
+              })}
           </g>
         </svg>
       </Frame>

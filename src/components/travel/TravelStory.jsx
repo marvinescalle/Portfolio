@@ -4,7 +4,7 @@ import {
   countryNames,
   formatPeriod,
   journeyStops,
-  mainJourney,
+  microStates,
   regionNames,
   sortedOtherJourneys,
   visitedCountries,
@@ -237,15 +237,24 @@ const TravelStory = () => {
   const { language } = useLanguage();
   const textes = t.passions.travel;
 
-  const pays = visitedCountries.map((entree) => ({
-    code: entree.code,
-    region: entree.region,
-    name: pick(countryNames[entree.code], language) ?? entree.code,
-  }));
+  /* La liste est alphabétique, et le tri suit la langue affichée : c'est un
+     index, on y cherche un nom. L'ordre de visite n'a de sens que dans le
+     récit, plus bas. */
+  const pays = visitedCountries
+    .map((entree) => ({
+      code: entree.code,
+      region: entree.region,
+      name: pick(countryNames[entree.code], language) ?? entree.code,
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name, language));
 
   /* Les continents ne sont annoncés que s'il y en a plusieurs : un seul
-     intertitre au-dessus de la liste entière ne dirait rien. */
-  const regions = [...new Set(pays.map((p) => p.region).filter(Boolean))];
+     intertitre au-dessus de la liste entière ne dirait rien. L'ordre des
+     continents est celui de leur déclaration, pour qu'il ne bouge pas d'une
+     visite à l'autre. */
+  const regions = Object.keys(regionNames).filter((region) =>
+    pays.some((p) => p.region === region)
+  );
   const grouper = regions.length > 1;
 
   const nomEtape = (code) => pick(countryNames[code], language) ?? code;
@@ -263,6 +272,7 @@ const TravelStory = () => {
         <Atlas>
           <WorldMap
             visited={pays}
+            markers={microStates}
             label={textes.mapLabel}
             summary={textes.count.replace("{n}", pays.length)}
           />
@@ -295,15 +305,9 @@ const TravelStory = () => {
         </Atlas>
       </Block>
 
-      <Block aria-labelledby="voyages-principal">
-        <BlockHead>
-          <h3 id="voyages-principal">{pick(mainJourney.title, language)}</h3>
-          <span className="meta">
-            {pick(regionNames[mainJourney.region], language)} ·{" "}
-            {formatPeriod(mainJourney.startDate, mainJourney.endDate, language)}
-          </span>
-        </BlockHead>
-
+      {/* Sans intitulé au-dessus : les étapes portent déjà leur pays et leur
+          période, et un titre de plus n'ajoutait qu'une strate. */}
+      <Block>
         {journeyStops.map((etape) => (
           <Stop key={etape.code}>
             <div className="head">

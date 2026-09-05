@@ -29,10 +29,19 @@ const Mosaic = styled.div`
   `}
 `;
 
+/* Le rapport donne à la case sa hauteur naturelle, qui sert à mesurer la
+   rangée. Mais un élément de grille porteur d'un rapport n'est pas étiré par
+   défaut : dans la rangée où la colonne étroite est la plus haute, la case
+   large restait plus courte que sa rangée et laissait un vide sous elle.
+   L'écart entre deux cartes passait ainsi de 20 à 83 px selon la rangée.
+
+   L'étirement ne vise que les cases larges. La colonne étroite, elle, garde
+   son gabarit : c'est lui qui règle le décalage en escalier plus bas, et
+   l'étirer désalignerait les deux cases entre elles. */
 const spans = {
-  large: "grid-column: span 4; aspect-ratio: 4 / 3;",
+  large: "grid-column: span 4; aspect-ratio: 4 / 3; align-self: stretch;",
   tall: "grid-column: span 2; aspect-ratio: 3 / 4;",
-  wide: "grid-column: span 4; aspect-ratio: 16 / 9;",
+  wide: "grid-column: span 4; aspect-ratio: 16 / 9; align-self: stretch;",
 };
 
 /* La cellule porte la géométrie ; le wrapper d'animation ne doit pas
@@ -48,10 +57,12 @@ const Cell = styled(Reveal)`
      Posé sur la tuile et non sur la case : celle-ci est animée par Framer
      Motion, qui pilote sa propriété transform et écraserait la nôtre. La
      valeur est un pourcentage de la hauteur de la tuile, donc identique pour
-     les deux cases puisqu'elles partagent le même gabarit. */
+     les deux cases puisqu'elles partagent le même gabarit. Elle est passée de
+     53 à 60 % le jour où les cases larges se sont mises à s'étirer : la carte
+     du milieu ayant grandi, son centre s'est déplacé de 47 px. */
   ${(props) =>
     props.$offset
-      ? "> a { transform: translateY(53%); }"
+      ? "> a { transform: translateY(60%); }"
       : ""}
 
   /* Sous 860 px il ne reste qu'une colonne de cartes : l'escalier n'a plus
@@ -69,10 +80,12 @@ const Cell = styled(Reveal)`
 `;
 
 const Tile = styled(Link)`
+  /* Posée sur toute la case plutôt que dimensionnée en pourcentages : une
+     hauteur de 100 % se résout contre le rapport de la case et non contre la
+     hauteur qu'elle obtient une fois étirée. */
+  position: absolute;
+  inset: 0;
   display: block;
-  position: relative;
-  width: 100%;
-  height: 100%;
   overflow: hidden;
   border: 1px solid ${(props) => props.theme.line};
   background: ${(props) => props.theme.surface};
