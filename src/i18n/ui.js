@@ -132,6 +132,12 @@ export const ui = {
         gallery: "Images",
         seeMore: "Voir plus",
       },
+      travel: {
+        countries: "Pays visités",
+        count: "{n} pays visités",
+        mapLabel: "Planisphère des pays visités :",
+        other: "Autres voyages",
+      },
     },
 
     notFound: {
@@ -313,6 +319,12 @@ export const ui = {
         highlights: "Highlights",
         gallery: "Images",
         seeMore: "See more",
+      },
+      travel: {
+        countries: "Countries visited",
+        count: "{n} countries visited",
+        mapLabel: "World map of the countries visited:",
+        other: "Other trips",
       },
     },
 

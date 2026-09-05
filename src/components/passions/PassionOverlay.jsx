@@ -1,6 +1,7 @@
 import styled from "styled-components";
 
 import OverlaySheet from "../overlay/OverlaySheet";
+import TravelStory from "../travel/TravelStory";
 import { ArrowUpRight } from "../icons";
 import { pick, useLanguage, useTranslation } from "../../i18n";
 import { breakpoints, media } from "../../styles/theme";
@@ -323,6 +324,11 @@ const PassionOverlay = ({ passion, onClose }) => {
         </Gallery>
       </Section>
     ) : null}
+
+    {/* Les voyages ont leur propre corps de fiche : une carte, une liste de
+        pays et un parcours daté ne s'expriment pas avec le récit illustré
+        générique, qui ne connaît que des sections et des photos. */}
+    {passion.travel ? <TravelStory /> : null}
 
     {passion.story ? (
       <>

@@ -114,6 +114,41 @@ src/
 └── index.jsx          Point d'entrée
 ```
 
+## Voyages et planisphère
+
+La fiche Passions « Voyages » lit `src/data/travel.js`, seule source de
+vérité : la carte, la liste des pays et le parcours daté en sortent tous les
+trois.
+
+**Ajouter un pays** revient à le citer dans un voyage par son code ISO 3166-1
+alpha-2, puis à renseigner son nom dans `countryNames` et son continent dans
+`countryRegions`. La carte le surligne et la liste l'affiche, sans seconde
+liste à tenir à jour.
+
+**Ajouter un voyage** : une entrée dans `otherJourneys`, avec ses dates en
+ISO. Rien d'autre. L'ordre vient des dates et non de la position dans le
+tableau : les étapes du grand voyage se lisent de la première à la dernière,
+les voyages indépendants du plus récent au plus ancien. Tant que
+`otherJourneys` est vide, la section correspondante n'apparaît pas.
+
+Les dates sont stockées au jour près, mais jamais affichées ainsi :
+`formatPeriod` n'en montre que le mois et l'année, dans la langue courante.
+
+### Les tracés de la carte
+
+`src/data/worldMap.js` est **généré**, par `scripts/build-world-map.mjs` :
+
+```bash
+node scripts/build-world-map.mjs
+```
+
+Le script télécharge le jeu « Admin 0 - Countries » au 1:110m de **Natural
+Earth**, domaine public, le projette en équirectangulaire, simplifie les
+contours et n'écrit que des tracés SVG. Aucune bibliothèque cartographique
+n'est embarquée et rien n'est téléchargé à l'exécution. Le fichier obtenu,
+une petite centaine de kilo-octets, est importé à la demande : il ne part sur
+le réseau qu'à l'ouverture de la fiche Voyages.
+
 ## Accessibilité
 
 Lien d'évitement, repères sémantiques, un seul `h1` par page, focus visible au
