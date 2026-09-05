@@ -243,6 +243,7 @@ const Experience = () => {
       index={t.experience.index}
       title={t.experience.title}
       lead={t.experience.lead}
+      rule={false}
     />
 
     <MainList>

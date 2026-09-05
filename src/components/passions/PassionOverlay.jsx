@@ -6,6 +6,18 @@ import { ArrowUpRight } from "../icons";
 import { pick, useLanguage, useTranslation } from "../../i18n";
 import { breakpoints, media } from "../../styles/theme";
 
+/* Longueur de ligne des textes de fiche.
+
+   Elle valait 62ch, la mesure de confort d'un livre. Dans une fiche large de
+   près de mille pixels, cela arrêtait les paragraphes à 57 % de la place
+   disponible : quatre retours à la ligne là où deux suffisaient, et une
+   colonne de blanc à droite qui se remarquait plus que le texte.
+
+   78ch reste dans les longueurs lisibles et occupe environ 80 % de la
+   largeur, ce qui referme la composition sans allonger la ligne au point de
+   perdre le début du paragraphe suivant. */
+const MESURE = "78ch";
+
 const Title = styled.h2`
   font-size: clamp(1.9rem, 5.5vw, 3.6rem);
   font-weight: 800;
@@ -16,7 +28,7 @@ const Title = styled.h2`
 
 const Lead = styled.p`
   margin-top: 1.25rem;
-  max-width: 62ch;
+  max-width: ${MESURE};
   font-size: clamp(1rem, 1.5vw, 1.15rem);
   line-height: 1.7;
 `;
@@ -37,7 +49,7 @@ const Section = styled.section`
   }
 
   p {
-    max-width: 62ch;
+    max-width: ${MESURE};
     line-height: 1.7;
     color: ${(props) => props.theme.textSoft};
   }
@@ -94,7 +106,7 @@ const Gallery = styled.div`
    recadrent l'image, plutôt que de conserver ses proportions. */
 const StoryIntro = styled.p`
   margin-top: clamp(2rem, 5vw, 3.25rem);
-  max-width: 62ch;
+  max-width: ${MESURE};
   line-height: 1.7;
   color: ${(props) => props.theme.textSoft};
 `;
@@ -128,7 +140,7 @@ const StoryGroup = styled.section`
 
   p {
     margin-top: 1rem;
-    max-width: 62ch;
+    max-width: ${MESURE};
     line-height: 1.7;
     color: ${(props) => props.theme.textSoft};
   }
@@ -137,7 +149,7 @@ const StoryGroup = styled.section`
      qu'un point, pour rester dans le vocabulaire typographique du site. */
   .points {
     margin-top: 1.1rem;
-    max-width: 62ch;
+    max-width: ${MESURE};
     display: flex;
     flex-direction: column;
     gap: 0.55rem;

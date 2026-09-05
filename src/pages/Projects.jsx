@@ -441,6 +441,7 @@ const Projects = () => {
       index={t.projects.index}
       title={t.projects.title}
       lead={t.projects.lead}
+      rule={false}
     />
 
     {featuredProjects.length ? (

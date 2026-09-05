@@ -9,11 +9,17 @@ const Wrap = styled.header`
   grid-template-columns: auto 1fr;
   align-items: start;
   gap: clamp(1rem, 3vw, 2.5rem);
-  /* Sans filet sous le chapô : l'espace suffit à séparer l'en-tête du
-     contenu, et le trait doublait celui que la première section pose déjà
-     quelques dizaines de pixels plus bas. */
   padding-bottom: clamp(1.5rem, 3.5vw, 2.5rem);
   margin-bottom: clamp(2rem, 5vw, 3.5rem);
+
+  /* Le filet est retiré sur les pages dont la première section pose déjà le
+     sien quelques dizaines de pixels plus bas : les deux traits s'y
+     répondaient sans rien séparer de plus. Ailleurs il reste, l'espace seul
+     ne suffisant pas à détacher l'en-tête du contenu. */
+  ${(props) =>
+    props.$rule
+      ? `border-bottom: 1px solid ${props.theme.line};`
+      : ""}
 
   ${media.sm`
     grid-template-columns: 1fr;
@@ -61,12 +67,16 @@ const Lead = styled.p`
 /**
  * En-tête de page : numéro d'ordre en chasse fixe, titre en display, et
  * chapô facultatif. Le titre est le <h1> unique de la page.
+ *
+ * `rule` pose le filet sous le chapô. Le passer à `false` sur les pages qui
+ * enchaînent immédiatement sur une section titrée, dont le propre filet
+ * viendrait doubler celui-ci.
  */
-const SectionHeader = ({ index, title, lead }) => {
+const SectionHeader = ({ index, title, lead, rule = true }) => {
   const reduce = useReducedMotion();
 
   return (
-  <Wrap>
+  <Wrap $rule={rule}>
     {index ? <Index aria-hidden="true">{index}</Index> : null}
     <div>
       <Mask>

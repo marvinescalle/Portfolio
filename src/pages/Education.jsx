@@ -104,6 +104,14 @@ const Grade = styled.p`
     font-weight: 500;
     color: ${(props) => props.theme.text};
   }
+
+  /* La mention suit la note dans le même cartouche, séparée du point qui
+     sert de ponctuation partout ailleurs sur le site. */
+  .mention::before {
+    content: "·";
+    margin-right: 0.5rem;
+    color: ${(props) => props.theme.textFaint};
+  }
 `;
 
 const Body = styled.p`
@@ -144,8 +152,16 @@ const Education = () => {
 
             {item.grade ? (
               <Grade>
-                {pick(item.gradeLabel, language) ?? t.education.grade} :{" "}
+                {pick(item.gradeLabel, language) ?? t.education.grade}
+                {/* Le français colle une espace insécable avant le
+                    deux-points, l'anglais n'en met aucune. */}
+                {language === "fr" ? "\u00a0: " : ": "}
                 <strong>{item.grade}</strong>
+                {pick(item.mention, language) ? (
+                  <span className="mention">
+                    {pick(item.mention, language)}
+                  </span>
+                ) : null}
               </Grade>
             ) : null}
 

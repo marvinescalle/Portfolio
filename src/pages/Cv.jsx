@@ -257,6 +257,7 @@ const Cv = () => {
             ? `${t.cv.lead} ${t.cv.updatedAt} : ${profile.cv.updatedAt}.`
             : t.cv.lead
         }
+        rule={false}
       />
 
       <Reveal>

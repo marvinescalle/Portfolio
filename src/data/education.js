@@ -6,6 +6,8 @@
  * volontairement courtes, deux à trois lignes : cette page raconte un
  * parcours, elle ne double pas le CV.
  *
+ * `mention` est facultatif et s'affiche à la suite de la note.
+ *
  * POUR AJOUTER UNE FORMATION : copier un objet et le placer dans le tableau,
  * l'ordre du tableau étant l'ordre d'affichage. Un champ vide masque
  * simplement la ligne correspondante.
@@ -108,11 +110,13 @@ export const education = [
     },
     period: "2020",
     grade: "17,72/20",
-    /* Il s'agit bien de la moyenne générale du baccalauréat, et non d'une
-       note d'épreuve : le libellé précédent était faux. */
-    gradeLabel: {
-      fr: "Moyenne générale",
-      en: "Overall average",
+    /* Le libellé revient au « Note » commun aux autres diplômes. Il s'agit
+       bien de la moyenne générale du baccalauréat, et non d'une note
+       d'épreuve : c'est ce que disait à tort la toute première version. */
+    gradeLabel: null,
+    mention: {
+      fr: "Mention très bien avec félicitations",
+      en: "Highest honours, with the examiners' commendation",
     },
     description: {
       fr: "Filière orientée gestion, économie et systèmes d'information, à l'origine de mon passage vers l'informatique.",
