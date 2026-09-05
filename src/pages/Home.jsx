@@ -7,11 +7,7 @@ import portrait from "../assets/optimized/portrait.jpg";
 import { profile } from "../data/profile";
 import { LANGUAGES, pick, useLanguage, useTranslation } from "../i18n";
 import useDocumentMeta from "../hooks/useDocumentMeta";
-import { layout, media } from "../styles/theme";
-import { applyChromaVars } from "../styles/chroma";
-import { useTone } from "../theme/SkinProvider";
-import ChromaBackdrop from "../components/layout/ChromaBackdrop";
-import SkinToggle from "../components/ui/SkinToggle";
+import { darkTheme, layout, lightTheme, media } from "../styles/theme";
 import SoundToggle from "../components/ui/SoundToggle";
 import { ArrowUpRight } from "../components/icons";
 import BrandMark from "../components/brand/BrandMark";
@@ -74,9 +70,6 @@ const motionSpec = {
 const ROLL_RATIO = 0.6;
 
 const Screen = styled.div`
-  /* Repère de tous les calages absolus de l'accueil, et socle du fond
-     décoratif de CHROMA, qui se pose au ras de la pile. */
-  isolation: isolate;
   position: relative;
   width: 100%;
   height: 100vh;
@@ -212,16 +205,10 @@ const TopRight = styled.div`
   align-items: center;
   gap: 0.45rem;
 
-  /* Enfants directs seulement : la bascule de peau porte elle aussi un span,
-     et il n'a rien à voir avec les barres de séparation des langues. */
-  > span {
+  span {
     font-family: ${(props) => props.theme.fontMono};
     font-size: 0.68rem;
     color: ${(props) => props.theme.textFaint};
-  }
-
-  > button:last-child {
-    margin-left: 0.55rem;
   }
 `;
 
@@ -411,7 +398,7 @@ const Focal = styled.button`
     content: "";
     position: absolute;
     inset: -14%;
-    border: 1px solid ${(props) => props.theme.accent};
+    border: 1px solid ${(props) => props.theme.text};
     border-radius: 50%;
     opacity: ${(props) => (props.$open || !props.$ready ? 0 : 1)};
     transition: opacity 0.6s ease;
@@ -568,7 +555,7 @@ const Role = styled.div`
     font-family: ${(props) => props.theme.fontMono};
     font-size: 0.72rem;
     letter-spacing: 0.09em;
-    color: ${(props) => props.theme.accentLabel};
+    color: ${(props) => props.theme.textFaint};
     margin-top: 0.45rem;
   }
 `;
@@ -577,7 +564,7 @@ const Quote = styled.p`
   position: relative;
   margin-top: 0.4rem;
   padding-left: 1rem;
-  border-left: 1px solid ${(props) => props.theme.accent};
+  border-left: 1px solid ${(props) => props.theme.lineStrong};
   font-size: clamp(0.85rem, 1.1vw, 0.95rem);
   line-height: 1.6;
   color: ${(props) => props.theme.textSoft};
@@ -668,8 +655,6 @@ const Home = () => {
   const t = useTranslation();
   const { language, setLanguage } = useLanguage();
   const reduce = useReducedMotion();
-  const lightTheme = useTone("light");
-  const darkTheme = useTone("dark");
 
   // Décidé une seule fois, au premier rendu : l'intro ne doit pas réapparaître
   // parce qu'un état a changé plus tard.
@@ -754,11 +739,6 @@ const Home = () => {
   // fond du document, pour éviter un fond hérité de la page précédente.
   useEffect(() => {
     document.body.style.backgroundColor = lightTheme.body;
-  }, [lightTheme.body]);
-
-  // Accents de l'accueil, posés sur la racine comme sur les autres pages.
-  useLayoutEffect(() => {
-    applyChromaVars("/", "light");
   }, []);
 
   useDocumentMeta();
@@ -778,7 +758,6 @@ const Home = () => {
   return (
     <ThemeProvider theme={lightTheme}>
       <Screen>
-        <ChromaBackdrop />
         <h1 className="visually-hidden">
           {profile.fullName}, {pick(profile.role, language)}.{" "}
           {pick(profile.focus, language)}.{" "}
@@ -816,7 +795,6 @@ const Home = () => {
               </LanguageButton>
             </Fragment>
           ))}
-          <SkinToggle />
         </TopRight>
 
         <DesktopOnly>

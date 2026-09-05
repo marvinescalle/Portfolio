@@ -93,8 +93,7 @@ Chaque dossier contient un `README.md` rappelant les formats attendus.
 
 - **React 19** + **Vite** : interface et build
 - **React Router 7** : navigation, avec redirections depuis les anciennes URL
-- **styled-components 6** : styles par composant, deux peaux (mono / chroma),
-  chacune en ambiance claire et sombre
+- **styled-components 6** : styles par composant, deux thèmes (clair / sombre)
 - **Framer Motion** : animations, désactivées si le visiteur a demandé de
   réduire les animations
 
@@ -110,69 +109,10 @@ src/
 ├── data/              ← tout le contenu éditorial
 ├── hooks/             Titre et métadonnées par page
 ├── pages/             Une page par section
-├── styles/            Jetons de design, palette chroma, styles globaux
-├── theme/             Peau active et thème qui en découle
+├── styles/            Jetons de design et styles globaux
 ├── App.jsx            Routes et redirections
 └── index.jsx          Point d'entrée
 ```
-
-## Les deux peaux
-
-Le site existe en deux versions visuelles, **MONO** et **CHROMA**. Même
-structure, même contenu, mêmes pages : seule la matière change. La bascule est
-la pastille ronde posée à droite du choix de langue, et le choix est mémorisé
-dans le navigateur. MONO est la version par défaut.
-
-Aucune page n'est dupliquée. Un composant ne sait jamais quelle peau est
-active : il demande des jetons, et la peau décide de ce qu'ils valent.
-
-| Jeton | MONO | CHROMA |
-| --- | --- | --- |
-| `accent` | encre | teinte de la rubrique |
-| `rule` | encre | teinte de la rubrique |
-| `accentLabel` | gris discret | variante contrastée de la teinte |
-| `accentBar` | transparent | dégradé des deux teintes |
-| `canvas` | couleur de page | transparent, le fond est derrière |
-| `card` | couleur de page | papier, plus clair que le sol teinté |
-| `veil` | couleur de page | voile translucide sous flou |
-
-C'est `accentBar` qui permet d'ajouter des repères propres à CHROMA sans écrire
-la moindre condition : en MONO ils sont transparents, donc absents.
-
-### Le fond
-
-Un seul système pour tout le site, dans `components/layout/ChromaBackdrop.jsx`,
-en quatre couches et sans une seule image : un aplat, deux champs colorés
-posés en diagonale plus un coin franc, un signe, un grain fractal. Tout est
-calculé par le navigateur.
-
-### Le signe
-
-La bibliothèque vit dans `components/decor/motifs.jsx` : six formes dessinées
-à la main, dans le même repère de 100 sur 100, au même trait. Étoile, fer à
-cheval, maillon, bulle, pétale, filaments.
-
-Deux règles tiennent leur cohérence. Le trait ne grossit pas avec la forme,
-grâce à `non-scaling-stroke` : un signe de 400 px garde la finesse d'un dessin
-technique. Et la couleur vient de `currentColor`, donc un motif se recolore
-depuis le CSS sans être redessiné.
-
-**Une page n'en montre qu'un.** Sa position est déclarée dans `pageDesign` de
-`styles/chroma.js`, en pourcentages de fenêtre et en vmin, ce qui la rend
-valable à toutes les tailles d'écran.
-
-Deux directions ont été essayées avant celle-ci. Une tuile répétée d'abord :
-c'était un papier peint, uniforme et sans intention. Une composition de quatre
-grandes formes ensuite : plus intentionnelle, mais elles se disputaient l'écran
-et l'ensemble retombait en habillage. Reste ce qui marche : un signe, et de la
-couleur. Le caractère d'une page tient à sa teinte, qui n'occupe aucune surface
-de lecture, et à une forme qu'on remarque parce qu'elle est seule.
-
-### Ajouter une rubrique à CHROMA
-
-Ajouter une entrée à `pageDesign` dans `src/styles/chroma.js` : deux teintes
-prises dans `hues`, un signe pris dans `motifs.jsx` avec sa position, et
-`tone: "dark"` si la page est sombre. Rien d'autre.
 
 ## Accessibilité
 

@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 import { profile } from "../data/profile";
 import { pick, useLanguage, useTranslation } from "../i18n";
-import { media } from "../styles/theme";
+import { darkTheme, media } from "../styles/theme";
 import PageShell from "../components/layout/PageShell";
 import Reveal from "../components/ui/Reveal";
 import { ArrowUpRight, Check, Copy, Github, Linkedin, Mail } from "../components/icons";
@@ -40,23 +40,10 @@ const Intro = styled.p`
 `;
 
 const Channels = styled.ul`
-  position: relative;
   display: flex;
   flex-direction: column;
   margin-top: clamp(2.5rem, 6vw, 4rem);
   border-top: 1px solid ${(props) => props.theme.line};
-
-  /* Même repère coloré qu'en tête de page, posé sur le filet d'ouverture.
-     Invisible en MONO. */
-  &::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: -1px;
-    width: clamp(3.5rem, 9vw, 6.5rem);
-    height: 2px;
-    background: ${(props) => props.theme.accentBar};
-  }
 `;
 
 const Channel = styled.li`
@@ -85,7 +72,7 @@ const Channel = styled.li`
     font-size: 0.72rem;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: ${(props) => props.theme.accentLabel};
+    color: ${(props) => props.theme.textFaint};
   }
 
   .value {
@@ -201,7 +188,7 @@ const Contact = () => {
 
   return (
     <PageShell
-      tone="dark"
+      theme={darkTheme}
       title="Contact"
       description={t.contact.seo}
     >

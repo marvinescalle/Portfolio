@@ -57,10 +57,7 @@ const Portrait = styled.figure`
      mélange avec ce qui est peint dans le même contexte d'empilement, et
      l'animation d'apparition en isole le contenu. */
   .frame {
-    /* Le papier d'une plaque, pas la couleur de la page : en CHROMA le sol
-       est teinté, et une plaque à sa couleur y serait invisible. Le mode
-       multiply de l'image a besoin d'un aplat opaque derrière lui. */
-    background: ${(props) => props.theme.card};
+    background: ${(props) => props.theme.body};
     overflow: hidden;
   }
 
@@ -94,11 +91,11 @@ const SkillsTitle = styled.h2`
   font-weight: 400;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: ${(props) => props.theme.accentLabel};
+  color: ${(props) => props.theme.textFaint};
   /* Même écart entre un intitulé de section et son filet sur toutes les
      pages : 1,25rem. C'était 1,5 ici, seul cas différent du site. */
   padding-bottom: 1.25rem;
-  border-bottom: 1px solid ${(props) => props.theme.rule};
+  border-bottom: 1px solid ${(props) => props.theme.text};
 `;
 
 const Groups = styled.div`
@@ -134,7 +131,7 @@ const Group = styled.div`
     font-weight: 500;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: ${(props) => props.theme.accentLabel};
+    color: ${(props) => props.theme.textFaint};
     margin-bottom: 1rem;
   }
 
@@ -151,7 +148,7 @@ const Group = styled.div`
     height: 4px;
     margin-right: 0.7rem;
     vertical-align: 0.22em;
-    background: ${(props) => props.theme.accent};
+    background: ${(props) => props.theme.text};
   }
 `;
 

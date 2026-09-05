@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { motion, useReducedMotion } from "framer-motion";
 
+import { lightTheme } from "../../styles/theme";
 
 /* ────────────────────────────────────────────────────────────────────────
    Rideau de transition entre les rubriques.
@@ -24,7 +25,7 @@ const Panel = styled(motion.div)`
   position: fixed;
   inset: 0;
   z-index: 90;
-  background: ${(props) => props.theme.text};
+  background: ${lightTheme.text};
   pointer-events: none;
   will-change: clip-path;
 `;
@@ -38,7 +39,7 @@ const Edge = styled(motion.div)`
   left: 0;
   width: 2px;
   z-index: 91;
-  background: ${(props) => props.theme.body};
+  background: ${lightTheme.body};
   pointer-events: none;
 `;
 

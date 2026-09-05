@@ -6,7 +6,7 @@ import { findPassion, passions } from "../data/passions";
 import PassionOverlay from "../components/passions/PassionOverlay";
 import { pick, useLanguage, useTranslation } from "../i18n";
 import useBodyScrollLock from "../hooks/useBodyScrollLock";
-import { media } from "../styles/theme";
+import { darkTheme, media } from "../styles/theme";
 import PageShell from "../components/layout/PageShell";
 import SectionHeader from "../components/ui/SectionHeader";
 import Reveal from "../components/ui/Reveal";
@@ -90,11 +90,6 @@ const Tile = styled(Link)`
     filter: grayscale(1) contrast(1.05);
     transform: scale(1.01);
     transition: filter 0.8s ease, transform 0.9s cubic-bezier(0.22, 0.61, 0.36, 1);
-  }
-
-  &:hover,
-  &:focus-visible {
-    border-color: ${(props) => props.theme.accent};
   }
 
   &:hover img,
@@ -186,7 +181,7 @@ const Passions = () => {
 
   return (
   <PageShell
-    tone="dark"
+    theme={darkTheme}
     title={t.passions.title}
     description={t.passions.seo}
   >

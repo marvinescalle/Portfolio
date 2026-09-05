@@ -7,9 +7,6 @@ import { Github, Linkedin, Mail } from "../icons";
 import { useTranslation } from "../../i18n";
 
 const Wrap = styled.footer`
-  /* Au-dessus du fond décoratif de CHROMA, comme le contenu principal. */
-  position: relative;
-  z-index: 1;
   border-top: 1px solid ${(props) => props.theme.line};
   margin-top: clamp(5rem, 12vw, 9rem);
 `;

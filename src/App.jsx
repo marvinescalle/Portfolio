@@ -3,7 +3,7 @@ import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { ThemeProvider } from "styled-components";
 
 import GlobalStyle from "./styles/GlobalStyle";
-import SkinProvider, { useTone } from "./theme/SkinProvider";
+import { lightTheme } from "./styles/theme";
 import Loading from "./components/ui/Loading";
 import { markIntroPlayed } from "./components/intro/introState";
 import RouteCurtain, {
@@ -37,9 +37,8 @@ const ConsumeIntroOutsideHome = () => {
 /** Première partie du chemin, qui identifie la section. */
 const sectionOf = (pathname) => `/${pathname.split("/")[1] ?? ""}`;
 
-function Portfolio() {
+function App() {
   const location = useLocation();
-  const theme = useTone("light");
 
   // La page affichée est volontairement en retard sur l'adresse : elle ne
   // change qu'une fois l'écran couvert par le rideau.
@@ -67,7 +66,7 @@ function Portfolio() {
   });
 
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={lightTheme}>
       <LanguageProvider>
       <AmbienceProvider>
       <GlobalStyle />
@@ -103,19 +102,6 @@ function Portfolio() {
       </AmbienceProvider>
       </LanguageProvider>
     </ThemeProvider>
-  );
-}
-
-/**
- * La peau est choisie au-dessus de tout le reste : elle décide des thèmes que
- * verront le ThemeProvider de l'application comme ceux des pages, sans
- * qu'aucune page ait à la connaître.
- */
-function App() {
-  return (
-    <SkinProvider>
-      <Portfolio />
-    </SkinProvider>
   );
 }
 

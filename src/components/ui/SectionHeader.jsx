@@ -5,7 +5,6 @@ import { motion, useReducedMotion } from "framer-motion";
 import Reveal from "./Reveal";
 
 const Wrap = styled.header`
-  position: relative;
   display: grid;
   grid-template-columns: auto 1fr;
   align-items: start;
@@ -13,19 +12,6 @@ const Wrap = styled.header`
   padding-bottom: clamp(1.5rem, 3.5vw, 2.5rem);
   border-bottom: 1px solid ${(props) => props.theme.line};
   margin-bottom: clamp(2rem, 5vw, 3.5rem);
-
-  /* Repère coloré posé au départ du filet, comme la marque d'encre d'une
-     affiche sérigraphiée. Il n'existe qu'en CHROMA : en MONO le jeton vaut
-     transparent, et aucune condition n'est nécessaire. */
-  &::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -1px;
-    width: clamp(3.5rem, 9vw, 6.5rem);
-    height: 2px;
-    background: ${(props) => props.theme.accentBar};
-  }
 
   ${media.sm`
     grid-template-columns: 1fr;
@@ -37,7 +23,7 @@ const Index = styled.span`
   font-family: ${(props) => props.theme.fontMono};
   font-size: 0.75rem;
   letter-spacing: 0.16em;
-  color: ${(props) => props.theme.accentLabel};
+  color: ${(props) => props.theme.textFaint};
   padding-top: 0.9rem;
 
   ${media.sm`
