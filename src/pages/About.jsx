@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 import portrait from "../assets/optimized/portrait.jpg";
-import { profile } from "../data/profile";
+import { getAge, profile } from "../data/profile";
 import { skillGroups } from "../data/skills";
 import { pick, useLanguage, useTranslation } from "../i18n";
 import { media } from "../styles/theme";
@@ -50,8 +50,6 @@ const Portrait = styled.figure`
   top: 8rem;
   max-width: 22rem;
   margin-left: auto;
-  border-top: 1px solid ${(props) => props.theme.text};
-  padding-top: 1rem;
 
   /* Le fond doit être posé juste derrière l'image : le mode multiply se
      mélange avec ce qui est peint dans le même contexte d'empilement, et
@@ -71,13 +69,44 @@ const Portrait = styled.figure`
     mix-blend-mode: multiply;
   }
 
+  /* La légende se mesure sur la largeur de l'image, pas sur celle de la
+     fenêtre : le cadre est plafonné à 22rem mais rétrécit avec la colonne.
+     Le conteneur est posé sur figcaption plutôt que sur la figure, car
+     container-type isole un contexte d'empilement, ce qui neutraliserait le
+     mode multiply de l'image juste au-dessus. */
   figcaption {
+    container-type: inline-size;
+    padding-top: 0.75rem;
+  }
+
+  figcaption > span {
+    display: block;
     font-family: ${(props) => props.theme.fontMono};
-    font-size: 0.7rem;
-    letter-spacing: 0.14em;
+    /* La ligne est calée sur la largeur de la photo, bord à bord.
+
+       Le corps est déduit de la largeur du cadre : le coefficient est mesuré
+       sur les 38 caractères que font les deux langues, interlettrage compris,
+       et vise un poil en dessous de la largeur disponible. La justification
+       reprend le reliquat, quelques dixièmes de pixel par espace, de sorte
+       que la ligne touche les deux bords sans jamais se replier. Les bornes
+       du clamp ne servent que de garde-fous. */
+    font-size: clamp(0.6rem, 3.62cqw, 0.9rem);
+    letter-spacing: 0.11em;
+    /* L'interlettrage s'applique aussi après le dernier caractère. Sans cette
+       compensation la ligne s'arrêterait un pixel et demi avant le bord
+       droit, alors qu'elle affleure le bord gauche. */
+    margin-right: -0.11em;
     text-transform: uppercase;
     color: ${(props) => props.theme.textFaint};
-    padding-top: 0.75rem;
+    text-align: justify;
+    text-align-last: justify;
+  }
+
+  /* Quand la légende se replie, sous 860 px, la coupure ne doit tomber que
+     sur les séparateurs : sans cela l'âge se retrouvait scindé, le nombre sur
+     une ligne et son unité sur la suivante. */
+  figcaption .part {
+    white-space: nowrap;
   }
 
   ${media.md`
@@ -195,7 +224,13 @@ const About = () => {
             />
           </div>
           <figcaption>
-            {profile.fullName} · {pick(profile.role, language)}
+            <span>
+              <span className="part">{profile.fullName}</span> ·{" "}
+              <span className="part">
+                {t.about.age.replace("{n}", getAge())}
+              </span>{" "}
+              · <span className="part">{pick(profile.role, language)}</span>
+            </span>
           </figcaption>
         </Portrait>
       </Reveal>

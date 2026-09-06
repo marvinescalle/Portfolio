@@ -9,6 +9,12 @@ export const profile = {
   fullName: "Marvin Escalle",
 
   /**
+   * Date de naissance au format ISO. Elle n'est jamais affichée telle
+   * quelle : seul l'âge en est déduit, par getAge plus bas.
+   */
+  birthDate: "2001-09-13",
+
+  /**
    * Positionnement professionnel, en trois niveaux de lecture décroissants.
    * La hiérarchie est portée par la typographie, jamais par un séparateur.
    *
@@ -75,6 +81,24 @@ export const profile = {
     // TODO à compléter : date de dernière mise à jour, ex. "Septembre 2026".
     updatedAt: null,
   },
+};
+
+/**
+ * Âge en années révolues, recalculé à chaque rendu. La comparaison se fait
+ * jour pour jour, donc le compteur avance de lui-même le 13 septembre sans
+ * qu'il y ait quoi que ce soit à modifier ici.
+ *
+ * Les dates sont lues en heure locale des deux côtés : le visiteur voit son
+ * propre 13 septembre, ce qui est la lecture attendue pour un anniversaire.
+ */
+export const getAge = (birthDate = profile.birthDate, today = new Date()) => {
+  const [year, month, day] = birthDate.split("-").map(Number);
+  const age = today.getFullYear() - year;
+  const beforeBirthday =
+    today.getMonth() + 1 < month ||
+    (today.getMonth() + 1 === month && today.getDate() < day);
+
+  return beforeBirthday ? age - 1 : age;
 };
 
 export const seo = {
