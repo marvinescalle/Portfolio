@@ -9,17 +9,31 @@ code n'est à modifier.
 | `Marvin_Escalle_CV_FR.pdf` | Français, colonne de gauche |
 | `Marvin_Escalle_CV_EN.pdf` | Anglais, colonne de droite |
 
+## Sources
+
+Ces deux PDF sont la version généraliste du CV. Les sources éditables et les
+exports de référence vivent à la racine du dépôt, hors de `public/`, donc non
+publiés :
+
+| Fichier | Rôle |
+| --- | --- |
+| `Marvin_Escalle_CV_Generaliste_FR.docx` | Source Word, français |
+| `Marvin_Escalle_CV_Generaliste_EN.docx` | Source Word, anglais |
+| `Marvin_Escalle_CV_Generaliste_FR.pdf` | Export de référence, français |
+| `Marvin_Escalle_CV_Generaliste_EN.pdf` | Export de référence, anglais |
+
+Pour mettre le site à jour après avoir retouché un DOCX : réexporter en PDF
+depuis Word, puis recopier l'export dans ce dossier sous le nom attendu ci
+dessus. Le nom public reste `Marvin_Escalle_CV_FR.pdf` plutôt que le nom de
+travail, pour que le fichier téléchargé par un recruteur porte un nom neutre.
+
 ## Ce que ces fichiers ne doivent pas contenir
 
 Ils sont accessibles à n'importe quel visiteur du site. Ils ne devraient donc
 porter **ni numéro de téléphone**, ni localisation qui varie d'une version à
-l'autre : les fichiers actuels indiquent Marseille en français et Paris en
-anglais, ce qui se lit comme une incohérence plutôt que comme une mobilité.
-La mention retenue ailleurs sur le site est « France · Mobilité
-internationale », ou son équivalent anglais.
-
-Ces deux points demandent de reprendre les documents dans Pages puis de les
-réexporter : aucune source éditable n'est versionnée ici.
+l'autre. Les versions généralistes respectent déjà ces deux points : pas de
+téléphone, et la même mention « France · Mobilité internationale » dans les
+deux langues.
 
 ## Format des pages
 
@@ -29,6 +43,9 @@ vide apparaît sous le PDF. Les fichiers actuels sont au format **US Letter**
 `src/data/profile.js`.
 
 Si un futur CV est au format A4, remplacer cette valeur par `"a4"`.
+
+Chacun des deux documents tient sur **une seule page**. C'est une contrainte
+à conserver : la page CV affiche un aperçu unique par langue.
 
 ## Autres réglages
 
