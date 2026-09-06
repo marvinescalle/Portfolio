@@ -9,7 +9,6 @@ import { markIntroPlayed } from "./components/intro/introState";
 import RouteCurtain, {
   useCurtain,
 } from "./components/transition/RouteCurtain";
-import { AmbienceProvider } from "./components/audio/AmbienceProvider";
 import { LanguageProvider } from "./i18n";
 
 const Home = lazy(() => import("./pages/Home"));
@@ -68,7 +67,6 @@ function App() {
   return (
     <ThemeProvider theme={lightTheme}>
       <LanguageProvider>
-      <AmbienceProvider>
       <GlobalStyle />
       <ConsumeIntroOutsideHome />
 
@@ -99,7 +97,6 @@ function App() {
       </Suspense>
 
       <RouteCurtain phase={phase} onComplete={handleComplete} />
-      </AmbienceProvider>
       </LanguageProvider>
     </ThemeProvider>
   );

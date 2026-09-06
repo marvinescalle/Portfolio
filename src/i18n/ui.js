@@ -64,6 +64,8 @@ export const ui = {
       ],
       skills: "Compétences",
       portrait: "Portrait de",
+      // {n} est remplacé par l'âge calculé depuis la date de naissance.
+      age: "{n} ans",
     },
 
     experience: {
@@ -189,13 +191,6 @@ export const ui = {
       },
       switchLabel: "Choisir la version du CV",
     },
-
-    sound: {
-      on: "Activer l'ambiance sonore",
-      off: "Couper l'ambiance sonore",
-      playing: "Ambiance sonore active",
-      muted: "Ambiance sonore coupée",
-    },
   },
 
   en: {
@@ -252,6 +247,7 @@ export const ui = {
       ],
       skills: "Skills",
       portrait: "Portrait of",
+      age: "{n} y.o.",
     },
 
     experience: {
@@ -375,13 +371,6 @@ export const ui = {
         },
       },
       switchLabel: "Choose the résumé version",
-    },
-
-    sound: {
-      on: "Turn the ambient sound on",
-      off: "Turn the ambient sound off",
-      playing: "Ambient sound on",
-      muted: "Ambient sound off",
     },
   },
 };

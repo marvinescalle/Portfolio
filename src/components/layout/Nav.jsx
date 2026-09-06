@@ -14,7 +14,6 @@ import navItems from "../../data/navigation";
 import { profile } from "../../data/profile";
 import { layout, media } from "../../styles/theme";
 import { Close, Menu } from "../icons";
-import SoundToggle from "../ui/SoundToggle";
 import { LANGUAGES, useLanguage, useTranslation } from "../../i18n";
 
 const Bar = styled.header`
@@ -431,7 +430,6 @@ const Nav = () => {
             <Wordmark to="/" aria-label={t.nav.backHome}>
               {profile.fullName}
             </Wordmark>
-            <SoundToggle />
           </Brand>
 
           <DesktopList ref={listRef} aria-label={t.nav.main}>

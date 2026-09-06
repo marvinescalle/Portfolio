@@ -8,7 +8,6 @@ import { profile } from "../data/profile";
 import { LANGUAGES, pick, useLanguage, useTranslation } from "../i18n";
 import useDocumentMeta from "../hooks/useDocumentMeta";
 import { darkTheme, layout, lightTheme, media } from "../styles/theme";
-import SoundToggle from "../components/ui/SoundToggle";
 import { ArrowUpRight } from "../components/icons";
 import BrandMark from "../components/brand/BrandMark";
 import VortexIntro from "../components/intro/VortexIntro";
@@ -778,7 +777,6 @@ const Home = () => {
               {pick(profile.role, language)}
             </span>
           </span>
-          <SoundToggle onDark={open} />
         </Wordmark>
 
         <TopRight role="group" aria-label={t.nav.language}>
