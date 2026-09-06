@@ -1,35 +1,43 @@
-# Déploiement final
+# Déploiement
 
-Ce document rassemble ce qui reste à faire le jour où le portfolio part en
-ligne. **Rien n'a été déployé** : tout le travail décrit ici a été préparé et
-vérifié en local uniquement.
+Le site est hébergé sur Netlify, qui reconstruit et met en ligne
+automatiquement à chaque push sur `main`. Il n'y a donc aucune commande de
+déploiement à lancer à la main.
 
----
+## Comment publier une modification
 
-## Checklist du jour J
+```bash
+git add -A
+git commit -m "Description du changement"
+git push origin main
+```
 
-- [ ] Compléter les champs marqués `TODO` dans `src/data/`
-- [ ] Fusionner la branche `v2` dans `main`
-- [ ] Déployer la version finale sur Netlify
-- [ ] Vérifier que Netlify détecte le formulaire
-- [ ] Envoyer un message de test depuis la page Contact en ligne
-- [ ] Vérifier que la soumission apparaît dans l'onglet Forms de Netlify
-- [ ] Vérifier la réception de la notification email
-- [ ] Retester la page Contact et la page CV en production, sur ordinateur
-      **et** sur téléphone
+Netlify détecte le push, lance `npm run build` et publie `dist/`. Le build
+prend une trentaine de secondes. En cas d'échec, le site en ligne reste sur
+la version précédente : rien ne casse en production.
 
----
+## Configuration
 
-## Contact
+Tout est dans `netlify.toml`, à la racine :
 
-Rien à configurer. La page Contact n'a plus de formulaire : elle affiche un
-lien `mailto:` et les profils LinkedIn et GitHub, tous définis dans
-`src/data/profile.js`. Netlify Forms n'est plus utilisé, et la déclaration
-statique correspondante a été retirée de `index.html`.
+| Réglage | Valeur | Pourquoi |
+| --- | --- | --- |
+| `command` | `npm run build` | build Vite |
+| `publish` | `dist` | dossier généré |
+| `NODE_VERSION` | `22` | Vite exige Node 20 ou plus |
+| Redirection `/*` vers `/index.html` | statut 200 | sans elle, un accès direct à `/projets` renvoie une 404 |
 
----
+Cette dernière ligne est indispensable : le portfolio est une application à
+page unique, c'est React Router qui gère les URL côté navigateur.
 
-## CV
+## Nom de domaine
+
+Le domaine personnalisé se branche depuis Netlify, dans **Domain management**,
+puis chez le registrar en pointant les enregistrements DNS vers Netlify. Le
+certificat HTTPS est émis automatiquement par Let's Encrypt, gratuitement, et
+se renouvelle seul.
+
+## Mettre à jour le CV
 
 Deux fichiers à remplacer dans `public/cv/`, en conservant exactement ces
 noms :
@@ -41,26 +49,28 @@ noms :
 
 Aucun code n'est à modifier : la page les reprend automatiquement.
 
-Les deux CV en place sont les versions Business Analyst IT, au format
-US Letter. Si un futur fichier est au format A4, basculer `cv.format` sur
-`"a4"` dans `src/data/profile.js`, sans quoi une bande vide apparaîtra sous
-le document.
+Les sources Word éditables sont versionnées à la racine du dépôt, hors de
+`public/`, donc non publiées avec le site. La marche à suivre complète est
+dans `public/cv/README.md`.
+
+Les deux CV en place sont les versions généralistes, au format US Letter, sur
+une page chacune. Si un futur fichier passe en A4, basculer `cv.format` sur
+`"a4"` dans `src/data/profile.js`, sans quoi une bande vide apparaîtra sous le
+document.
 
 Pour afficher une date de mise à jour sous le titre de la page, renseigner
-`cv.updatedAt` dans `src/data/profile.js`, par exemple `"Août 2026"`.
-
----
+`cv.updatedAt` dans `src/data/profile.js`, par exemple `"Septembre 2026"`.
 
 ## Langues
 
-Tous les textes de la page Contact et de la page CV existent déjà en français
-et en anglais dans `src/data/translations.js`.
+Le site est bilingue, avec un sélecteur français / anglais dans l'en-tête. Les
+textes d'interface vivent dans `src/i18n/ui.js`, et les contenus dans
+`src/data/`, où chaque champ traduit prend la forme `{ fr: "...", en: "..." }`.
 
-Le portfolio n'a pas encore de sélecteur de langue : la constante
-`DEFAULT_LANGUAGE` fixe la langue utilisée partout. Le jour où un sélecteur
-sera ajouté, il suffira de remplacer cette constante par une valeur issue
-d'un contexte React, sans toucher aux composants.
+## À compléter
 
-Les intitulés des colonnes de la page CV font exception et restent dans leur
-propre langue quelle que soit la langue du site : la colonne française
-affiche « Télécharger », la colonne anglaise « Download ».
+- [ ] Renseigner `seo.siteUrl` dans `src/data/profile.js` une fois le domaine
+      acheté. Il sert aux balises Open Graph, donc à l'aperçu affiché quand le
+      lien est partagé sur LinkedIn ou par message.
+- [ ] Vérifier la page CV et la page Contact en production, sur ordinateur
+      **et** sur téléphone.

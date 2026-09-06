@@ -33,7 +33,10 @@ d'interface n'est nécessaire pour ajouter un projet ou une expérience.
 | `education.js` | Formations affichées en timeline |
 | `passions.js` | Vignettes de la mosaïque Passions |
 | `navigation.js` | Sections et ordre de la navigation |
-| `translations.js` | Textes français et anglais des pages CV et Contact |
+| `travel.js` | Pays visités et étapes du voyage, pour la fiche Voyages |
+
+Les textes d'interface, français et anglais, vivent à part dans
+`src/i18n/ui.js`.
 
 ### Ajouter un projet
 
