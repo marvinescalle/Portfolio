@@ -216,6 +216,10 @@ const LanguageButton = styled.button`
   font-size: 0.72rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+  /* La couleur seule ne suffisait pas a distinguer la langue active. Le gras
+     s'y ajoute, sans deplacer quoi que ce soit : la police est a chasse
+     fixe, ses graisses partagent la meme avance. */
+  font-weight: ${(props) => (props.$active ? 700 : 400)};
   color: ${(props) =>
     props.$active ? props.theme.text : props.theme.textFaint};
   transition: color 0.25s ease;
@@ -465,7 +469,16 @@ const Panel = styled.div`
   ${media.md`
     height: 100%;
     grid-template-columns: 1fr;
-    grid-template-rows: 1fr auto;
+    /* Les deux rangees prennent leur hauteur naturelle.
+
+       Avec « 1fr auto », la rangee de texte reclamait d'abord son minimum,
+       544 px, et la photo heritait du reste. Sur un telephone reel, dont la
+       barre d'adresse de Safari ampute la hauteur utile, ce reste tombait a
+       96 px pour une image de 300 px : le portrait, ancre en bas, se
+       retrouvait coupe au niveau du visage. Le panneau defile desormais
+       plutot que de rogner l'image. */
+    grid-template-rows: auto auto;
+    align-content: start;
     border: none;
     overflow-y: auto;
   `}
@@ -633,10 +646,22 @@ const PhotoSide = styled.div`
   }
 
   ${media.md`
-    min-height: 0;
-    max-height: 42vh;
+    /* Le plafond en vh coupait l'image des que la hauteur utile descendait
+       sous 42 % de la fenetre annoncee, ce que fait tout navigateur mobile
+       affichant ses barres. Il laisse place a un plancher : le volet a un
+       debordement masque, donc une taille minimale automatique nulle, et la
+       grille du panneau le comprimait jusqu'a 96 px. */
+    min-height: 21rem;
+    max-height: none;
+    padding: 1.25rem 0 1.75rem;
 
-    img { max-width: 15rem; }
+    img {
+      max-width: 14rem;
+      /* Dernier garde-fou : si la rangee se retrouvait malgre tout plus
+         courte que le portrait, celui-ci se reduit au lieu d'etre rogne. */
+      max-height: 100%;
+      width: auto;
+    }
   `}
 `;
 

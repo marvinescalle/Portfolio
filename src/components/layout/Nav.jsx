@@ -206,6 +206,10 @@ const LanguageButton = styled.button`
   font-size: 0.7rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+  /* La couleur seule ne suffisait pas a distinguer la langue active. Le gras
+     s'y ajoute, sans deplacer quoi que ce soit : la police est a chasse
+     fixe, ses graisses partagent la meme avance. */
+  font-weight: ${(props) => (props.$active ? 700 : 400)};
   color: ${(props) =>
     props.$active ? props.theme.text : props.theme.textFaint};
   transition: color 0.25s ease;
@@ -333,10 +337,13 @@ const OverlayLanguages = styled.div`
     font-size: 0.8rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    opacity: ${(props) => (props.$dummy ? 1 : 1)};
+    /* Meme distinction que dans l'en-tete : gras sur la langue active, en
+     plus de l'opacite. La chasse fixe evite tout deplacement. */
+    font-weight: 700;
   }
 
   button[aria-pressed="false"] {
+    font-weight: 400;
     opacity: 0.45;
   }
 
