@@ -185,10 +185,10 @@ export const passions = [
     id: "sport",
     label: { fr: "Sport", en: "Sport" },
     text: {
-      fr: "De l'athlétisme à la boxe, en passant par l'escalade et l'alpinisme. Vice-champion départemental en duo mixte et vice-champion régional en sprint 100 m.",
-      en: "From athletics to boxing, by way of climbing and mountaineering. Runner-up in the departmental mixed doubles and in the regional 100 m sprint.",
+      fr: "De l'athlétisme au Muay Thai, en passant par l'escalade et l'alpinisme. Vice-champion départemental de badminton en duo mixte et vice-champion régional en sprint 100 m.",
+      en: "From athletics to Muay Thai, by way of climbing and mountaineering. Runner-up in the departmental badminton mixed doubles and in the regional 100 m sprint.",
     },
-    image: "/images/passions/sport/boxe.jpg",
+    image: "/images/passions/sport/muay-thai.jpg",
     alt: {
       fr: "Marvin Escalle pendant une séance de sport",
       en: "Marvin Escalle during a training session",
@@ -225,11 +225,19 @@ export const passions = [
             },
           },
           {
-            src: "/images/passions/sport/boxe.jpg",
-            caption: { fr: "Boxe", en: "Boxing" },
+            src: "/images/passions/sport/muay-thai.jpg",
+            caption: { fr: "Muay Thai", en: "Muay Thai" },
             alt: {
-              fr: "Marvin Escalle, boxe",
-              en: "Marvin Escalle, boxing",
+              fr: "Marvin Escalle, Muay Thai",
+              en: "Marvin Escalle, Muay Thai",
+            },
+          },
+          {
+            src: "/images/passions/sport/mma.jpg",
+            caption: { fr: "MMA", en: "MMA" },
+            alt: {
+              fr: "Séance de MMA au sol, travail de contrôle",
+              en: "MMA ground session, control work",
             },
           },
           {
@@ -238,6 +246,14 @@ export const passions = [
             alt: {
               fr: "Marvin Escalle, course",
               en: "Marvin Escalle, running",
+            },
+          },
+          {
+            src: "/images/passions/sport/bivouac.jpg",
+            caption: { fr: "Randonnée / Bivouac", en: "Hiking / Wild camping" },
+            alt: {
+              fr: "Tente plantée dans une forêt de pins, bivouac",
+              en: "Tent pitched in a pine forest, wild camping",
             },
           },
           {

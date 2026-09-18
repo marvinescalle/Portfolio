@@ -137,7 +137,7 @@ export const ui = {
       },
       travel: {
         countries: "Pays visités",
-        count: "{n} pays visités",
+        count: "{n} pays visités au total",
         mapLabel: "Planisphère des pays visités :",
         other: "Autres voyages",
       },
@@ -320,7 +320,7 @@ export const ui = {
       },
       travel: {
         countries: "Countries visited",
-        count: "{n} countries visited",
+        count: "{n} countries visited in total",
         mapLabel: "World map of the countries visited:",
         other: "Other trips",
       },
