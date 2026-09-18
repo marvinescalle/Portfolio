@@ -38,6 +38,13 @@ export const ArrowDown = (props) => (
   </svg>
 );
 
+export const ArrowUp = (props) => (
+  <svg {...base} {...props}>
+    <path d="M12 20V5" />
+    <path d="m6 11 6-6 6 6" />
+  </svg>
+);
+
 export const Download = (props) => (
   <svg {...base} {...props}>
     <path d="M12 3v12" />

@@ -38,6 +38,7 @@ export const ui = {
       linkedin: "Profil LinkedIn",
       github: "Profil GitHub",
       close: "Fermer",
+      backToTop: "Revenir en haut de la page",
     },
 
     home: {
@@ -221,6 +222,7 @@ export const ui = {
       linkedin: "LinkedIn profile",
       github: "GitHub profile",
       close: "Close",
+      backToTop: "Back to top",
     },
 
     home: {

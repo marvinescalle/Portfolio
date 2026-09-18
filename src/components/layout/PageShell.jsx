@@ -5,6 +5,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { layout, lightTheme } from "../../styles/theme";
 import useDocumentMeta from "../../hooks/useDocumentMeta";
 import { useTranslation } from "../../i18n";
+import ScrollTop from "../ui/ScrollTop";
 import Footer from "./Footer";
 import Nav from "./Nav";
 
@@ -110,6 +111,7 @@ const PageShell = ({
           {children}
         </Main>
         <Footer />
+        <ScrollTop />
       </Page>
     </ThemeProvider>
   );
